@@ -1,5 +1,6 @@
 import { combineReducers } from "redux";
 
-import simulation from './simulation'
+import parties from './parties'
+import constituencies from "./constituencies";
 
-export default combineReducers({ simulation });
+export default combineReducers({parties, constituencies});

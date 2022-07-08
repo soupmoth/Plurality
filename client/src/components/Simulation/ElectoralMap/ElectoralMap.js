@@ -4,13 +4,22 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import ElectoralGeography from "./westminster_const_region TRUE3.json"
 
 import "./styles.css"
+import { useSelector } from "react-redux";
 
 
 
 const ElectoralMap = () => {
 
-  console.log(ElectoralGeography)
-  
+
+  const constituencies = useSelector((state) => state.constituencies)
+  const parties = useSelector((state) => state.parties)
+
+  console.log(constituencies);
+  console.log(parties);
+
+  const determineWinner = (constituency) => {
+    
+  };
 
 
   return (

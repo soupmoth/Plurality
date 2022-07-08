@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Container, AppBar, Typography, Grow, Grid } from '@material-ui/core'
 import { useDispatch } from 'react-redux';
 
-import {getConstituencies} from './actions/simulation'
+import {getConstituencies, getParties} from './actions/simulation'
 
 import plurality from './images/plurality.jpg'
 import useStyles from './styles';
@@ -14,7 +14,8 @@ const App = () => {
 
     useEffect(() => {
         dispatch(getConstituencies());
-    }, [dispatch])
+        dispatch(getParties())
+    }, [])
 
     return (
         <Container maxWidth="lg">

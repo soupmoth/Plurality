@@ -16,3 +16,14 @@ export const getConstituencies = () => async (dispatch) => {
         console.log(error);
     }
 }
+
+export const getParties = () => async (dispatch) => {
+
+    try {
+        const {data} = await api.fetchParties();
+
+        dispatch({ type: act.FETCH_PARTIES, payload: data});
+    } catch (error) {
+        console.log(error);
+    }
+}

@@ -21,8 +21,8 @@ const constituencySchema = mongoose.Schema({
     uup: Number,
     alliance: Number,
     other: Number,
-});
+}, {collection : 'constituencies'});
 
-const Constituencies = mongoose.model("Constituencies", constituencySchema)
+const Constituencies = mongoose.model(`Constituencies`, constituencySchema)
 
 export default Constituencies;
