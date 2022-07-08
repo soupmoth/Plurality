@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv"
 
-import postRoutes from './routes/posts.js';
+import simulationRoutes from './routes/simulation.js';
 
 dotenv.config()
 
@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ limit: "32mb", extended: true}))
 app.use(cors());
 
 //routes
-app.use('/posts', postRoutes)
+app.use('/simulation', simulationRoutes)
 
 const PORT = process.env.PORT || 5000;
 
