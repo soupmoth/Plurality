@@ -5,6 +5,7 @@ import ElectoralGeography from "./westminster_const_region TRUE3.json"
 
 import "./styles.css"
 import { useSelector } from "react-redux";
+import { CircularProgress } from "@material-ui/core";
 
 
 
@@ -17,22 +18,57 @@ const ElectoralMap = () => {
   console.log(constituencies);
   console.log(parties);
 
-  const determineWinner = (constituency) => {
-    const winner = "con"
+  //c being the constituency.
+  const determineWinner = (c) => {
+
+    //TODO
+    //this solution is really bad, its because of how I formatted the backend. Have a fix in mind
+    //for it, but I'll have to test it later. Proof of concept
+    const array = [c.con, c.lab, c.ld, c.brexit, c.green, c.snp,
+      c.pc, c.dup, c.sf, c.sdlp, c.uup, c.alliance, c.other];
+    const highestVote =  Math.max(...array);
+
+    switch (highestVote) {
+      case c.con:
+        return "con";
+      case c.lab:
+        return "lab";
+      case c.ld:
+        return "ld";
+      case c.brexit:
+        return "brexit";
+      case c.green:
+        return "green";
+      case c.snp:
+        return "snp";
+      case c.pc:
+        return "pc";
+      case c.dup:
+        return "dup";
+      case c.sf:
+        return "sf";
+      case c.sdlp:
+        return "sdlp";
+      case c.uup:
+        return "uup";
+      case c.alliance:
+        return "alliance";
+      default:
+        return "other";
 
 
-    return winner
+    }
     
   };
 
   const getColour = (pID) => {
     const result = parties.find(party => party.partyID == pID)
-    console.log(result)
     return result.primaryColour
   };
 
 
   return (
+    !constituencies.length || !parties.length ? <CircularProgress/>: (
       <ComposableMap width={800}
       height={800}
       projectionConfig={{
@@ -44,12 +80,21 @@ const ElectoralMap = () => {
         <Geographies geography={ElectoralGeography}>
           {({ geographies }) =>
             geographies.map(geo => {
-              console.log(geo)
-              const currentConstit = constituencies.find(constit => constit.constituency === geo.properties.NAME);
+              const currentConstit = constituencies.find(constit => (constit.constituency) === geo.properties.NAME);
               
-              console.log(currentConstit)
-              const winner = determineWinner(currentConstit)
-              const colour = getColour(winner)
+              //console.log(currentConstit)
+
+              let colour = null
+              try {
+                const winner = determineWinner(currentConstit)
+                colour = getColour(winner)
+              }
+              catch (error) {
+                console.log(geo.properties.NAME)
+                console.log(error)
+                
+                colour = getColour("other")
+              }
               
               return <Geography key={geo.rsmKey}
                geography={geo}
@@ -59,7 +104,7 @@ const ElectoralMap = () => {
           }
         </Geographies>
       </ComposableMap>
-    
+    )
   );
 };
 
