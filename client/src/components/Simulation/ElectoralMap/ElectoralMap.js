@@ -18,7 +18,17 @@ const ElectoralMap = () => {
   console.log(parties);
 
   const determineWinner = (constituency) => {
+    const winner = "con"
+
+
+    return winner
     
+  };
+
+  const getColour = (pID) => {
+    const result = parties.find(party => party.partyID == pID)
+    console.log(result)
+    return result.primaryColour
   };
 
 
@@ -33,9 +43,19 @@ const ElectoralMap = () => {
       }}>
         <Geographies geography={ElectoralGeography}>
           {({ geographies }) =>
-            geographies.map(geo => (
-                <Geography key={geo.rsmKey} geography={geo}/>
-            ))
+            geographies.map(geo => {
+              console.log(geo)
+              const currentConstit = constituencies.find(constit => constit.constituency === geo.properties.NAME);
+              
+              console.log(currentConstit)
+              const winner = determineWinner(currentConstit)
+              const colour = getColour(winner)
+              
+              return <Geography key={geo.rsmKey}
+               geography={geo}
+                fill={`${colour}`}/>
+
+            })
           }
         </Geographies>
       </ComposableMap>
