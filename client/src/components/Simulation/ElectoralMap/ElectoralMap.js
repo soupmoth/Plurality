@@ -9,7 +9,25 @@ import { CircularProgress } from "@material-ui/core";
 
 
 
-const ElectoralMap = () => {
+const ElectoralMap = ({seats, setSeatData}) => {
+  //constants
+  const seatTotal = 650;
+
+  const seatCount = {
+    total: 18,
+    party: {
+        con: 0,
+        lab: 0,
+        ld: 0,
+        brexit: 0,
+        green: 0,
+        snp: 0,
+        pc: 0,
+        ni: 18,
+        other: 0
+    } 
+  }
+
 
 
   const constituencies = useSelector((state) => state.constituencies)
@@ -28,36 +46,63 @@ const ElectoralMap = () => {
       c.pc, c.dup, c.sf, c.sdlp, c.uup, c.alliance, c.other];
     const highestVote =  Math.max(...array);
 
+    
+    let pID = "";
+    
+    if ((seatCount.total == seatTotal)) {
+      setSeatData(seatCount)
+    }
+    else if (seats.total != seatTotal) {
+      seatCount.total = seatCount.total+1
+    }
+    
+    
     switch (highestVote) {
       case c.con:
-        return "con";
+        seatCount.party.con = seatCount.party.con+1;
+        pID = "con";break;
       case c.lab:
-        return "lab";
+        seatCount.party.lab = seatCount.party.lab+1;
+        pID = "lab";break;
       case c.ld:
-        return "ld";
+        seatCount.party.ld = seatCount.party.ld+1;
+        pID = "ld";break;
       case c.brexit:
-        return "brexit";
+        seatCount.party.brexit = seatCount.party.brexit+1;
+        pID = "brexit";break;
       case c.green:
-        return "green";
+        seatCount.party.green = seatCount.party.green+1;
+        pID = "green";break;
       case c.snp:
-        return "snp";
+        seatCount.party.snp = seatCount.party.snp+1;
+        pID = "snp";break;
       case c.pc:
-        return "pc";
+        seatCount.party.pc = seatCount.party.pc+1;
+        pID = "pc";break;
       case c.dup:
-        return "dup";
+        seatCount.party.ni = seatCount.party.ni+1;
+        pID = "dup";break;
       case c.sf:
-        return "sf";
+        seatCount.party.ni = seatCount.party.ni+1;
+        pID = "sf";break;
       case c.sdlp:
-        return "sdlp";
+        seatCount.party.ni = seatCount.party.ni+1;
+        pID = "sdlp";break;
       case c.uup:
-        return "uup";
+        seatCount.party.ni = seatCount.party.ni+1;
+        pID = "uup";break;
       case c.alliance:
-        return "alliance";
+        seatCount.party.ni = seatCount.party.ni+1;
+        pID = "alliance";break;
       default:
-        return "other";
-
+        seatCount.party.other = seatCount.party.other+1;
+        pID = "other"; break;
 
     }
+
+    
+
+    return pID;
     
   };
 
@@ -97,7 +142,7 @@ const ElectoralMap = () => {
               }
               
               return <Geography key={geo.rsmKey}
-               geography={geo}
+                geography={geo}
                 fill={`${colour}`}/>
 
             })
