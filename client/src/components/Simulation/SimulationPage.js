@@ -6,10 +6,14 @@ import { Grid, CircularProgress} from '@material-ui/core'
 import useStyles from './styles';
 
 import ElectoralMap from "./ElectoralMap/ElectoralMap.js"
-import ElectoralSeats from "./ElectoralSeats/ElectoralSeats";
+import ElectoralSeats from "./ElectoralSeats/ElectoralSeats.tsx";
 
 
 const SimulationPage = () => {
+
+    const constituencies = useSelector((state) => state.constituencies)
+    const parties = useSelector((state) => state.parties)
+
     const [seats, setSeatData] = useState({
         total: 18,
         party: {
@@ -28,10 +32,13 @@ const SimulationPage = () => {
     console.log(seats.total)
 
     return (
-        <div>
-            <div><p>{`${seats.total}`}</p></div>
-            <div><ElectoralMap seats={seats} setSeatData={setSeatData}/></div>
-        </div>
+        !constituencies.length || !parties.length ? <CircularProgress/>: (
+            <div>
+                <div><ElectoralSeats seats={seats} parties={parties} /></div>
+                <br />
+                <div><ElectoralMap seats={seats} setSeatData={setSeatData}/></div>
+            </div>
+        )
     );
 }
 
