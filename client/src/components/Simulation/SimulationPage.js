@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { Grid, CircularProgress} from '@material-ui/core'
@@ -23,12 +23,13 @@ const SimulationPage = () => {
             ni: 18,
             other: 0
         }
-        
     })
+
+    console.log(seats.total)
 
     return (
         <div>
-            <div><ElectoralSeats seats={seats}/></div>
+            <div><p>{`${seats.total}`}</p></div>
             <div><ElectoralMap seats={seats} setSeatData={setSeatData}/></div>
         </div>
     );

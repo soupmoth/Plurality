@@ -48,13 +48,15 @@ const ElectoralMap = ({seats, setSeatData}) => {
 
     
     let pID = "";
-    
+
+
+    if (seats.total != seatTotal) {
+      seatCount.total = seatCount.total+1
+    }
     if ((seatCount.total == seatTotal)) {
       setSeatData(seatCount)
     }
-    else if (seats.total != seatTotal) {
-      seatCount.total = seatCount.total+1
-    }
+    
     
     
     switch (highestVote) {
