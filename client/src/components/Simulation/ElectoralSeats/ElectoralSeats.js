@@ -7,39 +7,10 @@ import { CircularProgress } from "@material-ui/core";
 import {AxisOptions, Chart} from "react-charts";
 
 
-  
-  type Parties = {
-    name: string,
-    count: number,
-  }
-
-  type Series = {
-    label: string
-    data: Parties[]
-  }
-
 
 const ElectoralSeats = ({seats, parties}) => {
 
-    const primaryAxis = React.useMemo(
-        (): AxisOptions<Parties> => ({
-          getValue: datum => datum.name,
-          position: "left",
-          scaleType: "band",
-        }),
-        []
-      )
-    
-      const secondaryAxes = React.useMemo(
-        (): AxisOptions<Parties>[] => ([{
-          position: "bottom",
-          getValue: datum => datum.count,
-          scaleType: "band",
-        }]),
-        []
-      )
-
-    function findPartyName(pID:string):string {
+    function findPartyName(pID) {
       try {
         console.log(parties.find(party => party.partyID == pID).name)
         return parties.find(party => party.partyID == pID).name
@@ -50,7 +21,7 @@ const ElectoralSeats = ({seats, parties}) => {
       }
     }
 
-    const partyData: Parties[] = [
+    const partyData = [
       {
         name: findPartyName("con"),
         count: seats.con,
@@ -80,7 +51,7 @@ const ElectoralSeats = ({seats, parties}) => {
         count: seats.pc,
       },
       {
-        name: "Northen",
+        name: "Northen Ireland",
         count: seats.ni,
       },
       {
@@ -89,34 +60,18 @@ const ElectoralSeats = ({seats, parties}) => {
       },
     ]
 
-    const data : Series[] = [
-      {
-        label: "Seats Won",
-        data: partyData,
-      }
-    ]
+    console.log(seats)
 
-    console.log(data)
-
-    try {
-      return (
-        <>
-        <Chart
-          options={{
-            data,
-            primaryAxis,
-            secondaryAxes,
-          }}
-          />
-        </>
-      )
-    }
-    catch (error) {
-      return (
-        <>
-        </>
-      )
-    }
+    return (
+      <div>
+        <h1>totalSeats = {seats.total}</h1>
+        <div>
+          {partyData.map(party => {
+            return <p>{party.name}: {party.seats}</p>
+          })}
+        </div>
+      </div>
+    )
     
 }
 

@@ -6,7 +6,7 @@ import { Grid, CircularProgress} from '@material-ui/core'
 import useStyles from './styles';
 
 import ElectoralMap from "./ElectoralMap/ElectoralMap.js"
-import ElectoralSeats from "./ElectoralSeats/ElectoralSeats.tsx";
+import ElectoralSeats from "./ElectoralSeats/ElectoralSeats.js";
 
 
 const SimulationPage = () => {
