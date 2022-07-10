@@ -3,10 +3,15 @@ import { useSelector } from "react-redux";
 
 import { Grid, CircularProgress} from '@material-ui/core'
 
+
+
 import useStyles from './styles';
 
 import ElectoralMap from "./ElectoralMap/ElectoralMap.js"
 import ElectoralSeats from "./ElectoralSeats/ElectoralSeats.js";
+import ElectoralForm from "./ElectoralForm/ElectoralForm.js"
+
+import * as eConsts from '../../const/electionConsts.js'
 
 
 const SimulationPage = () => {
@@ -14,29 +19,20 @@ const SimulationPage = () => {
     const constituencies = useSelector((state) => state.constituencies)
     const parties = useSelector((state) => state.parties)
 
-    const [seats, setSeatData] = useState({
-        total: 18,
-        party: {
-            con: 0,
-            lab: 0,
-            ld: 0,
-            brexit: 0,
-            green: 0,
-            snp: 0,
-            pc: 0,
-            ni: 18,
-            other: 0
-        }
-    })
 
-    console.log(seats.total)
+    const [seats, setSeatData] = useState(eConsts.STARTING_SEATS)
+
+    const [electionParams, setElectionParams] = useState(eConsts.DEFAULT) 
+
+    console.log (electionParams)
 
     return (
         !constituencies.length || !parties.length ? <CircularProgress/>: (
             <div>
                 <div><ElectoralSeats seats={seats} parties={parties} /></div>
                 <br />
-                <div><ElectoralMap seats={seats} setSeatData={setSeatData}/></div>
+                <ElectoralForm electionParams={electionParams} setElectionParams={setElectionParams} setSeatData={setSeatData}/>
+                <div><ElectoralMap electionParams={electionParams} seats={seats} setSeatData={setSeatData}/></div>
             </div>
         )
     );

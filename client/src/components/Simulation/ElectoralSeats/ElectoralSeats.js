@@ -24,50 +24,50 @@ const ElectoralSeats = ({seats, parties}) => {
     const partyData = [
       {
         name: findPartyName("con"),
-        count: seats.con,
+        count: seats.party.con,
       },
       {
         name: findPartyName("lab"),
-        count: seats.lab,
+        count: seats.party.lab,
       },
       {
         name: findPartyName("ld"),
-        count: seats.ld,
+        count: seats.party.ld,
       },
       {
         name: findPartyName("brexit"),
-        count: seats.brexit,
+        count: seats.party.brexit,
       },
       {
         name: findPartyName("green"),
-        count: seats.green,
+        count: seats.party.green,
       },
       {
         name: findPartyName("snp"),
-        count: seats.snp,
+        count: seats.party.snp,
       },
       {
         name: findPartyName("pc"),
-        count: seats.pc,
+        count: seats.party.pc,
       },
       {
         name: "Northen Ireland",
-        count: seats.ni,
+        count: seats.party.ni,
       },
       {
         name: "Independants/Other",
-        count: seats.other,
+        count: seats.party.other,
       },
     ]
 
-    console.log(seats)
+    console.log(partyData)
 
     return (
       <div>
         <h1>totalSeats = {seats.total}</h1>
         <div>
           {partyData.map(party => {
-            return <p>{party.name}: {party.seats}</p>
+            return <p>{party.name}: {party.count}</p>
           })}
         </div>
       </div>

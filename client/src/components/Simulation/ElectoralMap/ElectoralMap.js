@@ -7,9 +7,11 @@ import "./styles.css"
 import { useSelector } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
 
+import * as eConsts from '../../../const/electionConsts.js'
 
 
-const ElectoralMap = ({seats, setSeatData}) => {
+
+const ElectoralMap = ({electionParams, seats, setSeatData}) => {
   //constants
   const seatTotal = 650;
 
@@ -33,8 +35,7 @@ const ElectoralMap = ({seats, setSeatData}) => {
   const constituencies = useSelector((state) => state.constituencies)
   const parties = useSelector((state) => state.parties)
 
-  console.log(constituencies);
-  console.log(parties);
+  console.log(electionParams);
 
   //c being the constituency.
   const determineWinner = (c) => {
@@ -42,10 +43,27 @@ const ElectoralMap = ({seats, setSeatData}) => {
     //TODO
     //this solution is really bad, its because of how I formatted the backend. Have a fix in mind
     //for it, but I'll have to test it later. Proof of concept
-    const array = [c.con, c.lab, c.ld, c.brexit, c.green, c.snp,
+    var array = [c.con, c.lab, c.ld, c.brexit, c.green, c.snp,
       c.pc, c.dup, c.sf, c.sdlp, c.uup, c.alliance, c.other];
-    const highestVote =  Math.max(...array);
+    var highestVote = null 
 
+
+
+    array = array.filter(e => {
+      return e>0
+    })
+
+
+
+    if (electionParams.typeOfVote === eConsts.PLURALITY) {
+      highestVote = Math.max(...array);
+    }
+    else if (electionParams.typeOfVote == eConsts.RUNOFF) {
+      highestVote = Math.min(...array);
+    }
+    else if (electionParams.typeOfVote == eConsts.LOSER_TAKES_ALL) {
+      highestVote = Math.min(...array);
+    }
     
     let pID = "";
 
@@ -102,7 +120,6 @@ const ElectoralMap = ({seats, setSeatData}) => {
 
     }
 
-    
 
     return pID;
     
@@ -137,8 +154,8 @@ const ElectoralMap = ({seats, setSeatData}) => {
                 colour = getColour(winner)
               }
               catch (error) {
-                console.log(geo.properties.NAME)
-                console.log(error)
+                //console.log(geo.properties.NAME)
+                //console.log(error)
                 
                 colour = getColour("other")
               }
