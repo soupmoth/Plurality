@@ -31,3 +31,19 @@ export const STARTING_SEATS = {
         other: 0
     }
 }
+
+export const POLITICAL_DISTANCE = (leaning) => {
+
+    const leaningOptions = {
+        "far-left": 1,
+    "left": 2,
+    "centre-left": 3,
+    "centre": 4,
+    "centre-right": 5,
+    "right": 6,
+    "far-right": 7
+    }
+
+    return leaningOptions[leaning]
+    
+}

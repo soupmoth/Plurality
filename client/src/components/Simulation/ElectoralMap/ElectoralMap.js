@@ -3,15 +3,18 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
 import ElectoralGeography from "./westminster_const_region TRUE3.json"
 
-import "./styles.css"
 import { useSelector } from "react-redux";
-import { CircularProgress } from "@material-ui/core";
+import { TextField, Button, Typography, Paper } from "@material-ui/core";
+
+import useStyles from './styles.js';
 
 import * as eConsts from '../../../const/electionConsts.js'
 
 
 
 const ElectoralMap = ({electionParams, seats, setSeatData}) => {
+  const classes = useStyles();
+
   //constants
   const seatTotal = 650;
 
@@ -147,6 +150,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
 
     if (seats.total != seatTotal) {
       seatCount.total = seatCount.total+1
+      console.log(seatCount.total)
     }
     if ((seatCount.total == seatTotal)) {
       setSeatData(seatCount)
@@ -194,63 +198,68 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
   //and MMP systems are called "STV". This system ensures no vote is wasted.
 
   const runoffVote = (partyResults, mpNumber) => {
-    var totalVotes = 0
+    let totalVotes = 0
     partyResults.map(p => {
       totalVotes = totalVotes + p.vCount
     })
+
 
     var winProportion = 0.5
     if (mpNumber > 2) {
       winProportion = 1/mpNumber
     }
 
-    var portionedResults = partyResults
+    let portionedResults = partyResults
 
     portionedResults.map(p => {
       p.vCount = p.vCount/totalVotes
     })
 
-
     //correcting tactical vote. we assume there are no tactical votes in Runoff
     portionedResults = redistrubuteTacticalVotes(portionedResults)
 
-    var runoffResults = []
+    let runoffResults = []
     portionedResults.forEach(p => {
       for (let i = 0; i < mpNumber; i++) {
         runoffResults.push({pName: p.pName, vCount: p.vCount/mpNumber})
       }
     });
 
-    var mpsSelected = 0;
+    console.log("runoff begins!:")
+    let mpsSelected = 0;
     //while we still have not selected enough MPs.
-    var mostPopular = null
+    let mostPopular = null
     while (mpsSelected < mpNumber) {
-      
-      if (runoffResults.length==1) {
-        handleWinners(runoffResults[0].pName)
+      //console.log(JSON.parse(JSON.stringify(runoffResults)))
+
+      if (runoffResults.length == 1) {
+        mostPopular = runoffResults[0]
         mpsSelected++
-        return runoffResults[0].pName
       }
       else {
         //find the biggest winner
-      runoffResults.forEach(p => {
-        if (mostPopular == null) {
-          mostPopular = p;
+        mostPopular = null
+        runoffResults.forEach(p => {
+          if (mostPopular == null) {
+            mostPopular = p;
+          }
+          else if (p.vCount > mostPopular.vCount) {
+            mostPopular = p;
+          }
+        });
+        //does the biggest winner qualify for a seat yet?
+        if (mostPopular.vCount >= winProportion) {
+          mostPopular.vCount -= winProportion 
+          mpsSelected++
+          if (mpsSelected < mpNumber) {
+            runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
+          }
+          
+          
         }
-        else if (p.vCount > mostPopular.vCount) {
-          mostPopular = p;
-        }
-      });
-      //does the biggest winner qualify for a seat yet?
-      if (mostPopular.vCount >= winProportion) {
-        handleWinners(mostPopular.pName)
-        runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
-        mpsSelected++
-        return 
-      }
-      else {
-        var leastPopular = null
-        //find the biggest loser
+        else {
+          var leastPopular = null
+          //find the biggest loser
           runoffResults.forEach(p => {
             if (leastPopular == null) {
               leastPopular = p;
@@ -261,35 +270,104 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
           });
 
           runoffResults = runoffRedistrubtion(runoffResults, leastPopular)
+        }
       }
-      }
-      
     }
+    handleWinners(mostPopular.pName)
+    console.log("winner!:")
+    console.log(mostPopular)
     return mostPopular.pName
   }
 
   const runoffRedistrubtion = (runoffResults, runoffVictim) => {
-    let newCap = 1-runoffVictim.vCount
-    let normaliseMult = 1/newCap
 
-    runoffResults = runoffResults.filter(p => runoffVictim != p)
+    //same candidate weight = 0
+    //same party weight = 50
+    //same alignment = 25
+    //one alignment off = 15
+    //two alignments off = 5
+    //else = 1
 
-    runoffResults.map(r => {
-      r.vCount = r.vCount*normaliseMult
+    let weightMax = 0
+    console.log("victim:")
+    console.log(runoffVictim)
+    console.log(JSON.parse(JSON.stringify(runoffResults)))
+    let resultsTemp = getWeightedArray(runoffResults, runoffVictim)
+
+    resultsTemp.map(w => {
+      weightMax += w
     })
 
+    console.log(JSON.parse(JSON.stringify(resultsTemp)))
+
+    let victimVote =  runoffVictim.vCount
+    runoffVictim.vCount = 0
+
+    for (let i = 0; i < runoffResults.length; i++) {
+      runoffResults[i].vCount += victimVote*(resultsTemp[i]/weightMax)
+    }
+    runoffResults = runoffResults.filter(p => runoffVictim != p)
+
+    console.log(JSON.parse(JSON.stringify(runoffResults)))
+
     return runoffResults
+  }
+
+  const getWeightedArray = (array, compareTo) => {
+    return array.map(p => {
+      let curPartyLeaning = toLeaning(p.pName) 
+      let victimLeaning = toLeaning(compareTo.pName)
+      if (p == compareTo) {
+        return 0
+      }
+      else if (p.pName == array.pName) {
+        return 200
+      }
+      else if (curPartyLeaning == victimLeaning) {
+        return 50
+      }
+      else if (Math.abs(curPartyLeaning-victimLeaning) == 1) {
+        return 25
+      }
+      else if (Math.abs(curPartyLeaning-victimLeaning) == 2) {
+        return 5
+      }
+      else {
+        return 1
+      }
+    })
+  }
+
+  //finds the leaning as an 
+  const toLeaning = (pName) => {
+    try {
+      let party = parties.find(p => pName == p.partyID)
+      return eConsts.POLITICAL_DISTANCE(party.leaning)
+    } catch (error) {
+      console.log(error)
+      return 4
+    }
   }
 
   //This redistrubutes the votes from the two best parties in a constituency
   const redistrubuteTacticalVotes = (results) => {
     var temp = results;
 
+    console.log(JSON.parse(JSON.stringify(temp)))
+
+    var tracker = 0
+    
+    temp.map(p => {
+      tracker+= p.vCount
+    })
+
+    console.log(tracker)
+
     var topTwoParties = []
 
-    const extractMaxResult = (r) => {
+    const extractMaxResult = () => {
       var mostPopular = null
-      r.forEach(p => {
+      temp.forEach(p => {
         if (mostPopular == null) {
           mostPopular = p;
         }
@@ -298,33 +376,45 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
         }
       });
       topTwoParties.push(mostPopular);
-      r.filter(p => mostPopular != p)
+      temp = temp.filter(p => mostPopular != p)
     }
 
-    extractMaxResult(temp);
-    extractMaxResult(temp);
-
-    let topPartiesMax = 0
-    let topPartiesMult = 0
-    let minorPartiesMax = 0
-    let minorPartiesMult = 0
-    topTwoParties.map(p => {
-      topPartiesMax = p.vCount + topPartiesMax
-    })
-    minorPartiesMax = 1-topPartiesMax
-
-    topPartiesMult = ((1-electionParams.tacticalVoteProportion) * topPartiesMax)
-    minorPartiesMult = ((electionParams.tacticalVoteProportion * topPartiesMax) + minorPartiesMax)/minorPartiesMax
+    extractMaxResult();
+    extractMaxResult();
 
     topTwoParties.map(p => {
-      p.vCount = p.vCount*topPartiesMult
+      let reducedVote = p.vCount * (electionParams.tacticalVoteProportion)
+      p.vCount -= reducedVote
+      let tempArray = temp.map(p => {
+        return p.vCount
+      })
+
+      let weightMax = 0
+
+      tempArray.map(w => {
+        weightMax += w
+      })
+
+      for (let i = 0; i < temp.length; i++) {
+        temp[i].vCount += reducedVote*(tempArray[i]/weightMax)
+      }
     })
 
+    topTwoParties.map(p => {
+      temp.push(p)
+    })
+
+    console.log(JSON.parse(JSON.stringify(temp)))
+
+    tracker = 0 
+    
     temp.map(p => {
-      p.vCount = p.vCount*minorPartiesMult
+      tracker+= p.vCount
     })
 
-    temp.concat(topTwoParties)
+    console.log(tracker)
+
+    console.log(JSON.parse(JSON.stringify(temp)))
 
     return temp
 
@@ -332,7 +422,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
 
 
   return (
-    !constituencies.length || !parties.length ? <CircularProgress/>: (
+    <Paper className={classes.paper}>
       <ComposableMap width={1200}
       height={800}
       projectionConfig={{
@@ -362,13 +452,15 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
               
               return <Geography key={geo.rsmKey}
                 geography={geo}
-                fill={`${colour}`}/>
+                fill={`${colour}`}
+                stroke="#000000"
+                strokeWidth={1}/>
 
             })
           }
         </Geographies>
       </ComposableMap>
-    )
+    </Paper>
   );
 };
 
