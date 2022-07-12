@@ -62,6 +62,126 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
   //NATION - all constituencies are linked
 
   //all constituencies in Northen Ireland are to be excluded for now.
+
+  const buildGroups = (constituencyArr, grouping) => {
+
+    var consts = constituencyArr.filter((c) => c.country != "Northern Ireland")
+
+    if (eConsts.NATION == grouping) {
+      return [consts]
+    }
+    else if (eConsts.INDIVIDUAL == grouping) {
+      return consts
+    }
+
+    var listOfGroups = []
+    if (eConsts.COUNTY_AND_BUROUGH == grouping) {
+      for (let i = 0; i < consts.length; i++) {
+        if (listOfGroups.find((e) => e == consts[i].county_name) == null) {
+          listOfGroups.push(consts[i].county_name)
+        }
+      }
+    }
+    else if (eConsts.REGION == grouping) {
+      for (let i = 0; i < consts.length; i++) {
+        if (listOfGroups.find((e) => e == consts[i].region) == null) {
+          listOfGroups.push(consts[i].region)
+        }
+      }
+      
+    }
+    else if (eConsts.COUNTRY == grouping) {
+      for (let i = 0; i < consts.length; i++) {
+        if (listOfGroups.find((e) => e == consts[i].country) == null) {
+          listOfGroups.push(consts[i].country)
+        }
+      }
+    }
+
+    let groups = []
+
+    for (let i = 0; i < listOfGroups.length; i++) {
+      groups.push([])
+    }
+
+    if (eConsts.COUNTY_AND_BUROUGH == grouping) {
+      for (let i = 0; i < consts.length; i++) {
+        let a = groups[listOfGroups.findIndex((g) => g == consts[i].county_name)]
+        a.push(consts[i])
+      }
+    }
+    else if (eConsts.REGION == grouping) {
+      for (let i = 0; i < consts.length; i++) {
+        groups[listOfGroups.findIndex((g) => g == consts[i].region)].push(consts[i])
+      }
+    }
+    else if (eConsts.COUNTRY == grouping) {
+      for (let i = 0; i < consts.length; i++) {
+        groups[listOfGroups.findIndex((g) => g == consts[i].country)].push(consts[i])
+      }
+    }
+
+    return groups
+
+  }
+
+
+  /*const buildGroups = (consts) => {
+    var groups = Object.create(null);
+
+    if (electionParams.grouping == eConsts.INDIVIDUAL) {
+      consts.reduce((obj) => {
+        console.log(obj)
+        var group = groups[obj.constituency];
+        if (!group) {
+          // There wasn't one, create it
+          group = groups[obj.constituency] = [];
+        }
+      // Add this entry
+      group.push(obj);
+      }, {});
+    }
+    else if (electionParams.grouping == eConsts.COUNTY_AND_BUROUGH) {
+      consts.reduce((obj) => {
+        var group = groups[obj.county];
+        if (!group) {
+          // There wasn't one, create it
+          group = groups[obj.county] = [];
+        }
+      // Add this entry
+      group.push(obj);
+      }, {});
+    }
+    else if (electionParams.grouping == eConsts.REGION) {
+      consts.reduce((obj) => {
+        var group = groups[obj.region];
+        if (!group) {
+          // There wasn't one, create it
+          group = groups[obj.region] = [];
+        }
+      // Add this entry
+      group.push(obj);
+      }, {});
+    }
+    else if (electionParams.grouping == eConsts.COUNTRY) {
+      consts.reduce((obj) => {
+        var group = groups[obj.country];
+        if (!group) {
+          // There wasn't one, create it
+          group = groups[obj.country] = [];
+        }
+      // Add this entry
+      group.push(obj);
+      }, {});
+    }
+
+    return groups
+  } */
+
+  var b = buildGroups(constituencies, eConsts.REGION)
+
+  console.log(b)
+  console.log(b[0])
   
 
   //c being the constituency.

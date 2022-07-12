@@ -6,6 +6,7 @@ export const LOSER_TAKES_ALL = "LOSER_TAKES_ALL" //loser wins if they had non-ze
 //election types
 export const REGION = 'REGION'
 export const COUNTY_AND_BUROUGH = 'CAB'
+export const COUNTRY = "COUNTRY"
 export const NATION = "NATION"
 export const INDIVIDUAL = "INDIVIDUAL"
 
