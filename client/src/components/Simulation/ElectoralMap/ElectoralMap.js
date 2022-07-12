@@ -48,9 +48,40 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
   //resulting array to resolve the colour of the constituency and the data to present
   //const resolveResults
 
-  //TODO, create method build groups which builds groups of constituencies, then returns an array
-  //of these groups, which is then used by resolveResults.
-  //const buildGroups
+  const resolveResults = () => {
+    //section dedicated to adding electoral swing. we can do it later
+
+    var groups = buildGroups(constituencies, electionParams.grouping)
+    groups = groups.map(g => {
+      var tempGroup = {
+        constituencies: g,
+        totalVotes: g.reduce((total, current) => {
+        return {
+          con: total + current.con,
+          lab: total + current.lab,
+          ld: total + current.con,
+          brexit: total + current.brexit,
+          green: total + current.green,
+          snp: total + current.snp,
+          pc: total + current.pc,
+          dup: total + current.dup,
+          sf: total + current.sf,
+          sdlp: total + current.sdlp,
+          uup: total + current.uup,
+          alliance: total + current.alliance,
+          other: total + current.other,
+        }}),
+        seatHolders: null,
+      }
+      tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, tempGroup.constituencies.length)
+
+      return tempGroup
+    })
+
+    console.log(groups)
+
+    return groups;
+  }
 
   //build groups works on 4 modes.
   //INDIVIDUAL - Looks at number of MPs per constituency, groups every constituency to match. 
@@ -71,7 +102,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
       return [consts]
     }
     else if (eConsts.INDIVIDUAL == grouping) {
-      return consts
+      return consts.map(c => {
+        return [c]
+      })
     }
 
     var listOfGroups = []
@@ -125,63 +158,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
 
   }
 
-
-  /*const buildGroups = (consts) => {
-    var groups = Object.create(null);
-
-    if (electionParams.grouping == eConsts.INDIVIDUAL) {
-      consts.reduce((obj) => {
-        console.log(obj)
-        var group = groups[obj.constituency];
-        if (!group) {
-          // There wasn't one, create it
-          group = groups[obj.constituency] = [];
-        }
-      // Add this entry
-      group.push(obj);
-      }, {});
-    }
-    else if (electionParams.grouping == eConsts.COUNTY_AND_BUROUGH) {
-      consts.reduce((obj) => {
-        var group = groups[obj.county];
-        if (!group) {
-          // There wasn't one, create it
-          group = groups[obj.county] = [];
-        }
-      // Add this entry
-      group.push(obj);
-      }, {});
-    }
-    else if (electionParams.grouping == eConsts.REGION) {
-      consts.reduce((obj) => {
-        var group = groups[obj.region];
-        if (!group) {
-          // There wasn't one, create it
-          group = groups[obj.region] = [];
-        }
-      // Add this entry
-      group.push(obj);
-      }, {});
-    }
-    else if (electionParams.grouping == eConsts.COUNTRY) {
-      consts.reduce((obj) => {
-        var group = groups[obj.country];
-        if (!group) {
-          // There wasn't one, create it
-          group = groups[obj.country] = [];
-        }
-      // Add this entry
-      group.push(obj);
-      }, {});
-    }
-
-    return groups
-  } */
-
-  var b = buildGroups(constituencies, eConsts.REGION)
-
-  console.log(b)
-  console.log(b[0])
   
 
   //c being the constituency.
@@ -540,6 +516,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
 
   }
 
+  const data = resolveResults();
 
   return (
     <Paper className={classes.paper}>
@@ -554,14 +531,19 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
         <Geographies geography={ElectoralGeography}>
           {({ geographies }) =>
             geographies.map(geo => {
-              const currentConstit = constituencies.find(constit => (constit.constituency) === geo.properties.NAME);
+              var currentDatum = null
+
+              data.forEach(datum => {
+                if (datum.constituencies.find(group => (group.constituency) === geo.properties.NAME) != null) {
+                  currentDatum = datum
+                }
+              });
               
-              //console.log(currentConstit)
+              console.log(currentDatum)
 
               let colour = null
               try {
-                const winner = determineWinner(currentConstit, electionParams.noOfMPsPerConst)
-                colour = getColour(winner)
+                colour = getColour(currentDatum.seatHolders)
               }
               catch (error) {
                 //console.log(geo.properties.NAME)
