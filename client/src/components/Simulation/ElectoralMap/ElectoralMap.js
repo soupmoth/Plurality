@@ -73,7 +73,79 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
         }}),
         seatHolders: null,
       }
+      
+      //determineWinner returns pIDs. We then map over them and find the biggest constituency for that party's success
+      let constituenciesCopy = tempGroup.constituencies.slice()
       tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, tempGroup.constituencies.length)
+      console.log(tempGroup.seatHolders)
+      tempGroup.seatHolders = tempGroup.seatHolders.map((pID) => {
+        
+        let constName = null
+        let valueArr = null
+        console.log(pID)
+
+        switch (pID) {
+          case "con":
+            valueArr = constituenciesCopy.map((c) => {return c.con})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "lab":
+            valueArr = constituenciesCopy.map((c) => {return c.lab})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "ld":
+            valueArr = constituenciesCopy.map((c) => {return c.ld})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "brexit":
+            valueArr = constituenciesCopy.map((c) => {return c.brexit})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "green":
+            valueArr = constituenciesCopy.map((c) => {return c.green})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "snp":
+            valueArr = constituenciesCopy.map((c) => {return c.snp})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "pc":
+            valueArr = constituenciesCopy.map((c) => {return c.pc})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "dup":
+            valueArr = constituenciesCopy.map((c) => {return c.ni})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "sf":
+            valueArr = constituenciesCopy.map((c) => {return c.ni})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "sdlp":
+            valueArr = constituenciesCopy.map((c) => {return c.ni})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "uup":
+            valueArr = constituenciesCopy.map((c) => {return c.ni})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          case "alliance":
+            valueArr = constituenciesCopy.map((c) => {return c.ni})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+          default:
+            valueArr = constituenciesCopy.map((c) => {return c.other})
+            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
+            break;
+        }
+
+        console.log(constName)
+
+        return { 
+          constituencyName: constName,
+          mostResponsible: pID
+        }
+      })
 
       return tempGroup
     })
@@ -189,7 +261,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
       pID = pluralityVote(array, false, mpNumber);
     }
 
-    return pID;
+    return [pID];
   };
 
   //handle winners increments a seat
@@ -256,6 +328,22 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
   const getColour = (pID) => {
     const result = parties.find(party => party.partyID == pID)
     return result.primaryColour
+  };
+
+  const getRegionColour = (group) => {
+    var frequency = {};  // array of frequency.
+    var maxFreq = 0;  // holds the max frequency.
+    var mode = null
+
+    for (var i = 0 ; i < group.seatHolders.length; i++) {
+      frequency[group.seatHolders[i]] = (frequency[group.seatHolders[i]] || 0) + 1; 
+
+      if (frequency[group.seatHolders[i]] > maxFreq) {
+        maxFreq = frequency[group.seatHolders[i]];  
+        mode = group.seatHolders[i];
+      }
+    }
+    return mode.mostResponsible.secondaryColour
   };
 
   const pluralityVote = (partyResults, winnerWins, mpNumber) => {
@@ -532,18 +620,23 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
           {({ geographies }) =>
             geographies.map(geo => {
               var currentDatum = null
+              var currentConstituency
 
               data.forEach(datum => {
-                if (datum.constituencies.find(group => (group.constituency) === geo.properties.NAME) != null) {
+                datum.constituencies.map(group => {
+                  if ((group.constituency === geo.properties.NAME)) {
                   currentDatum = datum
-                }
-              });
-              
+                  currentConstituency = group.constituency
+                  }
+                })
+              })
               console.log(currentDatum)
+              console.log(currentConstituency)
 
               let colour = null
               try {
-                colour = getColour(currentDatum.seatHolders)
+                console.log(currentDatum.seatHolders.find(s => currentConstituency == s.constituencyName).mostResponsible)
+                colour = getColour(currentDatum.seatHolders.find(s => currentConstituency == s.constituencyName).mostResponsible)
               }
               catch (error) {
                 //console.log(geo.properties.NAME)
@@ -551,12 +644,22 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
                 
                 colour = getColour("other")
               }
+
+              var strColour = getRegionColour(currentDatum)
+              var strWidth = 1
+
+              if ((electionParams.grouping == eConsts.INDIVIDUAL) && (electionParams.noOfMPsPerConst == 1)) {
+                strColour = "#000000"
+                strWidth = 0.5;
+              }
+
+              console.log(strColour)
               
               return <Geography key={geo.rsmKey}
                 geography={geo}
                 fill={`${colour}`}
-                stroke="#000000"
-                strokeWidth={1}/>
+                stroke={`${strColour}`}
+                strokeWidth={strWidth}/>
 
             })
           }
