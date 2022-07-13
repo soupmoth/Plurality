@@ -5,13 +5,19 @@
  The project hopes to do the following with the final product.
 
  -A map of all constituencies and their voting habits as a simple baseline.
+ 
  -Demonstrations of how different electoral systems would change the results and the overall proportionality of the system.
+ 
  -Customisations of the simulations and highlighting of individual constituencies for further data visualisation.
+ 
  -A write up of common arguments against alternative systems to First Past the Post and why the simulation shows otherwise.
+ 
 
 
 For the customisations aspect.
+
 -A component which dictates how many voters in a FPTP system vote tactically and don't truly vote for their favourite party. This means that these votes are reallocated from the 2 most electable parties in a given constituency. 
+
 
 
 The Ranked Choice simulation difficulty
@@ -21,12 +27,18 @@ Ranked Choice is the most complex voting system to simulate. It's easy to redist
 This is great for representing how tactical voting changes results, and can even make this look nice in Ranked Choice, but Ranked Choice is fundamentally different then Plurality, and your vote tends to carry between many different channels. 
 
 The assumptions will be as follows
+
 -The electorate always has the same pattern of ranked choices if they 1st choice the same party.
+
 -A 1st vote for the smallest party, will feature a 2nd and 3rd on its way back to the "safest" party. This means if they vote the least popular party, on their way to the safest choice, they vote any party that was more popular than their favourite,
 
+
 This assumptions has a bit of baggage
--Real voting behaviour will be far more complex and this does not capture that complexity.
+
+-Real voting behaviour will be far more complex and this does not capture that complexity
+
 -There are more Parties to the right then there are to the Left. A left winged voter will not vote for Reform. Therefore, there needs to be some sort of limit.
+
 
 Therefore, this limit will be by grouping similar parties together based on their self-described leanings and the ones documented on Wikipedia. A Left Winged voter will ranked choice only left winged parties and the Lib-Dems until they hit Labour, and a Right winged voter will ranked choice only right winged parties and the Lib-Dems. As the Lib-Dems are Centrist to Centre-Right, we'll have them prefer Tories over Labour, but place Labour as third, wanting the least extreme parties.
 
