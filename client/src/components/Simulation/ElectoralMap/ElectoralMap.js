@@ -523,7 +523,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
         return 0
       }
       else if (p.pName == array.pName) {
-        return 200
+        return 1000
       }
       else if (curPartyLeaning == victimLeaning) {
         return 50
