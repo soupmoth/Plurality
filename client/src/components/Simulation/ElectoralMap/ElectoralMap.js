@@ -55,34 +55,48 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
     groups = groups.map(g => {
       var tempGroup = {
         constituencies: g,
-        totalVotes: g.reduce((total, current) => {
-        return {
-          con: total + current.con,
-          lab: total + current.lab,
-          ld: total + current.con,
-          brexit: total + current.brexit,
-          green: total + current.green,
-          snp: total + current.snp,
-          pc: total + current.pc,
-          dup: total + current.dup,
-          sf: total + current.sf,
-          sdlp: total + current.sdlp,
-          uup: total + current.uup,
-          alliance: total + current.alliance,
-          other: total + current.other,
-        }}),
+        totalVotes: {
+          con: 0,
+          lab: 0,
+          ld: 0,
+          brexit: 0,
+          green: 0,
+          snp: 0,
+          pc:0,
+          dup:0,
+          sf: 0,
+          sdlp:0,
+          uup: 0,
+          alliance: 0,
+          other: 0
+        },
         seatHolders: null,
       }
+
+      for (let i = 0; i < g.length; i++) {
+        tempGroup.totalVotes.con += g[i].con
+        tempGroup.totalVotes.lab += g[i].lab
+        tempGroup.totalVotes.ld += g[i].ld
+        tempGroup.totalVotes.brexit += g[i].brexit
+        tempGroup.totalVotes.green += g[i].green
+        tempGroup.totalVotes.snp += g[i].snp
+        tempGroup.totalVotes.pc += g[i].pc
+        tempGroup.totalVotes.dup += g[i].dup
+        tempGroup.totalVotes.sf += g[i].sf
+        tempGroup.totalVotes.sdlp += g[i].sdlp
+        tempGroup.totalVotes.uup += g[i].uup
+        tempGroup.totalVotes.alliance += g[i].alliance
+        tempGroup.totalVotes.other += g[i].other
+      }
+
       
       //determineWinner returns pIDs. We then map over them and find the biggest constituency for that party's success
       let constituenciesCopy = tempGroup.constituencies.slice()
       tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, tempGroup.constituencies.length)
-      console.log(tempGroup.seatHolders)
       tempGroup.seatHolders = tempGroup.seatHolders.map((pID) => {
         
         let constName = null
         let valueArr = null
-        console.log(pID)
 
         switch (pID) {
           case "con":
@@ -139,7 +153,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
             break;
         }
 
-        console.log(constName)
+        constituenciesCopy = constituenciesCopy.filter(c => c.constituency != constName)
 
         return { 
           constituencyName: constName,
@@ -211,8 +225,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
 
     if (eConsts.COUNTY_AND_BUROUGH == grouping) {
       for (let i = 0; i < consts.length; i++) {
-        let a = groups[listOfGroups.findIndex((g) => g == consts[i].county_name)]
-        a.push(consts[i])
+        let a = groups[listOfGroups.findIndex((g) => g == consts[i].county_name)].push(consts[i])
       }
     }
     else if (eConsts.REGION == grouping) {
@@ -226,6 +239,8 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
       }
     }
 
+    console.log(groups)
+
     return groups
 
   }
@@ -238,39 +253,48 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
     //TODO
     //this solution is really bad, its because of how I formatted the backend. Have a fix in mind
     //for it, but I'll have to test it later. Proof of concept
-    var array = [{pName: "con", vCount : c.con}, {pName: "lab", vCount : c.lab}, 
+    var partyResults = [{pName: "con", vCount : c.con}, {pName: "lab", vCount : c.lab}, 
     {pName: "ld", vCount : c.ld}, {pName: "brexit", vCount : c.brexit}, 
     {pName: "green", vCount : c.green}, {pName: "snp", vCount : c.snp}, 
     {pName: "pc", vCount : c.pc}, {pName: "dup", vCount : c.dup}, {pName: "sf", vCount : c.sf},
     {pName: "sdlp", vCount : c.sdlp}, {pName: "uup", vCount : c.uup},
     {pName: "alliance", vCount : c.alliance}, {pName: "other", vCount : c.other}];
 
-    array = array.filter(e => {
+    partyResults = partyResults.filter(e => {
       return e.vCount>0
+    })
+
+    let totalVotes = 0
+    partyResults.map(p => {
+      totalVotes = totalVotes + p.vCount
+    })
+
+    partyResults.map(p => {
+      p.vCount = p.vCount/totalVotes
     })
 
     let pID = "";
 
     if (electionParams.typeOfVote === eConsts.PLURALITY) {
-      pID = pluralityVote(array, true, mpNumber);
+      pID = pluralityVote(partyResults, true, mpNumber);
     }
     else if (electionParams.typeOfVote == eConsts.RUNOFF) {
-      pID = runoffVote(array, mpNumber)
+      pID = runoffVote(partyResults, mpNumber)
     }
     else if (electionParams.typeOfVote == eConsts.LOSER_TAKES_ALL) {
-      pID = pluralityVote(array, false, mpNumber);
+      pID = pluralityVote(partyResults, false, mpNumber);
     }
 
-    return [pID];
+    handleWinners(pID)
+
+    return pID;
   };
 
   //handle winners increments a seat
-  const handleWinners = (pID) => {
-    incrementSeats(pID)
-
-    //pIDs.forEach(pID => {
-    //  incrementSeats(pID)
-    //});
+  const handleWinners = (pIDs) => {
+    pIDs.map(pID => {
+      incrementSeats(pID)
+    })
   }
 
   const incrementSeats = (pID) => {
@@ -347,25 +371,45 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
   };
 
   const pluralityVote = (partyResults, winnerWins, mpNumber) => {
+    var winProportion = 1
+    var mpsToElect = mpNumber
+
+    if (mpNumber > 1) {
+      winProportion = 1/mpNumber
+      partyResults = redistrubuteTacticalVotes(partyResults)
+    }
+    
+
     var rawResults = partyResults.map(p => {
       let resultsTemp = p.vCount
       return resultsTemp
     })
 
+    if (winnerWins == false) {
+      partyResults.map((p) => {
+        p.vCount = 1-p.vCount
+      })
+      
+    }
+
     var targetVote = null
+    var winners = []
+    var winner = null
 
-    if (winnerWins == true) {
-        targetVote = Math.max(...rawResults);
+    console.log("start")
+
+    while (mpsToElect > 0) {
+      targetVote = rawResults.indexOf(Math.max(...rawResults));
+      console.log(targetVote)
+      console.log(JSON.parse(JSON.stringify(partyResults)))
+      winner = partyResults[targetVote];
+      console.log(winner)
+      winner.vCount -= winProportion;
+      winners.push(winner.pName);
+      rawResults[targetVote] -= winProportion;
+      mpsToElect--
     }
-    else {
-        targetVote = Math.min(...rawResults);
-    }
 
-    const winners = partyResults.find((p) => p.vCount === targetVote).pName
-
-
-    handleWinners(winners)
-    
     try {
       return winners
     }
@@ -382,43 +426,36 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
   //and MMP systems are called "STV". This system ensures no vote is wasted.
 
   const runoffVote = (partyResults, mpNumber) => {
-    let totalVotes = 0
-    partyResults.map(p => {
-      totalVotes = totalVotes + p.vCount
-    })
+    var winProportion = 1
+    var mpsToElect = mpNumber
 
-
-    var winProportion = 0.5
-    if (mpNumber > 2) {
+    if (mpNumber > 1) {
       winProportion = 1/mpNumber
     }
 
-    let portionedResults = partyResults
-
-    portionedResults.map(p => {
-      p.vCount = p.vCount/totalVotes
-    })
-
     //correcting tactical vote. we assume there are no tactical votes in Runoff
-    portionedResults = redistrubuteTacticalVotes(portionedResults)
+    partyResults = redistrubuteTacticalVotes(partyResults)
 
     let runoffResults = []
-    portionedResults.forEach(p => {
+    partyResults.forEach(p => {
       for (let i = 0; i < mpNumber; i++) {
         runoffResults.push({pName: p.pName, vCount: p.vCount/mpNumber})
       }
     });
 
     console.log("runoff begins!:")
-    let mpsSelected = 0;
     //while we still have not selected enough MPs.
     let mostPopular = null
-    while (mpsSelected < mpNumber) {
-      //console.log(JSON.parse(JSON.stringify(runoffResults)))
-
-      if (runoffResults.length == 1) {
+    let winners = []
+    while (mpsToElect > 0) {
+      if (runoffResults.length == mpsToElect) {
+        //seat agained
         mostPopular = runoffResults[0]
-        mpsSelected++
+        winners.push(mostPopular.pName)
+        runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
+        console.log("winner!:")
+        console.log(mostPopular)
+        mpsToElect--
       }
       else {
         //find the biggest winner
@@ -434,12 +471,11 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
         //does the biggest winner qualify for a seat yet?
         if (mostPopular.vCount >= winProportion) {
           mostPopular.vCount -= winProportion 
-          mpsSelected++
-          if (mpsSelected < mpNumber) {
-            runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
-          }
-          
-          
+          mpsToElect--
+          runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
+          winners.push(mostPopular.pName)
+          console.log("winner!:")
+          console.log(mostPopular)
         }
         else {
           var leastPopular = null
@@ -457,10 +493,8 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
         }
       }
     }
-    handleWinners(mostPopular.pName)
-    console.log("winner!:")
-    console.log(mostPopular)
-    return mostPopular.pName
+    
+    return winners
   }
 
   const runoffRedistrubtion = (runoffResults, runoffVictim) => {
@@ -537,16 +571,13 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
   const redistrubuteTacticalVotes = (results) => {
     var temp = results;
 
-    console.log(JSON.parse(JSON.stringify(temp)))
+    
 
     var tracker = 0
     
     temp.map(p => {
       tracker+= p.vCount
     })
-
-    console.log(tracker)
-
     var topTwoParties = []
 
     const extractMaxResult = () => {
@@ -588,17 +619,12 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
       temp.push(p)
     })
 
-    console.log(JSON.parse(JSON.stringify(temp)))
 
     tracker = 0 
     
     temp.map(p => {
       tracker+= p.vCount
     })
-
-    console.log(tracker)
-
-    console.log(JSON.parse(JSON.stringify(temp)))
 
     return temp
 
