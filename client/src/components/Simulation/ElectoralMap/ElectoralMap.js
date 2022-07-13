@@ -354,22 +354,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
     return result.primaryColour
   };
 
-  const getRegionColour = (group) => {
-    var frequency = {};  // array of frequency.
-    var maxFreq = 0;  // holds the max frequency.
-    var mode = null
-
-    for (var i = 0 ; i < group.seatHolders.length; i++) {
-      frequency[group.seatHolders[i]] = (frequency[group.seatHolders[i]] || 0) + 1; 
-
-      if (frequency[group.seatHolders[i]] > maxFreq) {
-        maxFreq = frequency[group.seatHolders[i]];  
-        mode = group.seatHolders[i];
-      }
-    }
-    return mode.mostResponsible.secondaryColour
-  };
-
   const pluralityVote = (partyResults, winnerWins, mpNumber) => {
     var winProportion = 1
     var mpsToElect = mpNumber
@@ -671,15 +655,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
                 colour = getColour("other")
               }
 
-              var strColour = getRegionColour(currentDatum)
-              var strWidth = 1
+              var strColour = "#000000"
+              var strWidth = 1.125
 
-              if ((electionParams.grouping == eConsts.INDIVIDUAL) && (electionParams.noOfMPsPerConst == 1)) {
-                strColour = "#000000"
-                strWidth = 0.5;
-              }
-
-              console.log(strColour)
               
               return <Geography key={geo.rsmKey}
                 geography={geo}
