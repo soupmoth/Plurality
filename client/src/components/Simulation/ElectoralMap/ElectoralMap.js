@@ -418,16 +418,28 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
     }
 
     //correcting tactical vote. we assume there are no tactical votes in Runoff
-    partyResults = redistrubuteTacticalVotes(partyResults)
+    //partyResults = redistrubuteTacticalVotes(partyResults)
+
+
+    let weighting = []
+    let weightMax = 0
+    let weightAdding = 1
+
+    for (let i = 0; i < mpNumber; i++) {
+      weightMax += weightAdding
+      weighting.push(weightAdding)
+      weightAdding = 1/(1.5*(i+1))
+    }
 
     let runoffResults = []
     partyResults.forEach(p => {
       for (let i = 0; i < mpNumber; i++) {
-        runoffResults.push({pName: p.pName, vCount: p.vCount/mpNumber})
+        runoffResults.push({pName: p.pName, vCount: p.vCount*(weighting[i]/weightMax)})
       }
     });
 
     console.log("runoff begins!:")
+    console.log(winProportion)
     //while we still have not selected enough MPs.
     let mostPopular = null
     let winners = []
@@ -435,11 +447,12 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
       if (runoffResults.length == mpsToElect) {
         //seat agained
         mostPopular = runoffResults[0]
-        winners.push(mostPopular.pName)
-        runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
         console.log("winner!:")
         console.log(mostPopular)
         mpsToElect--
+        winners.push(mostPopular.pName)
+        runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
+        
       }
       else {
         //find the biggest winner
@@ -454,12 +467,13 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
         });
         //does the biggest winner qualify for a seat yet?
         if (mostPopular.vCount >= winProportion) {
-          mostPopular.vCount -= winProportion 
-          mpsToElect--
-          runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
           winners.push(mostPopular.pName)
           console.log("winner!:")
           console.log(mostPopular)
+          mostPopular.vCount -= winProportion 
+          mpsToElect--
+          runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
+          
         }
         else {
           var leastPopular = null
@@ -526,7 +540,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
         return 1000
       }
       else if (curPartyLeaning == victimLeaning) {
-        return 50
+        return 100
       }
       else if (Math.abs(curPartyLeaning-victimLeaning) == 1) {
         return 25
