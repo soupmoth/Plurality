@@ -354,7 +354,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
   const getColour = (pID) => {
     const result = parties.find(party => party.partyID == pID)
-    return result.primaryColour
+    return result
   };
 
   const pluralityVote = (partyResults, winnerWins, mpNumber) => {
@@ -665,7 +665,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
               var currentDatum = null
               var currentConstituency
 
-              console.log(electionData)
+              //console.log(electionData)
 
               electionData.forEach(datum => {
                 datum.constituencies.map(group => {
@@ -675,12 +675,11 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
                   }
                 })
               })
-              console.log(currentDatum)
-              console.log(currentConstituency)
+              //console.log(currentDatum)
+              //console.log(currentConstituency)
 
               let colour = null
               try {
-                console.log(currentDatum.seatHolders.find(s => currentConstituency == s.constituencyName).mostResponsible)
                 colour = getColour(currentDatum.seatHolders.find(s => currentConstituency == s.constituencyName).mostResponsible)
               }
               catch (error) {
@@ -692,13 +691,29 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
               var strColour = "#000000"
               var strWidth = (1/position.zoom)
+              var selectedWidth = 25*(1/position.zoom)
 
               
               return <Geography key={geo.rsmKey}
                 geography={geo}
-                fill={`${colour}`}
-                stroke={`${strColour}`}
-                strokeWidth={strWidth}/>
+                style={{
+                  default: {
+                    fill: `${colour.primaryColour}`,
+                    stroke: `${strColour}`,
+                    strokeWidth: {strWidth}
+                  },
+                  hover: {
+                    fill: `${colour.secondaryColour}`,
+                    strokeWidth: {selectedWidth}
+                  },
+                  press: {
+                    fill: `${colour.primaryColour}`,
+                    stroke: `${strColour}`,
+                    strokeWidth: {strWidth}
+                  }
+                }}
+                strokeWidth = {strWidth}
+                />
 
             })
           }
