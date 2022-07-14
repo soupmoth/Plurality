@@ -413,7 +413,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   //and MMP systems are called "STV". This system ensures no vote is wasted.
 
   const runoffVote = (partyResults, mpNumber) => {
-    var winProportion = 1
+    var winProportion = 0.5
     var mpsToElect = mpNumber
 
     if (mpNumber > 1) {
@@ -421,7 +421,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     }
 
     //correcting tactical vote. we assume there are no tactical votes in Runoff
-    //partyResults = redistrubuteTacticalVotes(partyResults)
+    partyResults = redistrubuteTacticalVotes(partyResults)
 
 
     let weighting = []
@@ -475,8 +475,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           console.log(mostPopular)
           mostPopular.vCount -= winProportion 
           mpsToElect--
-          runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
-          
+          if (mpsToElect > 0) {
+            runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
+          }
         }
         else {
           var leastPopular = null
