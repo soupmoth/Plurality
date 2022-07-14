@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 
 import ElectoralGeography from "./westminster_const_region TRUE3.json"
 
+import { Grid, CircularProgress} from '@material-ui/core'
+
 import { useSelector } from "react-redux";
-import { TextField, Button, Typography, Paper } from "@material-ui/core";
+import { TextField, Button, Typography, Paper, styled } from "@material-ui/core";
 
 import useStyles from './styles.js';
 
@@ -12,8 +14,9 @@ import * as eConsts from '../../../const/electionConsts.js'
 
 
 
-const ElectoralMap = ({electionParams, seats, setSeatData}) => {
+const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElectionData}) => {
   const classes = useStyles();
+  
 
   //constants
   const seatTotal = 650;
@@ -628,10 +631,21 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
 
   }
 
-  const data = resolveResults();
+  if (electionData == null) {
+    setElectionData(resolveResults())
+  }
+
+  const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
+  
+  function handleMoveEnd(pos) {
+    if (position.zoom != pos.zoom) {
+      setPosition(pos);
+    }
+    
+  }
 
   return (
-    <Paper className={classes.paper}>
+    !constituencies.length || !parties.length ? <CircularProgress/>: (
       <ComposableMap width={1200}
       height={800}
       projectionConfig={{
@@ -640,13 +654,20 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
         parallels: [0, 10],
         scale: 4000,
       }}>
+        <ZoomableGroup
+          zoom={position.zoom}
+          center={position.coordinates}
+          onMoveEnd={handleMoveEnd}
+        >
         <Geographies geography={ElectoralGeography}>
           {({ geographies }) =>
             geographies.map(geo => {
               var currentDatum = null
               var currentConstituency
 
-              data.forEach(datum => {
+              console.log(electionData)
+
+              electionData.forEach(datum => {
                 datum.constituencies.map(group => {
                   if ((group.constituency === geo.properties.NAME)) {
                   currentDatum = datum
@@ -670,7 +691,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
               }
 
               var strColour = "#000000"
-              var strWidth = 1.125
+              var strWidth = (1/position.zoom)
 
               
               return <Geography key={geo.rsmKey}
@@ -682,8 +703,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData}) => {
             })
           }
         </Geographies>
+        </ZoomableGroup>
       </ComposableMap>
-    </Paper>
+    )
   );
 };
 
