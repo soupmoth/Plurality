@@ -44,7 +44,7 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
                 valueLabelDisplay="on"
                 min={0}
                 step={0.001}
-                max={1}
+                max={3*pPercent.startingVotePercent}
          />
          </Container>
     );

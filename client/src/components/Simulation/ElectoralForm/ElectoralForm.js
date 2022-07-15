@@ -29,8 +29,8 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         let partyPercent = []
         if (parties !== null) {
             for (let i = 0; i < parties.length; i++) {
-                console.log(((parties)))
-                partyPercent.push({pID: parties[i].partyID, pName: parties[i].name, votePercent: parseFloat((parties[i].nVotePercent).replace('%',''))/100})
+                let percent = parseFloat((parties[i].nVotePercent).replace('%',''))/100
+                partyPercent.push({pID: parties[i].partyID, pName: parties[i].name, votePercent: percent, startingVotePercent: percent})
             }
         }
         setPartyPercentages(partyPercent)
