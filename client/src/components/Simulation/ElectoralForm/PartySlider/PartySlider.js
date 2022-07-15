@@ -1,18 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 
-import { TextField, Button, Typography, Paper, Slider, Grid, Box, Container } from "@material-ui/core";
+import { createTheme, ThemeProvider, TextField, Button, Typography, Paper, Slider, Grid, Box, Container } from "@material-ui/core";
 
 import useStyles from './styles.js';
 
 import * as eConsts from '../../../../const/electionConsts.js'
 
 
+
 const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
+    var newPP = null
+    const parties = useSelector((state) => state.parties)
+    
+    const getColour = (pID) => {
+        console.log(pID)
+        const result = parties.find(party => party.partyID === pID)
+        return result
+      };
 
-    //TACTICAL VOTING
 
-    var newPP
+
 
     const handleChange = (event, newValue) => {
         newPP = partyPercentages.slice()
@@ -24,11 +32,17 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
         setPartyPercentages(newPP);
       };
 
+    const findMax = (startingPercent) => {
+        if (startingPercent > 0.1) {
+            return 1
+        }
+        return 3*pPercent.startingVotePercent+0.02
+    };
+
     function percentValue(value) {
-        return `${Math.round(value*100)}%`;
+        return `${Math.round(value*1000)/10}%`;
     }
 
-    console.log(partyPercentages)
 
     return (
         <Container sx={{ width: 300 }}>
@@ -41,12 +55,14 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
                 aria-label="Always visible"
                 getAriaValueText={percentValue}
                 valueLabelFormat={percentValue}
-                valueLabelDisplay="on"
+                valueLabelDisplay="auto"
                 min={0}
                 step={0.001}
-                max={3*pPercent.startingVotePercent}
-         />
+                max={findMax(pPercent.startingVotePercent)}
+                style={{color: `${getColour(pPercent.pID).primaryColour}`}}
+            />
          </Container>
+
     );
 }
 
