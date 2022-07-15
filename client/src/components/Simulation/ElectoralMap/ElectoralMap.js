@@ -12,11 +12,8 @@ import useStyles from './styles.js';
 
 import * as eConsts from '../../../const/electionConsts.js'
 
-
-
 const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElectionData}) => {
   const classes = useStyles();
-  
 
   //constants
   const seatTotal = 650;
@@ -36,14 +33,10 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     } 
   }
 
-
-
   const constituencies = useSelector((state) => state.constituencies)
   const parties = useSelector((state) => state.parties)
 
-  console.log(electionParams);
-
-
+  //console.log(electionParams);
 
   //TODO - Build a method which finds the results of all grouped constituencies
   //This means an array of objects with first, an inner array of constituencies as "group",
@@ -156,7 +149,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
             break;
         }
 
-        constituenciesCopy = constituenciesCopy.filter(c => c.constituency != constName)
+        constituenciesCopy = constituenciesCopy.filter(c => c.constituency !== constName)
 
         return { 
           constituencyName: constName,
@@ -185,36 +178,36 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
   const buildGroups = (constituencyArr, grouping) => {
 
-    var consts = constituencyArr.filter((c) => c.country != "Northern Ireland")
+    var consts = constituencyArr.filter((c) => c.country !== "Northern Ireland")
 
-    if (eConsts.NATION == grouping) {
+    if (eConsts.NATION === grouping) {
       return [consts]
     }
-    else if (eConsts.INDIVIDUAL == grouping) {
+    else if (eConsts.INDIVIDUAL === grouping) {
       return consts.map(c => {
         return [c]
       })
     }
 
     var listOfGroups = []
-    if (eConsts.COUNTY_AND_BUROUGH == grouping) {
+    if (eConsts.COUNTY_AND_BUROUGH === grouping) {
       for (let i = 0; i < consts.length; i++) {
-        if (listOfGroups.find((e) => e == consts[i].county_name) == null) {
+        if (listOfGroups.find((e) => e === consts[i].county_name) === null) {
           listOfGroups.push(consts[i].county_name)
         }
       }
     }
-    else if (eConsts.REGION == grouping) {
+    else if (eConsts.REGION === grouping) {
       for (let i = 0; i < consts.length; i++) {
-        if (listOfGroups.find((e) => e == consts[i].region) == null) {
+        if (listOfGroups.find((e) => e === consts[i].region) === null) {
           listOfGroups.push(consts[i].region)
         }
       }
       
     }
-    else if (eConsts.COUNTRY == grouping) {
+    else if (eConsts.COUNTRY === grouping) {
       for (let i = 0; i < consts.length; i++) {
-        if (listOfGroups.find((e) => e == consts[i].country) == null) {
+        if (listOfGroups.find((e) => e === consts[i].country) === null) {
           listOfGroups.push(consts[i].country)
         }
       }
@@ -226,19 +219,19 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       groups.push([])
     }
 
-    if (eConsts.COUNTY_AND_BUROUGH == grouping) {
+    if (eConsts.COUNTY_AND_BUROUGH === grouping) {
       for (let i = 0; i < consts.length; i++) {
-        let a = groups[listOfGroups.findIndex((g) => g == consts[i].county_name)].push(consts[i])
+        let a = groups[listOfGroups.findIndex((g) => g === consts[i].county_name)].push(consts[i])
       }
     }
-    else if (eConsts.REGION == grouping) {
+    else if (eConsts.REGION === grouping) {
       for (let i = 0; i < consts.length; i++) {
-        groups[listOfGroups.findIndex((g) => g == consts[i].region)].push(consts[i])
+        groups[listOfGroups.findIndex((g) => g === consts[i].region)].push(consts[i])
       }
     }
-    else if (eConsts.COUNTRY == grouping) {
+    else if (eConsts.COUNTRY === grouping) {
       for (let i = 0; i < consts.length; i++) {
-        groups[listOfGroups.findIndex((g) => g == consts[i].country)].push(consts[i])
+        groups[listOfGroups.findIndex((g) => g === consts[i].country)].push(consts[i])
       }
     }
 
@@ -281,10 +274,10 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     if (electionParams.typeOfVote === eConsts.PLURALITY) {
       pID = pluralityVote(partyResults, true, mpNumber);
     }
-    else if (electionParams.typeOfVote == eConsts.RUNOFF) {
+    else if (electionParams.typeOfVote === eConsts.RUNOFF) {
       pID = runoffVote(partyResults, mpNumber)
     }
-    else if (electionParams.typeOfVote == eConsts.LOSER_TAKES_ALL) {
+    else if (electionParams.typeOfVote === eConsts.LOSER_TAKES_ALL) {
       pID = pluralityVote(partyResults, false, mpNumber);
     }
 
@@ -343,17 +336,17 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         break;
     }
 
-    if (seats.total != seatTotal) {
+    if (seats.total !== seatTotal) {
       seatCount.total = seatCount.total+1
       console.log(seatCount.total)
     }
-    if ((seatCount.total == seatTotal)) {
+    if ((seatCount.total === seatTotal)) {
       setSeatData(seatCount)
     }
   }
 
   const getColour = (pID) => {
-    const result = parties.find(party => party.partyID == pID)
+    const result = parties.find(party => party.partyID === pID)
     return result
   };
 
@@ -372,7 +365,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       return resultsTemp
     })
 
-    if (winnerWins == false) {
+    if (winnerWins === false) {
       partyResults.map((p) => {
         p.vCount = 1-p.vCount
       })
@@ -447,7 +440,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     let mostPopular = null
     let winners = []
     while (mpsToElect > 0) {
-      if (runoffResults.length == mpsToElect) {
+      if (runoffResults.length === mpsToElect) {
         //seat agained
         mostPopular = runoffResults[0]
         console.log("winner!:")
@@ -461,7 +454,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         //find the biggest winner
         mostPopular = null
         runoffResults.forEach(p => {
-          if (mostPopular == null) {
+          if (mostPopular === null) {
             mostPopular = p;
           }
           else if (p.vCount > mostPopular.vCount) {
@@ -483,7 +476,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           var leastPopular = null
           //find the biggest loser
           runoffResults.forEach(p => {
-            if (leastPopular == null) {
+            if (leastPopular === null) {
               leastPopular = p;
             }
             else if (p.vCount < leastPopular.vCount) {
@@ -526,7 +519,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     for (let i = 0; i < runoffResults.length; i++) {
       runoffResults[i].vCount += victimVote*(resultsTemp[i]/weightMax)
     }
-    runoffResults = runoffResults.filter(p => runoffVictim != p)
+    runoffResults = runoffResults.filter(p => runoffVictim !== p)
 
     console.log(JSON.parse(JSON.stringify(runoffResults)))
 
@@ -537,19 +530,19 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     return array.map(p => {
       let curPartyLeaning = toLeaning(p.pName) 
       let victimLeaning = toLeaning(compareTo.pName)
-      if (p == compareTo) {
+      if (p === compareTo) {
         return 0
       }
-      else if (p.pName == array.pName) {
+      else if (p.pName === array.pName) {
         return 1000
       }
-      else if (curPartyLeaning == victimLeaning) {
+      else if (curPartyLeaning === victimLeaning) {
         return 100
       }
-      else if (Math.abs(curPartyLeaning-victimLeaning) == 1) {
+      else if (Math.abs(curPartyLeaning-victimLeaning) === 1) {
         return 25
       }
-      else if (Math.abs(curPartyLeaning-victimLeaning) == 2) {
+      else if (Math.abs(curPartyLeaning-victimLeaning) === 2) {
         return 5
       }
       else {
@@ -561,7 +554,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   //finds the leaning as an 
   const toLeaning = (pName) => {
     try {
-      let party = parties.find(p => pName == p.partyID)
+      let party = parties.find(p => pName === p.partyID)
       return eConsts.POLITICAL_DISTANCE(party.leaning)
     } catch (error) {
       console.log(error)
@@ -585,7 +578,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     const extractMaxResult = () => {
       var mostPopular = null
       temp.forEach(p => {
-        if (mostPopular == null) {
+        if (mostPopular === null) {
           mostPopular = p;
         }
         if (p.vCount > mostPopular.vCount) {
@@ -593,7 +586,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         }
       });
       topTwoParties.push(mostPopular);
-      temp = temp.filter(p => mostPopular != p)
+      temp = temp.filter(p => mostPopular !== p)
     }
 
     extractMaxResult();
@@ -632,14 +625,14 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
   }
 
-  if (electionData == null) {
+  if (electionData === null) {
     setElectionData(resolveResults())
   }
 
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
   
   function handleMoveEnd(pos) {
-    if (position.zoom != pos.zoom) {
+    if (position.zoom !== pos.zoom) {
       setPosition(pos);
     }
     
@@ -659,6 +652,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           zoom={position.zoom}
           center={position.coordinates}
           onMoveEnd={handleMoveEnd}
+          maxZoom={16}
         >
         <Geographies geography={ElectoralGeography}>
           {({ geographies }) =>
@@ -681,7 +675,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
               let colour = null
               try {
-                colour = getColour(currentDatum.seatHolders.find(s => currentConstituency == s.constituencyName).mostResponsible)
+                colour = getColour(currentDatum.seatHolders.find(s => currentConstituency === s.constituencyName).mostResponsible)
               }
               catch (error) {
                 //console.log(geo.properties.NAME)

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const partySchema = mongoose.Schema({
     partyID: String,
     name: String,
-    nVotePercent: Number,
+    nVotePercent: String,
     nVoteCount: Number,
     leaning: String,
     primaryColour: String,
