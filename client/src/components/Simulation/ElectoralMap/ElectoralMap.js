@@ -47,9 +47,10 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   const resolveResults = () => {
     //section dedicated to adding electoral swing. we can do it later
 
-    findNationalResults(constituencies)
+    var allVotes = findNationalResults(constituencies)
+    newConstituencies = alterConstResults(constituencies, allVotes)
 
-    var groups = buildGroups(constituencies, electionParams.grouping)
+    var groups = buildGroups(newConstituencies, electionParams.grouping)
     groups = groups.map(g => {
       //build initial for group
       var tempGroup = {
@@ -109,6 +110,11 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   }
 
   //this function finds the national results of each party and then returns an array of such results
+  const alterConstResults = (constituencyArr, resultsToWeigh) => { 
+    return constituencyArr
+  }
+
+  //this function finds the national results of each party and then returns an array of such results
   const findNationalResults = (constituencyArr) => {
     var allVotes = {
       con: 0,
@@ -138,7 +144,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       allVotes[key] = allVotes[key] / totalVotes
     }
 
-    console.log(allVotes)
+    return allVotes
 
   }
 
