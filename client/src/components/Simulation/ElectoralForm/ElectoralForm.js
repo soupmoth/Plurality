@@ -36,6 +36,14 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         setPartyPercentages(partyPercent)
     }
 
+    //polling
+
+    const correctPolling = () => {
+        //partyPercentages.forEach(element => {
+            
+        //});
+    }
+
     //TACTICAL VOTING
 
     const handleTacticalChange = (event, newValue) => {
@@ -113,6 +121,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                         </Grid>
                 ))}
                 </Grid>
+                <Button variant="contained" color = "primary" size ="large" onClick={correctPolling} fullwidth> SUBMIT POLLS </Button>
             </Paper>
             <Paper className={classes.paper}>
                 <Typography variant="h6">Constituency Type</Typography>

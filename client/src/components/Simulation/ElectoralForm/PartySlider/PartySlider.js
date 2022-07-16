@@ -20,8 +20,6 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
       };
 
 
-
-
     const handleChange = (event, newValue) => {
         newPP = partyPercentages.slice()
         newPP.map((party) => {
@@ -57,7 +55,7 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
                 valueLabelFormat={percentValue}
                 valueLabelDisplay="auto"
                 min={0}
-                step={0.001}
+                step={0.0001}
                 max={findMax(pPercent.startingVotePercent)}
                 style={{color: `${getColour(pPercent.pID).primaryColour}`}}
             />
