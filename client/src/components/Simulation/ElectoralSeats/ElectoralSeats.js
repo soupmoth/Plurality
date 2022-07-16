@@ -9,7 +9,6 @@ import {AxisOptions, Chart} from "react-charts";
 
 
 const ElectoralSeats = ({seats, parties}) => {
-
     function findPartyName(pID) {
       try {
         console.log(parties.find(party => party.partyID == pID).name)
@@ -51,7 +50,7 @@ const ElectoralSeats = ({seats, parties}) => {
         count: seats.party.pc,
       },
       {
-        name: "Northen Ireland",
+        name: "Northern Ireland",
         count: seats.party.ni,
       },
       {
@@ -59,8 +58,6 @@ const ElectoralSeats = ({seats, parties}) => {
         count: seats.party.other,
       },
     ]
-
-    console.log(partyData)
 
     return (
       <div>
@@ -74,6 +71,5 @@ const ElectoralSeats = ({seats, parties}) => {
     )
     
 }
-
 
 export default ElectoralSeats;

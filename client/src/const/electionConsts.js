@@ -4,9 +4,9 @@ export const RUNOFF = 'RUNOFF'
 export const LOSER_TAKES_ALL = "LOSER_TAKES_ALL" //loser wins if they had non-zero votes
 
 //election types
-export const REGION = 'REGION'
-export const COUNTY_AND_BUROUGH = 'CAB'
-export const COUNTRY = "COUNTRY"
+export const REGION = "region"
+export const COUNTY_AND_BUROUGH = "county_name"
+export const COUNTRY = "country"
 export const NATION = "NATION"
 export const INDIVIDUAL = "INDIVIDUAL"
 

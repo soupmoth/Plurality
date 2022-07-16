@@ -47,8 +47,11 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   const resolveResults = () => {
     //section dedicated to adding electoral swing. we can do it later
 
+    findNationalResults(constituencies)
+
     var groups = buildGroups(constituencies, electionParams.grouping)
     groups = groups.map(g => {
+      //build initial for group
       var tempGroup = {
         constituencies: g,
         totalVotes: {
@@ -58,10 +61,10 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           brexit: 0,
           green: 0,
           snp: 0,
-          pc:0,
-          dup:0,
+          pc: 0,
+          dup: 0,
           sf: 0,
-          sdlp:0,
+          sdlp: 0,
           uup: 0,
           alliance: 0,
           other: 0
@@ -69,89 +72,29 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         seatHolders: null,
       }
 
+      //find the total votes in a group
       for (let i = 0; i < g.length; i++) {
-        tempGroup.totalVotes.con += g[i].con
-        tempGroup.totalVotes.lab += g[i].lab
-        tempGroup.totalVotes.ld += g[i].ld
-        tempGroup.totalVotes.brexit += g[i].brexit
-        tempGroup.totalVotes.green += g[i].green
-        tempGroup.totalVotes.snp += g[i].snp
-        tempGroup.totalVotes.pc += g[i].pc
-        tempGroup.totalVotes.dup += g[i].dup
-        tempGroup.totalVotes.sf += g[i].sf
-        tempGroup.totalVotes.sdlp += g[i].sdlp
-        tempGroup.totalVotes.uup += g[i].uup
-        tempGroup.totalVotes.alliance += g[i].alliance
-        tempGroup.totalVotes.other += g[i].other
+        for (const key in tempGroup.totalVotes) {
+          tempGroup.totalVotes[key] += (g[i])[key]
+        }
       }
 
-      
+      console.log(tempGroup)
+
       //determineWinner returns pIDs. We then map over them and find the biggest constituency for that party's success
       let constituenciesCopy = tempGroup.constituencies.slice()
       tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, tempGroup.constituencies.length)
       tempGroup.seatHolders = tempGroup.seatHolders.map((pID) => {
-        
+
         let constName = null
         let valueArr = null
 
-        switch (pID) {
-          case "con":
-            valueArr = constituenciesCopy.map((c) => {return c.con})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "lab":
-            valueArr = constituenciesCopy.map((c) => {return c.lab})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "ld":
-            valueArr = constituenciesCopy.map((c) => {return c.ld})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "brexit":
-            valueArr = constituenciesCopy.map((c) => {return c.brexit})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "green":
-            valueArr = constituenciesCopy.map((c) => {return c.green})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "snp":
-            valueArr = constituenciesCopy.map((c) => {return c.snp})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "pc":
-            valueArr = constituenciesCopy.map((c) => {return c.pc})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "dup":
-            valueArr = constituenciesCopy.map((c) => {return c.ni})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "sf":
-            valueArr = constituenciesCopy.map((c) => {return c.ni})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "sdlp":
-            valueArr = constituenciesCopy.map((c) => {return c.ni})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "uup":
-            valueArr = constituenciesCopy.map((c) => {return c.ni})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          case "alliance":
-            valueArr = constituenciesCopy.map((c) => {return c.ni})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-          default:
-            valueArr = constituenciesCopy.map((c) => {return c.other})
-            constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
-            break;
-        }
+        valueArr = constituenciesCopy.map((c) => { return c[pID] })
+        constName = constituenciesCopy[valueArr.indexOf(Math.max(...valueArr))].constituency;
 
         constituenciesCopy = constituenciesCopy.filter(c => c.constituency !== constName)
 
-        return { 
+        return {
           constituencyName: constName,
           mostResponsible: pID
         }
@@ -163,6 +106,40 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     console.log(groups)
 
     return groups;
+  }
+
+  //this function finds the national results of each party and then returns an array of such results
+  const findNationalResults = (constituencyArr) => {
+    var allVotes = {
+      con: 0,
+      lab: 0,
+      ld: 0,
+      brexit: 0,
+      green: 0,
+      snp: 0,
+      pc:0,
+      dup:0,
+      sf: 0,
+      sdlp:0,
+      uup: 0,
+      alliance: 0,
+      other: 0
+    }
+
+    var totalVotes = 0
+    constituencyArr.forEach(c => {
+      for (const key in allVotes) {
+        allVotes[key] += c[key]
+        totalVotes += c[key]
+    }
+    });
+
+    for (const key in allVotes) {
+      allVotes[key] = allVotes[key] / totalVotes
+    }
+
+    console.log(allVotes)
+
   }
 
   //build groups works on 4 modes.
@@ -190,26 +167,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     }
 
     var listOfGroups = []
-    if (eConsts.COUNTY_AND_BUROUGH === grouping) {
-      for (let i = 0; i < consts.length; i++) {
-        if (listOfGroups.find((e) => e === consts[i].county_name) === null) {
-          listOfGroups.push(consts[i].county_name)
-        }
-      }
-    }
-    else if (eConsts.REGION === grouping) {
-      for (let i = 0; i < consts.length; i++) {
-        if (listOfGroups.find((e) => e === consts[i].region) === null) {
-          listOfGroups.push(consts[i].region)
-        }
-      }
-      
-    }
-    else if (eConsts.COUNTRY === grouping) {
-      for (let i = 0; i < consts.length; i++) {
-        if (listOfGroups.find((e) => e === consts[i].country) === null) {
-          listOfGroups.push(consts[i].country)
-        }
+    for (let i = 0; i < consts.length; i++) {
+      if (!listOfGroups.find((e) => e === (consts[i])[grouping])) {
+        listOfGroups.push((consts[i])[grouping])
       }
     }
 
@@ -219,33 +179,17 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       groups.push([])
     }
 
-    if (eConsts.COUNTY_AND_BUROUGH === grouping) {
-      for (let i = 0; i < consts.length; i++) {
-        let a = groups[listOfGroups.findIndex((g) => g === consts[i].county_name)].push(consts[i])
-      }
+    for (let i = 0; i < consts.length; i++) {
+        groups[listOfGroups.findIndex((g) => g === (consts[i])[grouping])].push(consts[i])
     }
-    else if (eConsts.REGION === grouping) {
-      for (let i = 0; i < consts.length; i++) {
-        groups[listOfGroups.findIndex((g) => g === consts[i].region)].push(consts[i])
-      }
-    }
-    else if (eConsts.COUNTRY === grouping) {
-      for (let i = 0; i < consts.length; i++) {
-        groups[listOfGroups.findIndex((g) => g === consts[i].country)].push(consts[i])
-      }
-    }
-
-    console.log(groups)
 
     return groups
-
   }
 
   
 
   //c being the constituency.
   const determineWinner = (c, mpNumber) => {
-
     //TODO
     //this solution is really bad, its because of how I formatted the backend. Have a fix in mind
     //for it, but I'll have to test it later. Proof of concept
@@ -294,47 +238,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   }
 
   const incrementSeats = (pID) => {
-    switch (pID) {
-      case "con":
-        seatCount.party.con = seatCount.party.con+1;
-        break;
-      case "lab":
-        seatCount.party.lab = seatCount.party.lab+1;
-        break;
-      case "ld":
-        seatCount.party.ld = seatCount.party.ld+1;
-        break;
-      case "brexit":
-        seatCount.party.brexit = seatCount.party.brexit+1;
-        break;
-      case "green":
-        seatCount.party.green = seatCount.party.green+1;
-        break;
-      case "snp":
-        seatCount.party.snp = seatCount.party.snp+1;
-        break;
-      case "pc":
-        seatCount.party.pc = seatCount.party.pc+1;
-        break;
-      case "dup":
-        seatCount.party.ni = seatCount.party.ni+1;
-        break;
-      case "sf":
-        seatCount.party.ni = seatCount.party.ni+1;
-        break;
-      case "sdlp":
-        seatCount.party.ni = seatCount.party.ni+1;
-        break;
-      case "uup":
-        seatCount.party.ni = seatCount.party.ni+1;
-        break;
-      case "alliance":
-        seatCount.party.ni = seatCount.party.ni+1;
-        break;
-      default:
-        seatCount.party.other = seatCount.party.other+1;
-        break;
-    }
+    seatCount.party[pID] = seatCount.party[pID]+1;
 
     if (seats.total !== seatTotal) {
       seatCount.total = seatCount.total+1
@@ -380,10 +284,8 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
     while (mpsToElect > 0) {
       targetVote = rawResults.indexOf(Math.max(...rawResults));
-      console.log(targetVote)
       console.log(JSON.parse(JSON.stringify(partyResults)))
       winner = partyResults[targetVote];
-      console.log(winner)
       winner.vCount -= winProportion;
       winners.push(winner.pName);
       rawResults[targetVote] -= winProportion;
@@ -493,14 +395,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   }
 
   const runoffRedistrubtion = (runoffResults, runoffVictim) => {
-
-    //same candidate weight = 0
-    //same party weight = 50
-    //same alignment = 25
-    //one alignment off = 15
-    //two alignments off = 5
-    //else = 1
-
     let weightMax = 0
     console.log("victim:")
     console.log(runoffVictim)
@@ -527,6 +421,12 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   }
 
   const getWeightedArray = (array, compareTo) => {
+    //same candidate weight = 0
+    //same party weight = 50
+    //same alignment = 25
+    //one alignment off = 15
+    //two alignments off = 5
+    //else = 1
     return array.map(p => {
       let curPartyLeaning = toLeaning(p.pName) 
       let victimLeaning = toLeaning(compareTo.pName)
@@ -565,11 +465,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   //This redistrubutes the votes from the two best parties in a constituency
   const redistrubuteTacticalVotes = (results) => {
     var temp = results;
-
     
+    var tracker
 
-    var tracker = 0
-    
     temp.map(p => {
       tracker+= p.vCount
     })
@@ -658,18 +556,19 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           {({ geographies }) =>
             geographies.map(geo => {
               var currentDatum = null
-              var currentConstituency
+              var currentConstituency = null
 
               //console.log(electionData)
 
-              electionData.forEach(datum => {
-                datum.constituencies.map(group => {
-                  if ((group.constituency === geo.properties.NAME)) {
-                  currentDatum = datum
-                  currentConstituency = group.constituency
-                  }
+                electionData.forEach(datum => {
+                  datum.constituencies.map(group => {
+                    if ((group.constituency === geo.properties.NAME)) {
+                    currentDatum = datum
+                    currentConstituency = group.constituency
+                    }
+                  })
                 })
-              })
+
               //console.log(currentDatum)
               //console.log(currentConstituency)
 
