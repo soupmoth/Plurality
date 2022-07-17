@@ -48,7 +48,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     //section dedicated to adding electoral swing. we can do it later
 
     var allVotes = findNationalResults(constituencies)
-    newConstituencies = alterConstResults(constituencies, allVotes)
+    var newConstituencies = alterConstResults(constituencies, allVotes)
 
     var groups = buildGroups(newConstituencies, electionParams.grouping)
     groups = groups.map(g => {

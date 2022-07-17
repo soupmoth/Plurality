@@ -7,8 +7,6 @@ import useStyles from './styles.js';
 
 import * as eConsts from '../../../../const/electionConsts.js'
 
-
-
 const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
     var newPP = null
     const parties = useSelector((state) => state.parties)
@@ -31,8 +29,10 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
       };
 
     const findMax = (startingPercent) => {
-        if (startingPercent > 0.1) {
-            return 1
+        var sVP = startingPercent.startingVotePercent
+
+        if (sVP > 0.1) {
+            return 0.9985
         }
         return 3*pPercent.startingVotePercent+0.02
     };
@@ -41,11 +41,9 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
         return `${Math.round(value*1000)/10}%`;
     }
 
-
     return (
         <Container sx={{ width: 300 }}>
-        <Typography variant="h6">{`${pPercent.pName}`}</Typography>
-            <br/>
+        <Typography variant="h5">{`${pPercent.pName}`}</Typography>
             <br/>
             <Slider 
                 value={pPercent.votePercent} 
@@ -54,15 +52,14 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
                 getAriaValueText={percentValue}
                 valueLabelFormat={percentValue}
                 valueLabelDisplay="auto"
-                min={0}
-                step={0.0001}
-                max={findMax(pPercent.startingVotePercent)}
+                min={0.001}
+                step={0.001}
+                max={findMax(pPercent)}
                 style={{color: `${getColour(pPercent.pID).primaryColour}`}}
             />
          </Container>
 
     );
 }
-
 
 export default PartySlider
