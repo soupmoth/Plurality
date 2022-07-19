@@ -48,9 +48,6 @@ const ElectoralSeats = ({seats, parties}) => {
       }
     }
 
-    
-
-
     const getLabels = () => {
       var labels = []
       for (const key in seats.party) {
@@ -67,6 +64,14 @@ const ElectoralSeats = ({seats, parties}) => {
       return data
     }
 
+    const getVoteData = () => {
+      var data = []
+      for (const key in seats.nationalVote) {
+        data.push(seats.nationalVote[key])
+      }
+      return data
+    }
+
     const getPartyColours = (flip) => {
       var colours = []
       for (const key in seats.party) {
@@ -76,7 +81,7 @@ const ElectoralSeats = ({seats, parties}) => {
     }
 
 
-    const data = {
+    const seatData = {
       labels: getLabels(),
       datasets: [{
         label: 'Seats',
@@ -86,7 +91,19 @@ const ElectoralSeats = ({seats, parties}) => {
           return eConsts.darkenPartyColours(c, -0.5)
         }),
         hoverOffset: 4,
-        borderWidth: 3
+      }]
+    };
+
+    const voteData = {
+      labels: getLabels(),
+      datasets: [{
+        label: 'Votes',
+        data: getVoteData(),
+        backgroundColor: getPartyColours(false),
+        borderColor: getPartyColours(false).map((c) => {
+          return eConsts.darkenPartyColours(c, -0.5)
+        }),
+        hoverOffset: 4,
       }]
     };
 
@@ -106,22 +123,24 @@ const ElectoralSeats = ({seats, parties}) => {
   return (
       <Paper classes={classes.paper}>
         <Grid container spacing={2}>
-          <Grid item xs={1} />
-          <Grid item xs={5}>
+        <Grid item xs={1}/>
+          <Grid item xs={10}>
             <Typography variant="h6">Total Seats Won</Typography>
             <Pie
               options={options}
-              data={data}
+              data={seatData}
             />
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={1}/>
+          <Grid item xs={1}/>
+          <Grid item xs={10}>
             <Typography variant="h6">Total National Vote</Typography>
             <Pie
               options={options}
-              data={data}
+              data={voteData}
             />
           </Grid>
-          <Grid item xs={1} />
+          <Grid item xs={1}/>
         </Grid>
       </Paper>
   )

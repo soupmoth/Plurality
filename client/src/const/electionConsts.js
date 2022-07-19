@@ -19,12 +19,23 @@ export const DEFAULT = {
     partyPollRates: [],
 }
 
-export const STARTING_SEATS = {
+export const STARTING_VOTES = {
     total: 18,
     party: {
         con: 0,
         brexit: 0,     
         ni: 18,
+        snp: 0,
+        other: 0,
+        pc: 0,
+        ld: 0,
+        green: 0,
+        lab: 0,
+    },
+    nationalVote: {
+        con: 0,
+        brexit: 0,     
+        ni: 799034,
         snp: 0,
         other: 0,
         pc: 0,

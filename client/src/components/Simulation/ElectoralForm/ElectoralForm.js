@@ -171,6 +171,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
 
 
     const generateResults = () => {
+        setSeatData(eConsts.STARTING_VOTES)
         setElectionParams({
             tacticalVoteProportion: tacticalVoting,
             noOfMPsPerConst: 1,
@@ -178,7 +179,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
             grouping: constituencyType,
             partyPollRates: partyPercentages
         })
-        setSeatData(eConsts.STARTING_SEATS)
+        
     }
 
     function tacticalValueText(value) {

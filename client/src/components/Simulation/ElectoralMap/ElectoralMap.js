@@ -22,16 +22,27 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     total: 18,
     party: {
         con: 0,
-        lab: 0,
-        ld: 0,
-        brexit: 0,
-        green: 0,
-        snp: 0,
-        pc: 0,
+        brexit: 0,     
         ni: 18,
-        other: 0
-    } 
-  }
+        snp: 0,
+        other: 0,
+        pc: 0,
+        ld: 0,
+        green: 0,
+        lab: 0,
+    },
+    nationalVote: {
+        con: 0,
+        brexit: 0,     
+        ni: 799034,
+        snp: 0,
+        other: 0,
+        pc: 0,
+        ld: 0,
+        green: 0,
+        lab: 0,
+    }
+}
 
   const constituencies = useSelector((state) => state.constituencies)
   const parties = useSelector((state) => state.parties)
@@ -132,7 +143,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         for (var i = 0; i < pollRates.length; i++) {
           let key = pollRates[i].pID
           if (c[key] > 0) {
-            c[key] = c[key]*((pollRates[i].votePercent/nResults[key])/totalWeight)
+            c[key] = c[key]*(pollRates[i].votePercent/nResults[key])
           }
         }
 
@@ -181,7 +192,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     }
 
     return allVotes
-
   }
 
   //build groups works on 4 modes.
@@ -251,6 +261,12 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       totalVotes = totalVotes + p.vCount
     })
 
+    if (mpNumber > 1 || electionParams.typeOfVote === eConsts.RUNOFF) {
+      partyResults = redistrubuteTacticalVotes(partyResults)
+    }
+    
+    incrementVotes(partyResults)
+
     partyResults.map(p => {
       p.vCount = p.vCount/totalVotes
     })
@@ -282,12 +298,20 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   const incrementSeats = (pID) => {
     seatCount.party[pID] = seatCount.party[pID]+1;
 
+    console.log(seatCount.total)
+
     if (seats.total !== seatTotal) {
       seatCount.total = seatCount.total+1
     }
     if ((seatCount.total === seatTotal)) {
       setSeatData(seatCount)
     }
+  }
+
+  const incrementVotes = (partyResults) => {
+    partyResults.map((p) => {
+      seatCount.nationalVote[p.pName] = seatCount.nationalVote[p.pName] + p.vCount;
+    })
   }
 
   const getColour = (pID) => {
@@ -301,21 +325,27 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
     if (mpNumber > 1) {
       winProportion = 1/mpNumber
-      partyResults = redistrubuteTacticalVotes(partyResults)
+    }
+
+    if (winnerWins == false) {
+      var weightMax = 0
+      partyResults.map((p) => {
+        p.vCount = 1-p.vCount
+        weightMax += p.vCount
+      })
+
+      partyResults.map((p) => {
+        p.vCount = p.vCount/weightMax
+      })
+      
     }
     
-
     var rawResults = partyResults.map(p => {
       let resultsTemp = p.vCount
       return resultsTemp
     })
 
-    if (winnerWins === false) {
-      partyResults.map((p) => {
-        p.vCount = 1-p.vCount
-      })
-      
-    }
+    
 
     var targetVote = null
     var winners = []
@@ -357,7 +387,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     }
 
     //correcting tactical vote. we assume there are no tactical votes in Runoff
-    partyResults = redistrubuteTacticalVotes(partyResults)
+
 
 
     let weighting = []
@@ -574,18 +604,17 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     if (position.zoom !== pos.zoom) {
       setPosition(pos);
     }
-    
   }
 
   return (
     !constituencies.length || !parties.length ? <CircularProgress/>: (
       <ComposableMap width={1200}
-      height={800}
+      height={1550}
       projectionConfig={{
-        center: [0, 55.4],
+        center: [1.5, 55.4],
         rotate: [4.4, 0, 0],
         parallels: [0, 10],
-        scale: 4000,
+        scale: 8000,
       }}>
         <ZoomableGroup
           zoom={position.zoom}

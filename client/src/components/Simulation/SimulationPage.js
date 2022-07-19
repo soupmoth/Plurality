@@ -21,25 +21,36 @@ const SimulationPage = () => {
     const parties = useSelector((state) => state.parties)
 
 
-    const [seats, setSeatData] = useState(eConsts.STARTING_SEATS)
+    const [seats, setSeatData] = useState(eConsts.STARTING_VOTES)
     const [electionData, setElectionData] = useState(null)
     const [electionParams, setElectionParams] = useState(eConsts.DEFAULT) 
 
     //runs every time Election Params are updated or on first load
     useEffect(() => {
+        setSeatData(eConsts.STARTING_VOTES)
         setElectionData(null)
       }, [electionParams]);
 
     console.log(electionParams)
 
     return (
-        !constituencies.length || !parties.length ? <CircularProgress/>: (
+        !constituencies.length || !parties.length ? <CircularProgress /> : (
             <div>
-                <div><ElectoralSeats seats={seats} parties={parties} /></div>
+
+                <ElectoralForm electionParams={electionParams} setElectionParams={setElectionParams} setSeatData={setSeatData} />
                 <br />
-                <ElectoralForm electionParams={electionParams} setElectionParams={setElectionParams} setSeatData={setSeatData}/>
-                <br />
-                <div><Paper className={classes.paper}><ElectoralMap electionParams={electionParams} seats={seats} setSeatData={setSeatData} electionData={electionData} setElectionData={setElectionData}/></Paper></div>
+
+                <Grid container spacing={2}>
+                    <Grid item xs={5}><ElectoralSeats seats={seats} parties={parties} /></Grid>
+                    <Grid item xs={7}>
+                        <Paper className={classes.paper}>
+                            <ElectoralMap electionParams={electionParams} seats={seats} setSeatData={setSeatData} electionData={electionData} setElectionData={setElectionData} />
+                        </Paper>
+                    </Grid>
+                </Grid>
+
+
+
             </div>
         )
     );
