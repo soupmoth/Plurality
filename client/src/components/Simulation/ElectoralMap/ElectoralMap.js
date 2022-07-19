@@ -46,9 +46,8 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
   const resolveResults = () => {
     //section dedicated to adding electoral swing. we can do it later
-
     var allVotes = findNationalResults(constituencies)
-    var newConstituencies = alterConstResults(constituencies, allVotes)
+    var newConstituencies = alterConstResults(JSON.parse(JSON.stringify(constituencies)), allVotes)
 
     var groups = buildGroups(newConstituencies, electionParams.grouping)
     groups = groups.map(g => {
@@ -110,8 +109,45 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   }
 
   //this function finds the national results of each party and then returns an array of such results
-  const alterConstResults = (constituencyArr, resultsToWeigh) => { 
-    return constituencyArr
+  const alterConstResults = (constituencyArr, nResults) => { 
+
+    if (electionParams.partyPollRates.length > 0) {
+      var newConsts = constituencyArr.slice()
+      let pollRates = electionParams.partyPollRates.slice()
+
+      console.log(JSON.parse(JSON.stringify(newConsts)))
+
+      newConsts.map((c) => {
+        var totalWeight = 0;
+
+        console.log(JSON.parse(JSON.stringify(c)))
+        
+        for (var i = 0; i < pollRates.length; i++) {
+          let key = pollRates[i].pID
+          if (c[pollRates[i].pID] > 0) {
+            totalWeight += (pollRates[i].votePercent/nResults[key])
+          }
+        }
+
+        for (var i = 0; i < pollRates.length; i++) {
+          let key = pollRates[i].pID
+          if (c[key] > 0) {
+            c[key] = c[key]*((pollRates[i].votePercent/nResults[key])/totalWeight)
+          }
+        }
+
+        console.log(JSON.parse(JSON.stringify(c)))
+            
+
+      })
+
+      console.log(JSON.parse(JSON.stringify(newConsts)))
+
+      return newConsts
+    }
+    else {
+      return constituencyArr
+    }
   }
 
   //this function finds the national results of each party and then returns an array of such results
@@ -248,7 +284,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
     if (seats.total !== seatTotal) {
       seatCount.total = seatCount.total+1
-      console.log(seatCount.total)
     }
     if ((seatCount.total === seatTotal)) {
       setSeatData(seatCount)

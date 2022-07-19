@@ -16,20 +16,21 @@ export const DEFAULT = {
     noOfMPsPerConst: 1,
     typeOfVote: PLURALITY,
     grouping: INDIVIDUAL,
+    partyPollRates: [],
 }
 
 export const STARTING_SEATS = {
     total: 18,
     party: {
         con: 0,
-        lab: 0,
-        ld: 0,
-        brexit: 0,
-        green: 0,
-        snp: 0,
-        pc: 0,
+        brexit: 0,     
         ni: 18,
-        other: 0
+        snp: 0,
+        other: 0,
+        pc: 0,
+        ld: 0,
+        green: 0,
+        lab: 0,
     }
 }
 
