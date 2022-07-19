@@ -1,2 +1,0 @@
-export const FETCH_CONST = 'FETCH_CONST';
-export const FETCH_PARTIES = 'FETCH_PARTIES'
