@@ -138,6 +138,10 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         }
     }
 
+    const isConstituencyType = (type) => {
+        return type == constituencyType
+    }
+
 
     //ELECTION TYPES
 
@@ -165,13 +169,16 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         }
     }
 
+    const isElectionType = (type) => {
+        return type == voteType
+    }
+
     const resetSettings = () => {
         setElectionParams(eConsts.DEFAULT)
     }
 
 
     const generateResults = () => {
-        setSeatData(eConsts.STARTING_VOTES)
         setElectionParams({
             tacticalVoteProportion: tacticalVoting,
             noOfMPsPerConst: 1,
@@ -179,7 +186,6 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
             grouping: constituencyType,
             partyPollRates: partyPercentages
         })
-        
     }
 
     function tacticalValueText(value) {
@@ -210,7 +216,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 ))}
                 </Grid>
                 <Button variant="contained" color = "primary" size ="large" onClick={correctPolling}> SUBMIT POLLS </Button>
-                <Button variant="contained" color = "secondary" size ="large" onClick={defaultPolling}> RETURN TO DEFAULT </Button>
+                <Button variant="contained" color = "primary" size ="large" onClick={defaultPolling}> RETURN TO DEFAULT </Button>
                 <Button variant="contained" color = "primary" size ="large" onClick={toggleManualPolling}> {partyPercentageManual ? `Sliders` : `Manual`} </Button>
             </Paper>
             <Paper className={classes.paper}>
@@ -218,20 +224,20 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 <Typography variant="body1">A constituency type is how constituencies are joined together in order to create Multimember constituencies.</Typography>
                 <br></br>
                 <Typography variant="body1">{getConstituencyDetails()}</Typography>
-                <Button variant="contained" color = "primary" size ="large" onClick={setIndividual}> Individual </Button>
-                <Button variant="contained" color = "secondary" size ="large" onClick={setCounty}> Counties and Buroughs </Button>
-                <Button variant="contained" color = "primary" size ="large" onClick={setRegion}> Regions </Button>
-                <Button variant="contained" color = "secondary" size ="large" onClick={setCountry}> Countries </Button>
-                <Button variant="contained" color = "primary" size ="large" onClick={setNationwide}> Nationwide </Button>
+                <Button variant="contained" color = {isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size ="large" onClick={setIndividual}> Individual </Button>
+                <Button variant="contained" color = {isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size ="large" onClick={setCounty}> Counties and Buroughs </Button>
+                <Button variant="contained" color = {isConstituencyType(eConsts.REGION) ? "secondary" : "primary"}size ="large" onClick={setRegion}> Regions </Button>
+                <Button variant="contained" color = {isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size ="large" onClick={setCountry}> Countries </Button>
+                <Button variant="contained" color = {isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size ="large" onClick={setNationwide}> Nationwide </Button>
             </Paper>
             <Paper className={classes.paper}>
                 <Typography variant="h6">Voting Type</Typography>
                 <Typography variant="body1">This determines how a citizen may choose to cast their vote.</Typography>
                 <br></br>
                 <Typography variant="body1">{getElectionDetails()}</Typography>
-                <Button variant="contained" color = "primary" size ="large" onClick={setPlurality}> Plurality </Button>
-                <Button variant="contained" color = "secondary" size ="large" onClick={setRunOff}> Runoff </Button>
-                <Button variant="contained" color = "primary" size ="large" onClick={setLoserTakesAll}> LOSER TAKES ALL </Button>
+                <Button variant="contained" color = {isElectionType(eConsts.PLURALITY) ? "secondary" : "primary"} size ="large" onClick={setPlurality}> Plurality </Button>
+                <Button variant="contained" color = {isElectionType(eConsts.RUNOFF) ? "secondary" : "primary"} size ="large" onClick={setRunOff}> Runoff </Button>
+                <Button variant="contained" color = {isElectionType(eConsts.LOSER_TAKES_ALL) ? "secondary" : "primary"} size ="large" onClick={setLoserTakesAll}> LOSER TAKES ALL </Button>
 
             </Paper>
             <Paper className={classes.paper}>
