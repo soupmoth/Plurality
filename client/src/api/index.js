@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const constituencyURL = 'http://localhost:5000/constituencies';
-const partyURL = 'http://localhost:5000/parties';
+const constituencyURL = 'https://electoral-plurality.herokuapp.com/constituencies';
+const partyURL = 'https://electoral-plurality.herokuapp.com/parties';
 
 export const fetchConstituencies = () => axios.get(constituencyURL);
 export const fetchParties = () => axios.get(partyURL);
