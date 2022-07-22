@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 
-import { CircularProgress, Button, Typography, Paper, Slider, Grid } from "@material-ui/core";
+import { CircularProgress, Button, Typography, Paper, Slider, Grid, ButtonGroup, TextField, Container } from "@material-ui/core";
 
 import useStyles from './styles.js';
 
@@ -23,8 +23,13 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     const [partyPercentageManual, setPartyPercentageManual] = useState(false)
 
     useEffect(() => {
-        updateParties()
+        updateParties(partyPercentages)
     }, [parties])
+
+    const getColour = (pID) => {
+        const result = parties.find(party => party.partyID === pID)
+        return result
+      };
 
     const updateParties = () => {
         let partyPercent = []
@@ -51,10 +56,10 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 case "sf":
                 case "alliance":
                 case "uup":
-                    niPercent += party.startingVotePercent
+                    niPercent += parsePercentage(party.startingVotePercent)
                     break;
                 default:
-                    totalWeighting += party.votePercent
+                    totalWeighting += parsePercentage(party.votePercent)
             }
         });
         var proportionOfWeight = 1-niPercent
@@ -66,15 +71,33 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 case "sf":
                 case "alliance":
                 case "uup":
-                    party.votePercent = party.startingVotePercent
+                    party.votePercent = parsePercentage(party.startingVotePercent)
                     break;
                 default:
-                        party.votePercent = proportionOfWeight*(party.votePercent/totalWeighting)
-                        party.startingVotePercent = proportionOfWeight*(party.votePercent/totalWeighting)
+                    party.votePercent = proportionOfWeight*(parsePercentage(party.votePercent)/totalWeighting)
+                    party.startingVotePercent = proportionOfWeight*(parsePercentage(party.votePercent)/totalWeighting)
             }
         });
 
         return pPercentages
+    }
+
+    const parsePercentage = (value) => {
+        if (typeof value === 'string') {
+            var parsed = parseFloat(value)
+            console.log(parsed)
+            if (Number.isNaN(parsed)) {
+                parsed = 0.1
+            }
+            if (!partyPercentageManual) {
+                return parsed
+            }
+            else {
+                return parsed/100
+            }
+
+        }
+        return value
     }
 
     const correctPolling = () => {
@@ -96,8 +119,20 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     }
 
     const toggleManualPolling = () => {
+        defaultPolling()
         setPartyPercentageManual(!partyPercentageManual)
     }
+
+    const handlePercentageChange = (pID, newValue) => {
+        var newPP = partyPercentages.slice()
+        console.log(newValue)
+        newPP.map((party) => {
+            if (party.pID === pID) {
+                party.votePercent = newValue
+            }
+        })
+        setPartyPercentages(newPP);
+      };
 
     //TACTICAL VOTING
 
@@ -197,60 +232,132 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         updateParties(partyPercentages)
     } 
 
+    function percentValue(value) {
+        if (typeof value === 'string') {
+            return value
+        }
+        return `${Math.round(value*1000)/10}`;
+    }
+
     console.log(partyPercentages);
     
     return (
-        !partyPercentages === null ? <CircularProgress/>: (<div>
+        !partyPercentages === null ? <CircularProgress /> : (<div>
             <Paper className={classes.paper}>
-                <Typography variant="h3">Polling Rate</Typography>
-                <Typography variant="body1">This polling rate, while reported on the national level, will only effect constituencies where these parties chose to ran. For this reason, these values can never be at 0%, after all, a candidate will vote for themselves!
-                It's important to note that this is polling rates <b>before any changes made to the voting system.</b> Keep this in mind when picking your rates, as otherwise this can lead to surprising results! How the citizens voted overall is revealed after a
-                generated election below the Electoral Map.</Typography>
+                <Typography variant="h4">Polling Rate</Typography>
+                <Typography variant="body1">This polling rate, while reported on the national level, will only effect constituencies where these parties chose to run.
+                    It's important to note that this is polling rates <b>before any changes made to the voting system.</b> Keep this in mind when picking your rates, as otherwise this can lead to surprising results! How the citizens voted overall is revealed after a
+                    generated election below the Electoral Map.</Typography>
                 <br/>
-                <Typography variant="h6">The smallest possible value is 0.1%</Typography>
-                <Grid container spacing={{ xs: 1, md:  2}}>
-                    {partyPercentages.map((pPercent) => (
-                        <Grid item xs={4}>
-                            <PartySlider pPercent={pPercent} partyPercentages={partyPercentages} setPartyPercentages={setPartyPercentages} key={pPercent.pID}/> 
-                        </Grid>
-                ))}
-                </Grid>
-                <Button variant="contained" color = "primary" size ="large" onClick={correctPolling}> SUBMIT POLLS </Button>
-                <Button variant="contained" color = "primary" size ="large" onClick={defaultPolling}> RETURN TO DEFAULT </Button>
-                <Button variant="contained" color = "primary" size ="large" onClick={toggleManualPolling}> {partyPercentageManual ? `Sliders` : `Manual`} </Button>
-            </Paper>
-            <Paper className={classes.paper}>
-                <Typography variant="h6">Constituency Type</Typography>
-                <Typography variant="body1">A constituency type is how constituencies are joined together in order to create Multimember constituencies.</Typography>
-                <br></br>
-                <Typography variant="body1">{getConstituencyDetails()}</Typography>
-                <Button variant="contained" color = {isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size ="large" onClick={setIndividual}> Individual </Button>
-                <Button variant="contained" color = {isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size ="large" onClick={setCounty}> Counties and Buroughs </Button>
-                <Button variant="contained" color = {isConstituencyType(eConsts.REGION) ? "secondary" : "primary"}size ="large" onClick={setRegion}> Regions </Button>
-                <Button variant="contained" color = {isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size ="large" onClick={setCountry}> Countries </Button>
-                <Button variant="contained" color = {isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size ="large" onClick={setNationwide}> Nationwide </Button>
-            </Paper>
-            <Paper className={classes.paper}>
-                <Typography variant="h6">Voting Type</Typography>
-                <Typography variant="body1">This determines how a citizen may choose to cast their vote.</Typography>
-                <br></br>
-                <Typography variant="body1">{getElectionDetails()}</Typography>
-                <Button variant="contained" color = {isElectionType(eConsts.PLURALITY) ? "secondary" : "primary"} size ="large" onClick={setPlurality}> Plurality </Button>
-                <Button variant="contained" color = {isElectionType(eConsts.RUNOFF) ? "secondary" : "primary"} size ="large" onClick={setRunOff}> Runoff </Button>
-                <Button variant="contained" color = {isElectionType(eConsts.LOSER_TAKES_ALL) ? "secondary" : "primary"} size ="large" onClick={setLoserTakesAll}> LOSER TAKES ALL </Button>
+                <Grid container spacing={{ xs: 1, md: 2 }}>
+                    {
+                    
+                    partyPercentages.map((pPercent) => {
+                        if (partyPercentageManual) {
+                            switch (pPercent.pID) {
+                                case "sdlp":
+                                    break;
+                                case "dup":
+                                    break;
+                                case "sf":
+                                    break;
+                                case "alliance":
+                                    break;
+                                case "uup":
+                                    var percent = 0
+                                    partyPercentages.map((pPerc) => {
+                                        switch (pPercent.pID) {
+                                            case "sdlp":
+                                            case "dup":
+                                            case "sf":
+                                            case "alliance":
+                                            case "uup":
+                                                percent += pPerc.votePercent
+                                                break;
+                                            default:
+                                        }
 
+                                    })
+                                    return (
+                                        <Grid item xs={3}>
+                                            <Container sx={{ width: 300 }}>
+                                                <TextField name="ni" variant="filled"  label="ni" fullWidth value = {percentValue(pPercent.votePercent)} disabled={true} />
+                                            </Container>
+                                        </Grid>
+                                        )
+                                    break;
+                                default:
+                                    return (
+                                        <Grid item xs={3}>
+                                            <Container sx={{ width: 300 }} color={`${getColour(pPercent.pID).primaryColour}`}>
+                                                <TextField name={pPercent.pID} variant="filled"  label={pPercent.pID} fullWidth value = {percentValue(pPercent.votePercent)} onChange= {(e) => handlePercentageChange(e.target.name, e.target.value)} />
+                                            </Container>
+                                        </Grid>
+                                        )
+                            }
+                            
+                            
+                        }
+                        else {
+                            switch (pPercent.pID) {
+                                case "sdlp":
+                                case "dup":
+                                case "sf":
+                                case "alliance":
+                                case "uup":
+                                    break;
+                                default:
+                                        return (
+                                        <Grid item xs={3}>
+                                            <PartySlider pPercent={pPercent} partyPercentages={partyPercentages} setPartyPercentages={setPartyPercentages} key={pPercent.pID} />
+                                        </Grid>
+                                        )
+                            }
+                        }
+                        
+                    })}
+                </Grid>
+                <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+                    <Button color="primary" size="large" onClick={correctPolling}> SUBMIT POLLS </Button>
+                    <Button color="primary" size="large" onClick={defaultPolling}> RETURN TO DEFAULT </Button>
+                    <Button color="primary" size="large" onClick={toggleManualPolling}> {partyPercentageManual ? `Sliders` : `Manual`} </Button>
+                </ButtonGroup>
+            </Paper>
+            <Paper className={classes.paper}>
+                <Typography variant="h4">Constituency Type</Typography>
+                <Typography variant="body1">A constituency type is how constituencies are joined together in order to create Multimember constituencies.</Typography>
+                <br/>
+                <Typography variant="body1">{getConstituencyDetails()}</Typography>
+                <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+                    <Button color={isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size="large" onClick={setIndividual}> Individual </Button>
+                    <Button color={isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size="large" onClick={setCounty}> Counties/Buroughs </Button>
+                    <Button color={isConstituencyType(eConsts.REGION) ? "secondary" : "primary"} size="large" onClick={setRegion}> Regions </Button>
+                    <Button color={isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size="large" onClick={setCountry}> Countries </Button>
+                    <Button color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" onClick={setNationwide}> Nationwide </Button>
+                </ButtonGroup>
+            </Paper>
+            <Paper className={classes.paper}>
+                <Typography variant="h4">Voting Type</Typography>
+                <Typography variant="body1">This determines how a citizen may choose to cast their vote.</Typography>
+                <br/>
+                <Typography variant="body1">{getElectionDetails()}</Typography>
+                <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+                    <Button color={isElectionType(eConsts.PLURALITY) ? "secondary" : "primary"} size="large" onClick={setPlurality}> Plurality </Button>
+                    <Button color={isElectionType(eConsts.RUNOFF) ? "secondary" : "primary"} size="large" onClick={setRunOff}> Runoff </Button>
+                    <Button color={isElectionType(eConsts.LOSER_TAKES_ALL) ? "secondary" : "primary"} size="large" onClick={setLoserTakesAll}> LOSER TAKES ALL </Button>
+                </ButtonGroup>
             </Paper>
             <Paper className={classes.paper}>
                 <Typography variant="h6">Settings</Typography>
                 <Grid container spacing={2}>
-                    <Grid item xs={1}/>
+                    <Grid item xs={1} />
                     <Grid item xs={4}>
                         <Typography variant="h6">Tactical Voting Percent</Typography>
                         <br/>
                         <br/>
-                            <Slider 
-                            value={tacticalVoting} 
-                            onChange={handleTacticalChange} 
+                        <Slider
+                            value={tacticalVoting}
+                            onChange={handleTacticalChange}
                             aria-label="Always visible"
                             getAriaValueText={tacticalValueText}
                             valueLabelFormat={tacticalValueText}
@@ -258,25 +365,25 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                             min={0}
                             step={0.001}
                             max={1}
-                            />
+                        />
                         <Typography variant="body1">Tactical voting is the proportion of people who vote for one of the two biggest parties in a constituency to keep the other out. Under a proportional system, these votes will be reallocated.</Typography>
                     </Grid>
-                    <Grid item xs={2}/>
+                    <Grid item xs={2} />
                     <Grid item xs={4}>
                         <Typography variant="h6">we dont do that around here</Typography>
                         <br/>
                         <br/>
-                        <Slider 
-                            defaultValue={0.5} 
+                        <Slider
+                            defaultValue={0.5}
                             min={0}
                             step={0.01}
                             max={1}
-                            />
+                        />
                     </Grid>
-                    <Grid item xs={1}/>
+                    <Grid item xs={1} />
                 </Grid>
             </Paper>
-            <Button variant="contained" color = "primary" size ="large" onClick={generateResults} fullWidth> GENERATE </Button>
+            <Button variant="contained" color="primary" size="large" onClick={generateResults} fullWidth> GENERATE </Button>
         </div>
         )
     );

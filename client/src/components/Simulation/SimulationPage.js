@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { Grid, CircularProgress} from '@material-ui/core'
+import { Grid, CircularProgress, LinearProgress} from '@material-ui/core'
 
 import { TextField, Button, Typography, Paper, styled } from "@material-ui/core";
 
@@ -34,20 +34,23 @@ const SimulationPage = () => {
     console.log(electionParams)
 
     return (
-        !constituencies.length || !parties.length ? <CircularProgress /> : (
+        !constituencies.length || !parties.length ? <Paper className={classes.paper}>
+            <LinearProgress color="success" />
+        </Paper> : (
             <div>
 
                 <ElectoralForm electionParams={electionParams} setElectionParams={setElectionParams} setSeatData={setSeatData} />
                 <br />
-
+                <Paper className={classes.paper}>
                 <Grid container spacing={2}>
                     <Grid item xs={5}><ElectoralSeats seats={seats} parties={parties} /></Grid>
                     <Grid item xs={7}>
-                        <Paper className={classes.paper}>
+                        
                             <ElectoralMap electionParams={electionParams} seats={seats} setSeatData={setSeatData} electionData={electionData} setElectionData={setElectionData} />
-                        </Paper>
+                        
                     </Grid>
                 </Grid>
+                </Paper>
 
 
 

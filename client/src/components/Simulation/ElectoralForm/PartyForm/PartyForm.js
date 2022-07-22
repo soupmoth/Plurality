@@ -7,11 +7,12 @@ import useStyles from './styles.js';
 
 import * as eConsts from '../../../../const/electionConsts.js'
 
-const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
+const PartyForm = ({pPercent, partyPercentages, setPartyPercentages}) => {
     var newPP = null
     const parties = useSelector((state) => state.parties)
     
     const getColour = (pID) => {
+        console.log(pID)
         const result = parties.find(party => party.partyID === pID)
         return result
       };
@@ -61,4 +62,4 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
     );
 }
 
-export default PartySlider
+export default PartyForm
