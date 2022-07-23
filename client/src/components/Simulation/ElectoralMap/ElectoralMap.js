@@ -12,7 +12,7 @@ import useStyles from './styles.js';
 
 import * as eConsts from '../../../const/electionConsts.js'
 
-const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElectionData}) => {
+const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElectionData, setBreakdownConstituency}) => {
   const classes = useStyles();
 
   //constants
@@ -46,6 +46,8 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
   const constituencies = useSelector((state) => state.constituencies)
   const parties = useSelector((state) => state.parties)
+
+  const [mouseOverConst, setMouseOverConst] = useState("")
 
   //console.log(electionParams);
 
@@ -81,6 +83,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           other: 0
         },
         seatHolders: null,
+        rounds: []
       }
 
       //find the total votes in a group
@@ -94,7 +97,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
       //determineWinner returns pIDs. We then map over them and find the biggest constituency for that party's success
       let constituenciesCopy = tempGroup.constituencies.slice()
-      tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, tempGroup.constituencies.length)
+      tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, tempGroup.constituencies.length, tempGroup.rounds)
       tempGroup.seatHolders = tempGroup.seatHolders.map((pID) => {
 
         let constName = null
@@ -241,7 +244,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   
 
   //c being the constituency.
-  const determineWinner = (c, mpNumber) => {
+  const determineWinner = (c, mpNumber, rounds) => {
     //TODO
     //this solution is really bad, its because of how I formatted the backend. Have a fix in mind
     //for it, but I'll have to test it later. Proof of concept
@@ -274,13 +277,13 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     let pID = "";
 
     if (electionParams.typeOfVote === eConsts.PLURALITY) {
-      pID = pluralityVote(partyResults, true, mpNumber);
+      pID = pluralityVote(partyResults, true, mpNumber, rounds);
     }
     else if (electionParams.typeOfVote === eConsts.RUNOFF) {
-      pID = runoffVote(partyResults, mpNumber)
+      pID = runoffVote(partyResults, mpNumber, rounds)
     }
     else if (electionParams.typeOfVote === eConsts.LOSER_TAKES_ALL) {
-      pID = pluralityVote(partyResults, false, mpNumber);
+      pID = pluralityVote(partyResults, false, mpNumber, rounds);
     }
 
     handleWinners(pID)
@@ -319,7 +322,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     return result
   };
 
-  const pluralityVote = (partyResults, winnerWins, mpNumber) => {
+  const pluralityVote = (partyResults, winnerWins, mpNumber, rounds) => {
     var winProportion = 1
     var mpsToElect = mpNumber
 
@@ -354,11 +357,16 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     console.log("start")
 
     while (mpsToElect > 0) {
+      //figure out winner
       targetVote = rawResults.indexOf(Math.max(...rawResults));
-      console.log(JSON.parse(JSON.stringify(partyResults)))
       winner = partyResults[targetVote];
-      winner.vCount -= winProportion;
+
+      //update data
       winners.push(winner.pName);
+      rounds.push({winner: winner.pName, results: JSON.parse(JSON.stringify(partyResults))})
+
+      //diminish results for next round
+      winner.vCount -= winProportion;
       rawResults[targetVote] -= winProportion;
       mpsToElect--
     }
@@ -378,7 +386,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   //prime party does not win. SMP constituency systems with this are commonly called "AV"
   //and MMP systems are called "STV". This system ensures no vote is wasted.
 
-  const runoffVote = (partyResults, mpNumber) => {
+  const runoffVote = (partyResults, mpNumber, rounds) => {
     var winProportion = 0.5
     var mpsToElect = mpNumber
 
@@ -386,14 +394,12 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       winProportion = 1/mpNumber
     }
 
-    //correcting tactical vote. we assume there are no tactical votes in Runoff
 
-
-
+    //this code breaks the parties into a pseudo-zipfian distrubition, depending on how many seats can be won
+    //in a consistuency. This is because 
     let weighting = []
     let weightMax = 0
     let weightAdding = 1
-
     for (let i = 0; i < mpNumber; i++) {
       weightMax += weightAdding
       weighting.push(weightAdding)
@@ -419,7 +425,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         console.log("winner!:")
         console.log(mostPopular)
         mpsToElect--
+        //determine winners
         winners.push(mostPopular.pName)
+        rounds.push({winner: mostPopular.pName, results: JSON.parse(JSON.stringify(runoffResults))})
         runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
         
       }
@@ -437,8 +445,11 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         //does the biggest winner qualify for a seat yet?
         if (mostPopular.vCount >= winProportion) {
           winners.push(mostPopular.pName)
+          rounds.push({winner: mostPopular.pName, results: JSON.parse(JSON.stringify(runoffResults))})
+
           console.log("winner!:")
           console.log(mostPopular)
+
           mostPopular.vCount -= winProportion 
           mpsToElect--
           if (mpsToElect > 0) {
@@ -447,9 +458,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         }
         else {
           var leastPopular = null
-          //find the biggest loser
+          //if not, we need to find the biggest loser
           runoffResults.forEach(p => {
-            if (leastPopular === null) {
+            if (leastPopular == null) {
               leastPopular = p;
             }
             else if (p.vCount < leastPopular.vCount) {
@@ -457,6 +468,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
             }
           });
 
+          //update the rounds, but declare no winner was found.
+
+          rounds.push({winner: "none", results: JSON.parse(JSON.stringify(runoffResults))})
           runoffResults = runoffRedistrubtion(runoffResults, leastPopular)
         }
       }
@@ -533,6 +547,19 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     }
   }
 
+  const constShareGroup = (group) => {
+    if (mouseOverConst == "") {
+      return true
+    }
+    if (group == null) {
+      return false
+    }
+    if (group.constituencies.find(c => c.constituency == mouseOverConst)) {
+        return true
+    }
+    return false
+  }
+
   //This redistrubutes the votes from the two best parties in a constituency
   const redistrubuteTacticalVotes = (results) => {
     var temp = results;
@@ -606,6 +633,8 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     }
   }
 
+  
+
   return (
     !constituencies.length || !parties.length ? <CircularProgress/>: (
       <ComposableMap width={1200}
@@ -656,25 +685,29 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
               var strColour = "#000000"
               var strWidth = (1/position.zoom)
               var selectedWidth = 25*(1/position.zoom)
-
               
               return <Geography key={geo.rsmKey}
                 geography={geo}
+                onMouseEnter={() => {
+                  setMouseOverConst(geo.properties.NAME)
+                }}
+                onMouseLeave={() => {
+                  setMouseOverConst("");
+                }}
+                onClick={() => {
+                  setBreakdownConstituency(geo.properties.NAME);
+                }}
                 style={{
                   default: {
-                    fill: `${colour.primaryColour}`,
+                    fill: `${constShareGroup(currentDatum) ? colour.primaryColour : eConsts.darkenPartyColours(colour.primaryColour, -0.3)}`,
                     stroke: `${strColour}`,
                     strokeWidth: {strWidth}
                   },
                   hover: {
-                    fill: `${colour.secondaryColour}`,
-                    strokeWidth: {selectedWidth}
-                  },
-                  press: {
-                    fill: `${colour.primaryColour}`,
+                    fill: eConsts.darkenPartyColours(colour.primaryColour, 0.3),
                     stroke: `${strColour}`,
                     strokeWidth: {strWidth}
-                  }
+                  },
                 }}
                 strokeWidth = {strWidth}
                 />

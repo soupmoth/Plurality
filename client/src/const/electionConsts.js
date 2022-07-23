@@ -13,7 +13,7 @@ export const INDIVIDUAL = "INDIVIDUAL"
 
 export const DEFAULT = {
     tacticalVoteProportion: 0.25,
-    noOfMPsPerConst: 1,
+    noOfMPsPerConst: 0,
     typeOfVote: PLURALITY,
     grouping: INDIVIDUAL,
     partyPollRates: [],

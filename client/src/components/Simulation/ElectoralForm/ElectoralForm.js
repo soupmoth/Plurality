@@ -44,7 +44,6 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     }
 
     //polling
-
     const correction = (pPercentages) => {
         var totalWeighting = 0
         var niPercent = 0
@@ -177,13 +176,19 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         return type == constituencyType
     }
 
-
     //ELECTION TYPES
-
     const setPlurality = () => {
         setVoteType(eConsts.PLURALITY)
     }
+
     const setRunOff = () => {
+        switch (constituencyType) {
+            case eConsts.COUNTRY:
+            case eConsts.NATION:
+                setConstituencyType(eConsts.REGION)
+            default: 
+                break;
+        }
         setVoteType(eConsts.RUNOFF)
     }
 
@@ -212,11 +217,10 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         setElectionParams(eConsts.DEFAULT)
     }
 
-
     const generateResults = () => {
         setElectionParams({
             tacticalVoteProportion: tacticalVoting,
-            noOfMPsPerConst: 1,
+            noOfMPsPerConst: 0,
             typeOfVote: voteType,
             grouping: constituencyType,
             partyPollRates: partyPercentages
@@ -238,8 +242,6 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         }
         return `${Math.round(value*1000)/10}`;
     }
-
-    console.log(partyPercentages);
     
     return (
         !partyPercentages === null ? <CircularProgress /> : (<div>
@@ -332,8 +334,8 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     <Button color={isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size="large" onClick={setIndividual}> Individual </Button>
                     <Button color={isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size="large" onClick={setCounty}> Counties/Buroughs </Button>
                     <Button color={isConstituencyType(eConsts.REGION) ? "secondary" : "primary"} size="large" onClick={setRegion}> Regions </Button>
-                    <Button color={isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size="large" onClick={setCountry}> Countries </Button>
-                    <Button color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" onClick={setNationwide}> Nationwide </Button>
+                    <Button color={isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size="large" disabled={isElectionType(eConsts.RUNOFF)} onClick={setCountry}> Countries </Button>
+                    <Button color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" disabled={isElectionType(eConsts.RUNOFF)} onClick={setNationwide}> Nationwide </Button>
                 </ButtonGroup>
             </Paper>
             <Paper className={classes.paper}>

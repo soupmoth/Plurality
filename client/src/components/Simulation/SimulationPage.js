@@ -24,6 +24,7 @@ const SimulationPage = () => {
     const [seats, setSeatData] = useState(eConsts.STARTING_VOTES)
     const [electionData, setElectionData] = useState(null)
     const [electionParams, setElectionParams] = useState(eConsts.DEFAULT) 
+    const [breakdownConstituency, setBreakdownConstituency] = useState([])
 
     //runs every time Election Params are updated or on first load
     useEffect(() => {
@@ -42,14 +43,15 @@ const SimulationPage = () => {
                 <ElectoralForm electionParams={electionParams} setElectionParams={setElectionParams} setSeatData={setSeatData} />
                 <br />
                 <Paper className={classes.paper}>
-                <Grid container spacing={2}>
-                    <Grid item xs={5}><ElectoralSeats seats={seats} parties={parties} /></Grid>
-                    <Grid item xs={7}>
-                        
-                            <ElectoralMap electionParams={electionParams} seats={seats} setSeatData={setSeatData} electionData={electionData} setElectionData={setElectionData} />
-                        
+                    <Grid container spacing={2}>
+                        <Grid item xs={5}>
+                            <ElectoralSeats seats={seats} parties={parties} />
+                        </Grid>
+                        <Grid item xs={7}>
+                            <Typography variant="h6">{`${breakdownConstituency}`}</Typography>
+                            <ElectoralMap electionParams={electionParams} seats={seats} setSeatData={setSeatData} electionData={electionData} setElectionData={setElectionData} setBreakdownConstituency={setBreakdownConstituency} />
+                        </Grid>
                     </Grid>
-                </Grid>
                 </Paper>
 
 
