@@ -10,6 +10,7 @@ import useStyles from './styles.js';
 import ElectoralMap from "./ElectoralMap/ElectoralMap.js"
 import ElectoralSeats from "./ElectoralSeats/ElectoralSeats.js";
 import ElectoralForm from "./ElectoralForm/ElectoralForm.js"
+import ElectoralBreakdown from "./ElectoralBreakdown/ElectoralBreakdown.js"
 
 import * as eConsts from '../../const/electionConsts.js'
 
@@ -52,6 +53,9 @@ const SimulationPage = () => {
                             <ElectoralMap electionParams={electionParams} seats={seats} setSeatData={setSeatData} electionData={electionData} setElectionData={setElectionData} setBreakdownConstituency={setBreakdownConstituency} />
                         </Grid>
                     </Grid>
+
+                    <ElectoralBreakdown breakdownConstituency={breakdownConstituency} electionData={electionData} parties={parties}></ElectoralBreakdown>
+
                 </Paper>
 
 

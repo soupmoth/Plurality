@@ -460,12 +460,15 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           var leastPopular = null
           //if not, we need to find the biggest loser
           runoffResults.forEach(p => {
-            if (leastPopular == null) {
-              leastPopular = p;
-            }
-            else if (p.vCount < leastPopular.vCount) {
-              leastPopular = p;
-            }
+            if (p != 0) {
+              if (leastPopular == null) {
+                leastPopular = p;
+              }
+              else if (p.vCount < leastPopular.vCount) {
+                leastPopular = p;
+              }
+            } 
+            
           });
 
           //update the rounds, but declare no winner was found.
