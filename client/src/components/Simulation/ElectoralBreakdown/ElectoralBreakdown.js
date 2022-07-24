@@ -13,22 +13,23 @@ import {
     Tooltip,
     Legend,
   } from 'chart.js';
+import annotationPlugin from 'chartjs-plugin-annotation';
+
 import { CircularProgress, Button, Typography, Paper, LinearProgress, Container, Grid, Box } from "@material-ui/core";
 
 import * as eConsts from '../../../const/electionConsts.js'
 
 import useStyles from './styles.js';
 
-ChartJS.register(LinearScale, BarElement, Title, CategoryScale, Tooltip, Legend);
+ChartJS.register(LinearScale, BarElement, Title, CategoryScale, Tooltip, Legend, annotationPlugin);
 
-const ElectoralBreakdown = ({breakdownConstituency, electionData, parties}) => {
+const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams, parties}) => {
     const classes = useStyles();
 
     const [data, setData] = useState(null)
 
     useEffect(() => {
-      console.log("hi")
-      setData(getRoundData)
+      setData(getRoundData())
     }, [electionData, breakdownConstituency])
 
     function findPartyColour(pID, flip) {
@@ -127,29 +128,70 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, parties}) => {
       return colours
     }
 
+    const getThreshold = () => {
+      if (electionParams == null || electionData == null) {
+        return 0
+      }
+      if (electionParams.typeOfVote == eConsts.RUNOFF) {
+        electionData.forEach(eData => {
+          
+          if (eData.constituencies.find(e => e.constituency == breakdownConstituency)) {
+            console.log(1/eData.constituencies.length)
+            
+            return 1/eData.constituencies.length;
+          }
+        });
+      }
+      return 1;
+    }
+
     const options = {
       responsive: true,
       plugins: {
         legend: {
+          display: false,
           position: 'top',
         },
         title: {
           display: true,
           text: 'Round 1',
         },
+        
+        annotation: {
+          annotations: {
+            line1: {
+              type: 'line',
+              yScale:  "y-axis-1",
+              yMin: getThreshold(),
+              yMax: getThreshold(),
+              borderColor: 'rgb(255, 99, 132)',
+              borderWidth: 2,
+            }
+          },
+        }
+
       },
     };
+
+
+    console.log(options)
 
   return (
     !data ? <Paper className={classes.paper}>
             <LinearProgress color="success" />
         </Paper> : (
       <Paper classes={classes.paper}>
+        <Grid container spacing={2}> 
+          <Grid item xs={8}>
             <Typography variant="h6">Breakdown</Typography>
-            <Bar
-              options={options}
-              data={data}
-            />
+              <Bar
+                options={options}
+                data={data}
+              />
+          </Grid>
+        
+        </Grid>
+            
       </Paper>
   ))
 

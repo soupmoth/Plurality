@@ -363,7 +363,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
       //update data
       winners.push(winner.pName);
-      rounds.push({winner: winner.pName, results: JSON.parse(JSON.stringify(partyResults))})
+      rounds.push({winner: winner.pName, loser: "", results: JSON.parse(JSON.stringify(partyResults))})
 
       //diminish results for next round
       winner.vCount -= winProportion;
@@ -427,7 +427,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         mpsToElect--
         //determine winners
         winners.push(mostPopular.pName)
-        rounds.push({winner: mostPopular.pName, results: JSON.parse(JSON.stringify(runoffResults))})
+        rounds.push({winner: mostPopular.pName, loser: "", results: JSON.parse(JSON.stringify(runoffResults))})
         runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
         
       }
@@ -445,7 +445,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         //does the biggest winner qualify for a seat yet?
         if (mostPopular.vCount >= winProportion) {
           winners.push(mostPopular.pName)
-          rounds.push({winner: mostPopular.pName, results: JSON.parse(JSON.stringify(runoffResults))})
+          rounds.push({winner: mostPopular.pName, loser: "", results: JSON.parse(JSON.stringify(runoffResults))})
 
           console.log("winner!:")
           console.log(mostPopular)
@@ -460,7 +460,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           var leastPopular = null
           //if not, we need to find the biggest loser
           runoffResults.forEach(p => {
-            if (p != 0) {
+            if (p.vCount != 0) {
               if (leastPopular == null) {
                 leastPopular = p;
               }
@@ -473,7 +473,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
           //update the rounds, but declare no winner was found.
 
-          rounds.push({winner: "none", results: JSON.parse(JSON.stringify(runoffResults))})
+          rounds.push({winner: "", loser: leastPopular, results: JSON.parse(JSON.stringify(runoffResults))})
           runoffResults = runoffRedistrubtion(runoffResults, leastPopular)
         }
       }

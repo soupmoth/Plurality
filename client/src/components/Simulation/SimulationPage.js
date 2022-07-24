@@ -54,7 +54,7 @@ const SimulationPage = () => {
                         </Grid>
                     </Grid>
 
-                    <ElectoralBreakdown breakdownConstituency={breakdownConstituency} electionData={electionData} parties={parties}></ElectoralBreakdown>
+                    <ElectoralBreakdown breakdownConstituency={breakdownConstituency} electionData={electionData} electionParams={electionParams} parties={parties}></ElectoralBreakdown>
 
                 </Paper>
 
