@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import "./styles.js"
 import { useSelector } from "react-redux";
@@ -25,11 +25,24 @@ ChartJS.register(LinearScale, BarElement, Title, CategoryScale, Tooltip, Legend,
 
 const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams, parties}) => {
     const classes = useStyles();
-
     const [data, setData] = useState(null)
+    const [round, setRound] = useState(0)
 
     useEffect(() => {
-      setData(getRoundData())
+      if (breakdownConstituency == "" || electionData == null) {
+        return null
+      }
+
+      
+      var roundOfInterest = null
+      //get the group which the selected constituency lies within
+      electionData.forEach(eData => {
+        if (eData.constituencies.find(e => e.constituency == breakdownConstituency)) {
+          roundOfInterest = eData.rounds[round].results
+        }
+      });
+
+      setData(getRoundData(roundOfInterest))
     }, [electionData, breakdownConstituency])
 
     function findPartyColour(pID, flip) {
@@ -51,17 +64,14 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
       }
     }
 
-    const getRoundData = () => {
-      if (breakdownConstituency == "" || electionData == null) {
-        return null
-      }
+    const getRoundData = (roundOfInterest) => {
       var datasets = []
       var roundOfInterest = null
       
-      //get the group which the selected constituency lies within
+      
       electionData.forEach(eData => {
         if (eData.constituencies.find(e => e.constituency == breakdownConstituency)) {
-          roundOfInterest = eData.rounds[0].results //TODO: implement pagination for this!
+          roundOfInterest = eData.rounds[round].results //TODO: implement pagination for this!
         }
       });
 
@@ -82,11 +92,9 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
           }
         }
       });
-      
       for (let i = 0; i < maxAmount; i++) {
         rawData.push([])
       }
-
       rawLabels.forEach(party => {
         var key = party
         var newArray = roundOfInterest.filter(e => e.pName == key)
@@ -99,7 +107,6 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
           }
         }
       });
-
       var datasetNumber = 0
       rawData.forEach(d => {
         datasetNumber++
@@ -113,7 +120,6 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
           hoverOffset: 4,
         })
       })
-
       return {
         labels: rawLabels,
         datasets: datasets
@@ -133,16 +139,22 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
         return 0
       }
       if (electionParams.typeOfVote == eConsts.RUNOFF) {
+        var p = 0
         electionData.forEach(eData => {
-          
           if (eData.constituencies.find(e => e.constituency == breakdownConstituency)) {
-            console.log(1/eData.constituencies.length)
-            
-            return 1/eData.constituencies.length;
+            p = 1/eData.constituencies.length
           }
         });
+        if (p == 1) {
+          p = 0.5
+        }
+        return p;
       }
-      return 1;
+      return 0;
+    }
+
+    const getOffset = (value) => {
+      return 0.9*value
     }
 
     const options = {
@@ -156,25 +168,40 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
           display: true,
           text: 'Round 1',
         },
-        
         annotation: {
           annotations: {
             line1: {
               type: 'line',
-              yScale:  "y-axis-1",
-              yMin: getThreshold(),
-              yMax: getThreshold(),
+              yMin: () => getThreshold(),
+              yMax: () => getThreshold(),
               borderColor: 'rgb(255, 99, 132)',
               borderWidth: 2,
+            },
+            line2: {
+              type: 'label',
+              yValue: () => getOffset(getThreshold()),
+              shadowOffsetX: 3,
+              shadowOffsetY: 3,
+              xAdjust: 100,
+              xValue: "con",
+              backgroundColor: 'rgba(245,245,245)',
+              content: ["Conservative Win"],
+              font: {
+                size: 18
+              },
+              callout: {
+                enabled: true,
+                side: 10
+              }
             }
           },
         }
-
       },
     };
 
+      
 
-    console.log(options)
+    
 
   return (
     !data ? <Paper className={classes.paper}>
@@ -183,7 +210,6 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
       <Paper classes={classes.paper}>
         <Grid container spacing={2}> 
           <Grid item xs={8}>
-            <Typography variant="h6">Breakdown</Typography>
               <Bar
                 options={options}
                 data={data}
