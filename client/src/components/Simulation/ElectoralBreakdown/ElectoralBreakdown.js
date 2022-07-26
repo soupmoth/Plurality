@@ -15,7 +15,7 @@ import {
   } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
-import { CircularProgress, Button, Typography, Paper, LinearProgress, Container, Grid, Box } from "@material-ui/core";
+import { CircularProgress, Button, Typography, Paper, LinearProgress, ButtonGroup, Grid, Box } from "@material-ui/core";
 
 import * as eConsts from '../../../const/electionConsts.js'
 
@@ -26,24 +26,28 @@ ChartJS.register(LinearScale, BarElement, Title, CategoryScale, Tooltip, Legend,
 const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams, parties}) => {
     const classes = useStyles();
     const [data, setData] = useState(null)
+    const [rounds, setRounds] = useState(null)
     const [round, setRound] = useState(0)
 
     useEffect(() => {
-      if (breakdownConstituency == "" || electionData == null) {
-        return null
+      if (!(breakdownConstituency == "" || electionData == null)) {
+        electionData.forEach(eData => {
+          if (eData.constituencies.find(e => e.constituency == breakdownConstituency)) {
+            setRounds(eData.rounds)
+          }
+        });
       }
-
       
-      var roundOfInterest = null
-      //get the group which the selected constituency lies within
-      electionData.forEach(eData => {
-        if (eData.constituencies.find(e => e.constituency == breakdownConstituency)) {
-          roundOfInterest = eData.rounds[round].results
-        }
-      });
-
-      setData(getRoundData(roundOfInterest))
+      setData(null)
+      setRound(0)
     }, [electionData, breakdownConstituency])
+
+    useEffect(() => {
+      if (rounds != null) {
+        console.log(rounds[round])
+        setData(getRoundData())
+      }
+    }, [round])
 
     function findPartyColour(pID, flip) {
       try {
@@ -64,16 +68,9 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
       }
     }
 
-    const getRoundData = (roundOfInterest) => {
+    const getRoundData = () => {
       var datasets = []
-      var roundOfInterest = null
-      
-      
-      electionData.forEach(eData => {
-        if (eData.constituencies.find(e => e.constituency == breakdownConstituency)) {
-          roundOfInterest = eData.rounds[round].results //TODO: implement pagination for this!
-        }
-      });
+      var roundOfInterest = rounds[round].results
 
 
       var rawLabels = []
@@ -157,6 +154,59 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
       return 0.9*value
     }
 
+    const getParty = () => {
+      return rounds[round].target
+    }
+
+    const getVerdictText = () => {
+      var pID = getParty()
+      var pName = parties.find(party => party.partyID == pID).name
+
+      if (pName == "Other") {
+        pName = "An Independant"
+      }
+
+      switch (rounds[round].reason) {
+        case eConsts.R_DEFAULT:
+        case eConsts.R_SURPASS:
+          return `${pName} wins a seat!`
+        case eConsts.R_LOSS:
+          return `${pName} loses an MP!`
+        default: 
+          return "ERROR"
+      }
+    }
+
+    const pluralCheck = (value, flip) => {
+      if (value == 1 && flip) {
+        return ""
+      }
+      if (value != 1 && !flip) {
+        return ""
+      }
+      return "s"
+    }
+
+    const getVerdictFlavour = () => {
+      var pID = getParty()
+      var pName = parties.find(party => party.partyID == pID).name
+
+      if (pName == "Other") {
+        pName = "An Independant"
+      }
+
+      switch (rounds[round].reason) {
+        case eConsts.R_DEFAULT:
+          return `This seat is won as ${rounds[round].results.length} seat${pluralCheck(rounds[round].results.length, true)} remain to be filled and ${rounds[round].results.length} candidate${pluralCheck(rounds[round].results.length, true)} remain${pluralCheck(rounds[round].results.length, false)}`
+        case eConsts.R_SURPASS:
+          return `${pName} wins a seat as an MP's votes surpasses the threshold! Its excess votes are reallocated if more seats remain to be filled`
+        case eConsts.R_LOSS:
+          return `One of ${pName}'s MPs is eliminated from unpopularity, and has its votes reallocated!`
+        default: 
+          return "ERROR"
+      }
+    }
+
     const options = {
       responsive: true,
       plugins: {
@@ -166,7 +216,7 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
         },
         title: {
           display: true,
-          text: 'Round 1',
+          text: `Round ${round + 1}`,
         },
         annotation: {
           annotations: {
@@ -183,9 +233,9 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
               shadowOffsetX: 3,
               shadowOffsetY: 3,
               xAdjust: 100,
-              xValue: "con",
+              xValue: () => getParty(),
               backgroundColor: 'rgba(245,245,245)',
-              content: ["Conservative Win"],
+              content: () => getVerdictText(),
               font: {
                 size: 18
               },
@@ -199,9 +249,41 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
       },
     };
 
-      
-
     
+
+    const shiftPage = (shift) => {
+      var rnd = round + shift;
+      if ((rnd >= rounds.length) || (rnd < 0)) {
+        rnd = rnd - shift
+      }
+      setRound(rnd)
+    }
+
+    const shiftPageToInterest = (shift) => {
+      var rnd = null;
+      if (shift == 1) {
+        rnd = rounds.length-1
+      }
+      else {
+        rnd = 0
+      }
+
+      //find next winner 
+      for (let i = round+shift; (i < rounds.length) && (i >= 0); i+=shift) {
+        console.log(i)
+        if (rounds[i].reason == eConsts.R_SURPASS || rounds[i].reason == eConsts.R_DEFAULT) {
+          rnd = i
+          i = -1
+          break;
+        }
+      }
+
+      setRound(rnd)
+    }
+
+    if ((data == null) && (rounds != null)) {
+      setData(getRoundData())
+    }
 
   return (
     !data ? <Paper className={classes.paper}>
@@ -214,6 +296,20 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
                 options={options}
                 data={data}
               />
+          </Grid>
+          <Grid item xs={4}>
+          <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+            <Button color="primary" size="large" onClick={(e) => shiftPage(-1)}> Previous </Button>
+            <Button color="primary" size="large" onClick={(e) => shiftPageToInterest(-1)}> Prev. Winner </Button>
+            </ButtonGroup>
+            <br/>
+          <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+            <Button color="secondary" size="large" onClick={(e) => shiftPage(1)}> Next </Button>
+            <Button color="secondary" size="large" onClick={(e) => shiftPageToInterest(1)}> Next. Winner </Button>
+            </ButtonGroup>
+            <br/>
+            <br/>
+            <Typography variant="body1">{`${getVerdictFlavour()}`}</Typography>
           </Grid>
         
         </Grid>

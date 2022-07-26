@@ -363,7 +363,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
       //update data
       winners.push(winner.pName);
-      rounds.push({winner: winner.pName, loser: "", results: JSON.parse(JSON.stringify(partyResults))})
+      rounds.push({target: winner.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(partyResults))})
 
       //diminish results for next round
       winner.vCount -= winProportion;
@@ -427,7 +427,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         mpsToElect--
         //determine winners
         winners.push(mostPopular.pName)
-        rounds.push({winner: mostPopular.pName, loser: "", results: JSON.parse(JSON.stringify(runoffResults))})
+        rounds.push({target: mostPopular.pName, reason: eConsts.R_DEFAULT, results: JSON.parse(JSON.stringify(runoffResults))})
         runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
         
       }
@@ -445,7 +445,8 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         //does the biggest winner qualify for a seat yet?
         if (mostPopular.vCount >= winProportion) {
           winners.push(mostPopular.pName)
-          rounds.push({winner: mostPopular.pName, loser: "", results: JSON.parse(JSON.stringify(runoffResults))})
+          //TODO: Change reasons to constants
+          rounds.push({target: mostPopular.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(runoffResults))})
 
           console.log("winner!:")
           console.log(mostPopular)
@@ -473,7 +474,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
           //update the rounds, but declare no winner was found.
 
-          rounds.push({winner: "", loser: leastPopular, results: JSON.parse(JSON.stringify(runoffResults))})
+          rounds.push({target: leastPopular.pName, reason: eConsts.R_LOSS, results: JSON.parse(JSON.stringify(runoffResults))})
           runoffResults = runoffRedistrubtion(runoffResults, leastPopular)
         }
       }
