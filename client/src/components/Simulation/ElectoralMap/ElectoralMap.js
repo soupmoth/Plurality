@@ -363,7 +363,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
       //update data
       winners.push(winner.pName);
-      rounds.push({target: winner.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(partyResults))})
+      rounds.push({target: winner.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(partyResults)), seatTotal: mpNumber, seatsLeft: mpsToElect})
 
       //diminish results for next round
       winner.vCount -= winProportion;
@@ -427,7 +427,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         mpsToElect--
         //determine winners
         winners.push(mostPopular.pName)
-        rounds.push({target: mostPopular.pName, reason: eConsts.R_DEFAULT, results: JSON.parse(JSON.stringify(runoffResults))})
+        rounds.push({target: mostPopular.pName, reason: eConsts.R_DEFAULT, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect})
         runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
         
       }
@@ -446,7 +446,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         if (mostPopular.vCount >= winProportion) {
           winners.push(mostPopular.pName)
           //TODO: Change reasons to constants
-          rounds.push({target: mostPopular.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(runoffResults))})
+          rounds.push({target: mostPopular.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect})
 
           console.log("winner!:")
           console.log(mostPopular)
@@ -474,7 +474,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
           //update the rounds, but declare no winner was found.
 
-          rounds.push({target: leastPopular.pName, reason: eConsts.R_LOSS, results: JSON.parse(JSON.stringify(runoffResults))})
+          rounds.push({target: leastPopular.pName, reason: eConsts.R_LOSS, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect})
           runoffResults = runoffRedistrubtion(runoffResults, leastPopular)
         }
       }

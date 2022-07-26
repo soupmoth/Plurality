@@ -151,7 +151,11 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
     }
 
     const getOffset = (value) => {
-      return 0.9*value
+      return 0.1*value
+    }
+
+    const getAdjustOffset = (value) => {
+      return -100
     }
 
     const getParty = () => {
@@ -207,6 +211,33 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
       }
     }
 
+    const findPosition = () => {
+      var rawLabels = []
+
+      //find out the max many MPs are running per party
+      parties.forEach(party => {
+        var key = party.partyID
+        var newArray = rounds[round].results.filter(e => e.pName == key)
+        if (newArray.length > 0) {
+          rawLabels.push(key)
+        }
+      });
+      
+      if (rawLabels.length == 1) {
+        return "middle"
+      }
+
+      var pID = getParty()
+
+      if (rawLabels.indexOf(pID) == rawLabels.length-1) {
+        return "end"
+      } 
+      else if (rawLabels.indexOf(pID) == 0) {
+        return "start"
+      }
+      return "middle"
+    }
+
     const options = {
       responsive: true,
       plugins: {
@@ -232,16 +263,17 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
               yValue: () => getOffset(getThreshold()),
               shadowOffsetX: 3,
               shadowOffsetY: 3,
-              xAdjust: 100,
+              position: () => findPosition(),
+              yAdjust: () => getAdjustOffset(getThreshold()),
               xValue: () => getParty(),
-              backgroundColor: 'rgba(245,245,245)',
+              backgroundColor: () => eConsts.darkenPartyColours(findPartyColour(getParty()), 0.1),
               content: () => getVerdictText(),
               font: {
-                size: 18
+                size: 20
               },
               callout: {
                 enabled: true,
-                side: 10
+                position: "bottom"
               }
             }
           },
@@ -309,6 +341,10 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
             </ButtonGroup>
             <br/>
             <br/>
+            <Typography variant="body1">Seat Total</Typography>
+            <Typography variant="body1">{`${rounds[round].seatTotal}`}</Typography>
+            <Typography variant="body1">Seats Left</Typography>
+            <Typography variant="body1">{`${rounds[round].seatsLeft}`}</Typography>
             <Typography variant="body1">{`${getVerdictFlavour()}`}</Typography>
           </Grid>
         
