@@ -341,10 +341,10 @@ const ElectoralBreakdown = ({breakdownConstituency, electionData, electionParams
             </ButtonGroup>
             <br/>
             <br/>
-            <Typography variant="body1">Seat Total</Typography>
-            <Typography variant="body1">{`${rounds[round].seatTotal}`}</Typography>
-            <Typography variant="body1">Seats Left</Typography>
-            <Typography variant="body1">{`${rounds[round].seatsLeft}`}</Typography>
+            <Typography variant="h6">Seat Total</Typography>
+            <Typography variant="h3">{`${rounds[round].seatTotal}`}</Typography>
+            <Typography variant="h6">Seats Left</Typography>
+            <Typography variant="h3">{`${rounds[round].seatsLeft}`}</Typography>
             <Typography variant="body1">{`${getVerdictFlavour()}`}</Typography>
           </Grid>
         
