@@ -461,14 +461,12 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           var leastPopular = null
           //if not, we need to find the biggest loser
           runoffResults.forEach(p => {
-            if (p.vCount != 0) {
               if (leastPopular == null) {
                 leastPopular = p;
               }
               else if (p.vCount < leastPopular.vCount) {
                 leastPopular = p;
               }
-            } 
             
           });
 
