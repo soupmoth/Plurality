@@ -21,6 +21,8 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     const [tacticalVoting, setTacticalVoting] = useState(eConsts.DEFAULT.tacticalVoteProportion) 
     const [partyPercentages, setPartyPercentages] = useState([])
     const [partyPercentageManual, setPartyPercentageManual] = useState(false)
+    const [MPMode, setMPMode] = useState(eConsts.DEFAULT.MPGroupingMode)
+    const [MPSeats, setMPSeats] = useState(eConsts.DEFAULT.MPsPerGroup)
 
     useEffect(() => {
         updateParties(partyPercentages)
@@ -138,6 +140,10 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     const handleTacticalChange = (event, newValue) => {
         setTacticalVoting(newValue);
       };
+
+      const handleMPSeatsChange = (event, newValue) => {
+        setMPSeats(newValue);
+      };
     
     //MULTIMEMBER CONSTITUENCY TYPES
 
@@ -213,6 +219,10 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         return type == voteType
     }
 
+    const isMPMode = (type) => {
+        return type == MPMode
+    }
+
     const resetSettings = () => {
         setElectionParams(eConsts.DEFAULT)
     }
@@ -220,7 +230,8 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     const generateResults = () => {
         setElectionParams({
             tacticalVoteProportion: tacticalVoting,
-            noOfMPsPerConst: 0,
+            MPGroupingMode: MPMode,
+            MPsPerGroup: MPSeats,
             typeOfVote: voteType,
             grouping: constituencyType,
             partyPollRates: partyPercentages
@@ -287,7 +298,6 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                                             </Container>
                                         </Grid>
                                         )
-                                    break;
                                 default:
                                     return (
                                         <Grid item xs={3}>
@@ -372,14 +382,26 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     </Grid>
                     <Grid item xs={2} />
                     <Grid item xs={4}>
-                        <Typography variant="h6">we dont do that around here</Typography>
+                        <Typography variant="h6">MP Mode and Number</Typography>
+                        <br/>
+                        <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+                            <Button color={isMPMode(eConsts.NO_CHANGE) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.NO_CHANGE)}> Off </Button>
+                            <Button color={isMPMode(eConsts.ALTER) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.ALTER)}> Alter </Button>
+                            <Button color={isMPMode(eConsts.LIMIT) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.LIMIT)}> Limit </Button>
+                        </ButtonGroup>
                         <br/>
                         <br/>
+                        <br/>
+                        
                         <Slider
-                            defaultValue={0.5}
-                            min={0}
-                            step={0.01}
-                            max={1}
+                            defaultValue={eConsts.DEFAULT.MPsPerGroup}
+                            value={MPSeats}
+                            valueLabelDisplay="on"
+                            valueLabelFormat={MPSeats}
+                            onChange={handleMPSeatsChange}
+                            min={1}
+                            step={1}
+                            max={10}
                         />
                     </Grid>
                     <Grid item xs={1} />

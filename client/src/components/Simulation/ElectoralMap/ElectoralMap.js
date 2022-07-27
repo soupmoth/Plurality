@@ -93,8 +93,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         }
       }
 
-      console.log(tempGroup)
-
       //determineWinner returns pIDs. We then map over them and find the biggest constituency for that party's success
       let constituenciesCopy = tempGroup.constituencies.slice()
       tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, tempGroup.constituencies.length, tempGroup.rounds)
@@ -117,8 +115,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       return tempGroup
     })
 
-    console.log(groups)
-
     return groups;
   }
 
@@ -129,12 +125,8 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       var newConsts = constituencyArr.slice()
       let pollRates = electionParams.partyPollRates.slice()
 
-      console.log(JSON.parse(JSON.stringify(newConsts)))
-
       newConsts.map((c) => {
         var totalWeight = 0;
-
-        console.log(JSON.parse(JSON.stringify(c)))
         
         for (var i = 0; i < pollRates.length; i++) {
           let key = pollRates[i].pID
@@ -149,13 +141,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
             c[key] = c[key]*(pollRates[i].votePercent/nResults[key])
           }
         }
-
-        console.log(JSON.parse(JSON.stringify(c)))
-            
-
       })
-
-      console.log(JSON.parse(JSON.stringify(newConsts)))
 
       return newConsts
     }
@@ -221,25 +207,95 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       })
     }
 
-    var listOfGroups = []
+      var listOfGroups = []
     for (let i = 0; i < consts.length; i++) {
       if (!listOfGroups.find((e) => e === (consts[i])[grouping])) {
         listOfGroups.push((consts[i])[grouping])
       }
     }
 
-    let groups = []
+      let groups = []
 
-    for (let i = 0; i < listOfGroups.length; i++) {
-      groups.push([])
-    }
+      for (let i = 0; i < listOfGroups.length; i++) {
+        groups.push([])
+      }
 
-    for (let i = 0; i < consts.length; i++) {
+      for (let i = 0; i < consts.length; i++) {
         groups[listOfGroups.findIndex((g) => g === (consts[i])[grouping])].push(consts[i])
-    }
+      }
 
-    return groups
-  }
+      console.log(electionParams.MPGroupingMode)
+      if (electionParams.MPGroupingMode == eConsts.LIMIT) {
+        let brokenUpGroups = []
+        console.log("building broken up groups")
+
+        groups.forEach(g => {
+          
+          //To limit the number of MPs per group without weird truncations (constituencies with too little MPs), we need to figure out
+          //the average MPs per group ideally, then round that down, and create an array of that size (if its 0, then the array has 1 element), populating them of that number. Then,
+          //iterate over that array, adding 1 to each element until the total equals the size of the group. Then, iterate over the group's constituencies
+          //and add them to subgroups in the break up array, then iterate over THAT, pushing it into
+          let breakUpArray = []
+          let breakupNumberArray = []
+          let total = 0;
+          var averageBreakup = g.length/electionParams.MPsPerGroup
+          var breakupFloor = Math.floor(averageBreakup)
+
+          console.log(breakupFloor)
+
+          console.log(1)
+          
+          //populate array
+          for (let i = 0; i < breakupFloor; i++) {
+            breakupNumberArray.push(1)
+            total++
+          }
+          if (averageBreakup > breakupFloor) {
+            breakupNumberArray.push(1)
+            total++
+          }
+
+          //iterate over value array
+          let l = 0
+          while (total < g.length) {
+            breakupNumberArray[l] = breakupNumberArray[l] + 1
+            l++
+            total++
+            if (l == breakupNumberArray.length) {
+              l = 0
+            }
+          }
+
+
+          var index = 0
+          var constNumber = 0
+          breakupNumberArray.forEach(n => {
+            breakUpArray.push([])
+            for (let m = 0; m < n; m++) {
+              breakUpArray[index].push(g[constNumber])
+              constNumber++
+            }
+            index++
+          });
+
+          console.log(breakUpArray)
+
+          
+          breakUpArray.forEach(b => {
+            brokenUpGroups.push(b)
+          });
+        });
+
+        console.log(brokenUpGroups)
+
+        return brokenUpGroups
+      }
+      else {
+        return groups
+      }
+
+      
+    }
 
   
 
@@ -301,8 +357,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   const incrementSeats = (pID) => {
     seatCount.party[pID] = seatCount.party[pID]+1;
 
-    console.log(seatCount.total)
-
     if (seats.total !== seatTotal) {
       seatCount.total = seatCount.total+1
     }
@@ -353,8 +407,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     var targetVote = null
     var winners = []
     var winner = null
-
-    console.log("start")
 
     while (mpsToElect > 0) {
       //figure out winner
@@ -422,8 +474,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       if (runoffResults.length === mpsToElect) {
         //seat agained
         mostPopular = runoffResults[0]
-        console.log("winner!:")
-        console.log(mostPopular)
         mpsToElect--
         //determine winners
         winners.push(mostPopular.pName)
@@ -447,9 +497,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           winners.push(mostPopular.pName)
           //TODO: Change reasons to constants
           rounds.push({target: mostPopular.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect})
-
-          console.log("winner!:")
-          console.log(mostPopular)
 
           mostPopular.vCount -= winProportion 
           mpsToElect--
@@ -483,16 +530,12 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
   const runoffRedistrubtion = (runoffResults, runoffVictim) => {
     let weightMax = 0
-    console.log("victim:")
-    console.log(runoffVictim)
-    console.log(JSON.parse(JSON.stringify(runoffResults)))
     let resultsTemp = getWeightedArray(runoffResults, runoffVictim)
 
     resultsTemp.map(w => {
       weightMax += w
     })
 
-    console.log(JSON.parse(JSON.stringify(resultsTemp)))
 
     let victimVote =  runoffVictim.vCount
     runoffVictim.vCount = 0
@@ -501,8 +544,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       runoffResults[i].vCount += victimVote*(resultsTemp[i]/weightMax)
     }
     runoffResults = runoffResults.filter(p => runoffVictim !== p)
-
-    console.log(JSON.parse(JSON.stringify(runoffResults)))
 
     return runoffResults
   }

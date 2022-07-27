@@ -15,10 +15,17 @@ export const R_SURPASS = "SURPASS"
 export const R_LOSS = "LOSS"
 export const R_DEFAULT = "DEFAULT"
 
+//MP Grouping Modes
+
+export const LIMIT = "LIMIT"
+export const ALTER = "ALTER"
+export const NO_CHANGE = "NO_CHANGE"
+
 
 export const DEFAULT = {
     tacticalVoteProportion: 0.25,
-    noOfMPsPerConst: 0,
+    MPGroupingMode: NO_CHANGE,
+    MPsPerGroup: 1,
     typeOfVote: PLURALITY,
     grouping: INDIVIDUAL,
     partyPollRates: [],
