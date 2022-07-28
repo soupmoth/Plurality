@@ -356,6 +356,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     <Button color="primary" size="large" onClick={toggleManualPolling}> {partyPercentageManual ? `Sliders` : `Manual`} </Button>
                 </ButtonGroup>
             </Paper>
+            <br/>
             <Paper className={classes.paper}>
                 <Typography variant="h4">Constituency Type</Typography>
                 <Typography variant="body1">A constituency type is how constituencies are joined together in order to create Multimember constituencies.</Typography>
@@ -369,6 +370,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     <Button color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" disabled={isElectionType(eConsts.RUNOFF)} onClick={(e) => setConstType(eConsts.NATION)}> Nationwide </Button>
                 </ButtonGroup>
             </Paper>
+            <br/>
             <Paper className={classes.paper}>
                 <Typography variant="h4">Voting Type</Typography>
                 <Typography variant="body1">This determines how a citizen may choose to cast their vote.</Typography>
@@ -380,6 +382,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     <Button color={isElectionType(eConsts.LOSER_TAKES_ALL) ? "secondary" : "primary"} size="large" onClick={setLoserTakesAll}> LOSER TAKES ALL </Button>
                 </ButtonGroup>
             </Paper>
+            <br/>
             <Paper className={classes.paper}>
                 <Typography variant="h6">Settings</Typography>
                 <Grid container spacing={2}>
@@ -436,6 +439,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     <Grid item xs={1} />
                 </Grid>
             </Paper>
+            <br/>
             <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
                             <Button color="secondary" size="large" onClick={generateResults} > GENERATE </Button>
                             <Button color="primary" size="large" onClick={resetSettings} > RESET </Button>
