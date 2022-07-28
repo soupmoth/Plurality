@@ -104,13 +104,9 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     const correctPolling = () => {
         var temp = partyPercentages.slice()
 
-        console.log(temp)
-
         //do this twice to first give priority to all changed fields, then again to ensure that the result adds up to 100%
         temp = correction(temp)
-        
-
-        console.log(temp)
+    
         setPartyPercentages(temp)
     }
 
@@ -147,20 +143,11 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     
     //MULTIMEMBER CONSTITUENCY TYPES
 
-    const setIndividual = () => {
-        setConstituencyType(eConsts.INDIVIDUAL)
-    }
-    const setCounty = () => {
-        setConstituencyType(eConsts.COUNTY_AND_BUROUGH)
-    }
-    const setRegion = () => {
-        setConstituencyType(eConsts.REGION)
-    }
-    const setCountry = () => {
-        setConstituencyType(eConsts.COUNTRY)
-    }
-    const setNationwide = () => {
-        setConstituencyType(eConsts.NATION)
+    const setConstType = (constType) => {
+        setConstituencyType(constType)
+        if (MPSeats > getMPSeatMax(constType)) {
+            setMPSeats(getMPSeatMax(constType))
+        }
     }
 
     const getConstituencyDetails = () => {
@@ -185,21 +172,23 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     //ELECTION TYPES
     const setPlurality = () => {
         setVoteType(eConsts.PLURALITY)
+
     }
 
     const setRunOff = () => {
         switch (constituencyType) {
-            case eConsts.COUNTRY:
             case eConsts.NATION:
                 setConstituencyType(eConsts.REGION)
             default: 
                 break;
         }
         setVoteType(eConsts.RUNOFF)
+
     }
 
     const setLoserTakesAll = () => {
         setVoteType(eConsts.LOSER_TAKES_ALL)
+        
     }
 
     const getElectionDetails = () => {
@@ -252,6 +241,33 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         }
         return `${Math.round(value*1000)/10}`;
     }
+
+    const getMPSeatMax = (constType) => {
+        switch (constType) {
+            case eConsts.NATION:
+                return 632
+            case eConsts.COUNTRY:
+                return 158
+            case eConsts.REGION:
+                return 50
+            case eConsts.COUNTY_AND_BUROUGH:
+                return 10
+            default: 
+                return 5;
+        }
+    }
+
+    const getMPModeFlavourText = () => {
+        switch (MPMode) {
+            case eConsts.NO_CHANGE:
+                return "No Change: This slider is ignored."
+            case eConsts.ALTER:
+                return "Alter: This slider sets the number of MPs in each group to the same size"
+            case eConsts.LIMIT:
+                return "Limit: This slider sets the limit of MPs per group, and breaks a group up into smaller pieces to fit this. This does not respect geographic proximity as a limitation of the design."
+        }
+        
+    };
     
     return (
         !partyPercentages === null ? <CircularProgress /> : (<div>
@@ -340,11 +356,11 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 <br/>
                 <Typography variant="body1">{getConstituencyDetails()}</Typography>
                 <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                    <Button color={isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size="large" onClick={setIndividual}> Individual </Button>
-                    <Button color={isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size="large" onClick={setCounty}> Counties/Buroughs </Button>
-                    <Button color={isConstituencyType(eConsts.REGION) ? "secondary" : "primary"} size="large" onClick={setRegion}> Regions </Button>
-                    <Button color={isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size="large" disabled={isElectionType(eConsts.RUNOFF)} onClick={setCountry}> Countries </Button>
-                    <Button color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" disabled={isElectionType(eConsts.RUNOFF)} onClick={setNationwide}> Nationwide </Button>
+                    <Button color={isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.INDIVIDUAL)}> Individual </Button>
+                    <Button color={isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.COUNTY_AND_BUROUGH)}> Counties/Buroughs </Button>
+                    <Button color={isConstituencyType(eConsts.REGION) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.REGION)}> Regions </Button>
+                    <Button color={isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.COUNTRY)}> Countries </Button>
+                    <Button color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" disabled={isElectionType(eConsts.RUNOFF)} onClick={(e) => setConstType(eConsts.NATION)}> Nationwide </Button>
                 </ButtonGroup>
             </Paper>
             <Paper className={classes.paper}>
@@ -383,15 +399,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     <Grid item xs={4}>
                         <Typography variant="h6">MP Mode and Number</Typography>
                         <br/>
-                        <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                            <Button color={isMPMode(eConsts.NO_CHANGE) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.NO_CHANGE)}> Off </Button>
-                            <Button color={isMPMode(eConsts.ALTER) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.ALTER)}> Alter </Button>
-                            <Button color={isMPMode(eConsts.LIMIT) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.LIMIT)}> Limit </Button>
-                        </ButtonGroup>
                         <br/>
-                        <br/>
-                        <br/>
-                        
                         <Slider
                             defaultValue={eConsts.DEFAULT.MPsPerGroup}
                             value={MPSeats}
@@ -400,8 +408,17 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                             onChange={handleMPSeatsChange}
                             min={1}
                             step={1}
-                            max={10}
+                            max={getMPSeatMax(constituencyType)}
                         />
+                        <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+                            <Button color={isMPMode(eConsts.NO_CHANGE) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.NO_CHANGE)}> Off </Button>
+                            <Button color={isMPMode(eConsts.ALTER) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.ALTER)}> Alter </Button>
+                            <Button color={isMPMode(eConsts.LIMIT) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.LIMIT)}> Limit </Button>
+                        </ButtonGroup>
+                        <br/>
+                        <br/>
+                        <Typography variant="body1">{getMPModeFlavourText(constituencyType)} </Typography>
+                        
                     </Grid>
                     <Grid item xs={1} />
                 </Grid>

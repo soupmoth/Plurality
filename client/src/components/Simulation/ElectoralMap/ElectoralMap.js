@@ -223,33 +223,38 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
     var consts = constituencyArr.filter((c) => c.country !== "Northern Ireland")
 
+    let groups = []
+
     if (eConsts.NATION === grouping) {
-      return [consts]
+      groups = [consts]
     }
     else if (eConsts.INDIVIDUAL === grouping) {
       return consts.map(c => {
         return [c]
       })
     }
-
+    else {
       var listOfGroups = []
-    for (let i = 0; i < consts.length; i++) {
-      if (!listOfGroups.find((e) => e === (consts[i])[grouping])) {
-        listOfGroups.push((consts[i])[grouping])
+      for (let i = 0; i < consts.length; i++) {
+        if (!listOfGroups.find((e) => e === (consts[i])[grouping])) {
+          listOfGroups.push((consts[i])[grouping])
+        }
       }
+  
+        
+  
+        for (let i = 0; i < listOfGroups.length; i++) {
+          groups.push([])
+        }
+  
+        for (let i = 0; i < consts.length; i++) {
+          groups[listOfGroups.findIndex((g) => g === (consts[i])[grouping])].push(consts[i])
+        }
+  
+        console.log(electionParams.MPGroupingMode)
     }
 
-      let groups = []
-
-      for (let i = 0; i < listOfGroups.length; i++) {
-        groups.push([])
-      }
-
-      for (let i = 0; i < consts.length; i++) {
-        groups[listOfGroups.findIndex((g) => g === (consts[i])[grouping])].push(consts[i])
-      }
-
-      console.log(electionParams.MPGroupingMode)
+    
       if (electionParams.MPGroupingMode == eConsts.LIMIT) {
         let brokenUpGroups = []
         console.log("building broken up groups")
