@@ -214,7 +214,14 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     }
 
     const resetSettings = () => {
-        setElectionParams(eConsts.DEFAULT)
+        setVoteType(eConsts.DEFAULT.typeOfVote) 
+        setConstituencyType(eConsts.DEFAULT.grouping) 
+        setTacticalVotingMode(eConsts.DEFAULT.tacticalVoteMode)
+        setTacticalVoting(eConsts.DEFAULT.tacticalVoteProportion) 
+        defaultPolling()
+        setPartyPercentageManual(false)
+        setMPMode(eConsts.DEFAULT.MPGroupingMode)
+        setMPSeats(eConsts.DEFAULT.MPsPerGroup)
     }
 
     const generateResults = () => {
@@ -429,7 +436,10 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     <Grid item xs={1} />
                 </Grid>
             </Paper>
-            <Button variant="contained" color="primary" size="large" onClick={generateResults} fullWidth> GENERATE </Button>
+            <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+                            <Button color="secondary" size="large" onClick={generateResults} > GENERATE </Button>
+                            <Button color="primary" size="large" onClick={resetSettings} > RESET </Button>
+                </ButtonGroup>
         </div>
         )
     );
