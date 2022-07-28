@@ -10,14 +10,14 @@ import PartySlider from "./PartySlider/PartySlider.js";
 import * as eConsts from '../../../const/electionConsts.js'
 
 
-const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
+const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
     const classes = useStyles();
     const parties = useSelector((state) => state.parties)
-    
-    const [voteType, setVoteType] = useState(eConsts.DEFAULT.typeOfVote) 
-    const [constituencyType, setConstituencyType] = useState(eConsts.DEFAULT.grouping) 
+
+    const [voteType, setVoteType] = useState(eConsts.DEFAULT.typeOfVote)
+    const [constituencyType, setConstituencyType] = useState(eConsts.DEFAULT.grouping)
     const [tacticalVotingMode, setTacticalVotingMode] = useState(eConsts.DEFAULT.tacticalVoteMode)
-    const [tacticalVoting, setTacticalVoting] = useState(eConsts.DEFAULT.tacticalVoteProportion) 
+    const [tacticalVoting, setTacticalVoting] = useState(eConsts.DEFAULT.tacticalVoteProportion)
     const [partyPercentages, setPartyPercentages] = useState([])
     const [partyPercentageManual, setPartyPercentageManual] = useState(false)
     const [MPMode, setMPMode] = useState(eConsts.DEFAULT.MPGroupingMode)
@@ -36,8 +36,8 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         let partyPercent = []
         if (parties !== null) {
             for (let i = 0; i < parties.length; i++) {
-                let percent = parseFloat((parties[i].nVotePercent).replace('%',''))/100
-                partyPercent.push({pID: parties[i].partyID, pName: parties[i].name, votePercent: percent, startingVotePercent: percent})
+                let percent = parseFloat((parties[i].nVotePercent).replace('%', '')) / 100
+                partyPercent.push({ pID: parties[i].partyID, pName: parties[i].name, votePercent: percent, startingVotePercent: percent })
             }
         }
         setPartyPercentages(partyPercent)
@@ -61,7 +61,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     totalWeighting += parsePercentage(party.votePercent)
             }
         });
-        var proportionOfWeight = 1-niPercent
+        var proportionOfWeight = 1 - niPercent
 
         pPercentages.forEach(party => {
             switch (party.pID) {
@@ -73,8 +73,8 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     party.votePercent = parsePercentage(party.startingVotePercent)
                     break;
                 default:
-                    party.votePercent = proportionOfWeight*(parsePercentage(party.votePercent)/totalWeighting)
-                    party.startingVotePercent = proportionOfWeight*(parsePercentage(party.votePercent)/totalWeighting)
+                    party.votePercent = proportionOfWeight * (parsePercentage(party.votePercent) / totalWeighting)
+                    party.startingVotePercent = proportionOfWeight * (parsePercentage(party.votePercent) / totalWeighting)
             }
         });
 
@@ -91,7 +91,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 return parsed
             }
             else {
-                return parsed/100
+                return parsed / 100
             }
 
         }
@@ -103,7 +103,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
 
         //do this twice to first give priority to all changed fields, then again to ensure that the result adds up to 100%
         temp = correction(temp)
-    
+
         setPartyPercentages(temp)
     }
 
@@ -126,18 +126,18 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
             }
         })
         setPartyPercentages(newPP);
-      };
+    };
 
     //TACTICAL VOTING
 
     const handleTacticalChange = (event, newValue) => {
         setTacticalVoting(newValue);
-      };
+    };
 
-      const handleMPSeatsChange = (event, newValue) => {
+    const handleMPSeatsChange = (event, newValue) => {
         setMPSeats(newValue);
-      };
-    
+    };
+
     //MULTIMEMBER CONSTITUENCY TYPES
 
     const setConstType = (constType) => {
@@ -167,25 +167,16 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     }
 
     //ELECTION TYPES
-    const setPlurality = () => {
-        setVoteType(eConsts.PLURALITY)
-
-    }
-
-    const setRunOff = () => {
-        switch (constituencyType) {
-            case eConsts.NATION:
-                setConstituencyType(eConsts.REGION)
-            default: 
-                break;
+    const setElectionType = (electType) => {
+        if (electType === eConsts.RUNOFF) {
+            switch (constituencyType) {
+                case eConsts.NATION:
+                    setConstituencyType(eConsts.COUNTRY)
+                default:
+                    break;
+            }
         }
-        setVoteType(eConsts.RUNOFF)
-
-    }
-
-    const setLoserTakesAll = () => {
-        setVoteType(eConsts.LOSER_TAKES_ALL)
-        
+        setVoteType(electType)
     }
 
     const getElectionDetails = () => {
@@ -194,10 +185,10 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 return "Plurality gives each voter a single vote, seats are given to the candidate/party who receives the biggest vote. In a multimember constituency, these are awarded as proportionally as possible."
             case eConsts.RUNOFF:
                 return "In Runoff, each voter ranks the candidates in order of preference. If their preferred candidate loses, their vote is counted for their next choice. In a multimember constituency, if a candidate wins, their wasted votes" +
-                " are allocated to the next choices of every voter based on the excess of votes. A candidate wins if they have a majority in a single member constituency (called AV), or if they reach a threshold in a multi member constituency (called STV), or if they're" +
-                " the last man standing with one seat remaining."
+                    " are allocated to the next choices of every voter based on the excess of votes. A candidate wins if they have a majority in a single member constituency (called AV), or if they reach a threshold in a multi member constituency (called STV), or if they're" +
+                    " the last man standing with one seat remaining."
             default:
-                return "Westminister goes insane and votes in a landslide 650-0 vote that the biggest loser wins, and hides it from the public! A bit of fun data visualisation to see the weakest party in each constituency. Works with Multimember constituencies!"
+                return "Westminister goes insane and votes in a landslide 574-0 vote that the biggest loser wins, and hides it from the public! A bit of fun data visualisation to see the weakest party in each constituency. Works with Multimember constituencies!"
         }
     }
 
@@ -214,10 +205,10 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     }
 
     const resetSettings = () => {
-        setVoteType(eConsts.DEFAULT.typeOfVote) 
-        setConstituencyType(eConsts.DEFAULT.grouping) 
+        setVoteType(eConsts.DEFAULT.typeOfVote)
+        setConstituencyType(eConsts.DEFAULT.grouping)
         setTacticalVotingMode(eConsts.DEFAULT.tacticalVoteMode)
-        setTacticalVoting(eConsts.DEFAULT.tacticalVoteProportion) 
+        setTacticalVoting(eConsts.DEFAULT.tacticalVoteProportion)
         defaultPolling()
         setPartyPercentageManual(false)
         setMPMode(eConsts.DEFAULT.MPGroupingMode)
@@ -237,18 +228,18 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     }
 
     function tacticalValueText(value) {
-        return `${Math.round(value*100)}%`;
+        return `${Math.round(value * 100)}%`;
     }
 
     if (partyPercentages == []) {
         updateParties(partyPercentages)
-    } 
+    }
 
     function percentValue(value) {
         if (typeof value === 'string') {
             return value
         }
-        return `${Math.round(value*1000)/10}`;
+        return `${Math.round(value * 1000) / 10}`;
     }
 
     const getMPSeatMax = (constType) => {
@@ -261,7 +252,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 return 50
             case eConsts.COUNTY_AND_BUROUGH:
                 return 25
-            default: 
+            default:
                 return 10;
         }
     }
@@ -275,9 +266,9 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
             case eConsts.LIMIT:
                 return "Limit: This slider sets the limit of MPs per group, and breaks a group up into smaller pieces to fit this. This does not respect geographic proximity as a limitation of the design."
         }
-        
+
     };
-    
+
     return (
         !partyPercentages === null ? <CircularProgress /> : (<div>
             <Paper className={classes.paper}>
@@ -285,82 +276,82 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 <Typography variant="body1">This polling rate, while reported on the national level, will only effect constituencies where these parties chose to run.
                     It's important to note that this is polling rates <b>before any changes made to the voting system.</b> Keep this in mind when picking your rates, as otherwise this can lead to surprising results! How the citizens voted overall is revealed after a
                     generated election below the Electoral Map.</Typography>
-                <br/>
+                <br />
                 <Grid container spacing={{ xs: 1, md: 2 }}>
                     {
-                    partyPercentages.map((pPercent) => {
-                        if (partyPercentageManual) {
-                            switch (pPercent.pID) {
-                                case "sdlp":
-                                    break;
-                                case "dup":
-                                    break;
-                                case "sf":
-                                    break;
-                                case "alliance":
-                                    break;
-                                case "uup":
-                                    var percent = 0
-                                    partyPercentages.map((pPerc) => {
-                                        switch (pPercent.pID) {
-                                            case "sdlp":
-                                            case "dup":
-                                            case "sf":
-                                            case "alliance":
-                                            case "uup":
-                                                percent += pPerc.votePercent
-                                                break;
-                                            default:
-                                        }
+                        partyPercentages.map((pPercent) => {
+                            if (partyPercentageManual) {
+                                switch (pPercent.pID) {
+                                    case "sdlp":
+                                        break;
+                                    case "dup":
+                                        break;
+                                    case "sf":
+                                        break;
+                                    case "alliance":
+                                        break;
+                                    case "uup":
+                                        var percent = 0
+                                        partyPercentages.map((pPerc) => {
+                                            switch (pPercent.pID) {
+                                                case "sdlp":
+                                                case "dup":
+                                                case "sf":
+                                                case "alliance":
+                                                case "uup":
+                                                    percent += pPerc.votePercent
+                                                    break;
+                                                default:
+                                            }
 
-                                    })
-                                    return (
-                                        <Grid item xs={3}>
-                                            <Container sx={{ width: 300 }}>
-                                                <TextField name="ni" variant="filled"  label="ni" fullWidth value = {percentValue(pPercent.votePercent)} disabled={true} />
-                                            </Container>
-                                        </Grid>
-                                        )
-                                default:
-                                    return (
-                                        <Grid item xs={3}>
-                                            <Container sx={{ width: 300 }} color={`${getColour(pPercent.pID).primaryColour}`}>
-                                                <TextField name={pPercent.pID} variant="filled"  label={pPercent.pID} fullWidth value = {percentValue(pPercent.votePercent)} onChange= {(e) => handlePercentageChange(e.target.name, e.target.value)} />
-                                            </Container>
-                                        </Grid>
-                                        )
-                            }
-                        }
-                        else {
-                            switch (pPercent.pID) {
-                                case "sdlp":
-                                case "dup":
-                                case "sf":
-                                case "alliance":
-                                case "uup":
-                                    break;
-                                default:
+                                        })
                                         return (
-                                        <Grid item xs={3}>
-                                            <PartySlider pPercent={pPercent} partyPercentages={partyPercentages} setPartyPercentages={setPartyPercentages} key={pPercent.pID} />
-                                        </Grid>
+                                            <Grid item xs={3}>
+                                                <Container sx={{ width: 300 }}>
+                                                    <TextField name="ni" variant="filled" label="ni" fullWidth value={percentValue(pPercent.votePercent)} disabled={true} />
+                                                </Container>
+                                            </Grid>
                                         )
+                                    default:
+                                        return (
+                                            <Grid item xs={3}>
+                                                <Container sx={{ width: 300 }} color={`${getColour(pPercent.pID).primaryColour}`}>
+                                                    <TextField name={pPercent.pID} variant="filled" label={pPercent.pID} fullWidth value={percentValue(pPercent.votePercent)} onChange={(e) => handlePercentageChange(e.target.name, e.target.value)} />
+                                                </Container>
+                                            </Grid>
+                                        )
+                                }
                             }
-                        }
-                        
-                    })}
+                            else {
+                                switch (pPercent.pID) {
+                                    case "sdlp":
+                                    case "dup":
+                                    case "sf":
+                                    case "alliance":
+                                    case "uup":
+                                        break;
+                                    default:
+                                        return (
+                                            <Grid item xs={3}>
+                                                <PartySlider pPercent={pPercent} partyPercentages={partyPercentages} setPartyPercentages={setPartyPercentages} key={pPercent.pID} />
+                                            </Grid>
+                                        )
+                                }
+                            }
+
+                        })}
                 </Grid>
                 <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
                     <Button color="primary" size="large" onClick={correctPolling}> SUBMIT POLLS </Button>
                     <Button color="primary" size="large" onClick={defaultPolling}> RETURN TO DEFAULT </Button>
-                    <Button color="primary" size="large" onClick={toggleManualPolling}> {partyPercentageManual ? `Sliders` : `Manual`} </Button>
+                    <Button color={partyPercentageManual ? "secondary" : "primary"} size="large" onClick={toggleManualPolling}> {partyPercentageManual ? `Sliders` : `Manual`} </Button>
                 </ButtonGroup>
             </Paper>
-            <br/>
+            <br />
             <Paper className={classes.paper}>
                 <Typography variant="h4">Constituency Type</Typography>
                 <Typography variant="body1">A constituency type is how constituencies are joined together in order to create Multimember constituencies.</Typography>
-                <br/>
+                <br />
                 <Typography variant="body1">{getConstituencyDetails()}</Typography>
                 <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
                     <Button color={isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.INDIVIDUAL)}> Individual </Button>
@@ -370,27 +361,27 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                     <Button color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" disabled={isElectionType(eConsts.RUNOFF)} onClick={(e) => setConstType(eConsts.NATION)}> Nationwide </Button>
                 </ButtonGroup>
             </Paper>
-            <br/>
+            <br />
             <Paper className={classes.paper}>
                 <Typography variant="h4">Voting Type</Typography>
                 <Typography variant="body1">This determines how a citizen may choose to cast their vote.</Typography>
-                <br/>
+                <br />
                 <Typography variant="body1">{getElectionDetails()}</Typography>
                 <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                    <Button color={isElectionType(eConsts.PLURALITY) ? "secondary" : "primary"} size="large" onClick={setPlurality}> Plurality </Button>
-                    <Button color={isElectionType(eConsts.RUNOFF) ? "secondary" : "primary"} size="large" onClick={setRunOff}> Runoff </Button>
-                    <Button color={isElectionType(eConsts.LOSER_TAKES_ALL) ? "secondary" : "primary"} size="large" onClick={setLoserTakesAll}> LOSER TAKES ALL </Button>
+                    <Button color={isElectionType(eConsts.PLURALITY) ? "secondary" : "primary"} size="large" onClick={(e) => setElectionType(eConsts.PLURALITY)}> Plurality </Button>
+                    <Button color={isElectionType(eConsts.RUNOFF) ? "secondary" : "primary"} size="large" onClick={(e) => setElectionType(eConsts.RUNOFF)}> Runoff </Button>
+                    <Button color={isElectionType(eConsts.LOSER_TAKES_ALL) ? "secondary" : "primary"} size="large" onClick={(e) => setElectionType(eConsts.LOSER_TAKES_ALL)}> LOSER TAKES ALL </Button>
                 </ButtonGroup>
             </Paper>
-            <br/>
+            <br />
             <Paper className={classes.paper}>
                 <Typography variant="h6">Settings</Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={1} />
                     <Grid item xs={4}>
                         <Typography variant="h6">Tactical Voting Percent</Typography>
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                         <Slider
                             value={tacticalVoting}
                             onChange={handleTacticalChange}
@@ -407,15 +398,15 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                             <Button color={isTacticalVotingMode(eConsts.PREDICATE) ? "secondary" : "primary"} size="large" onClick={(e) => setTacticalVotingMode(eConsts.PREDICATE)}> Conditional </Button>
                             <Button color={isTacticalVotingMode(eConsts.ALWAYS) ? "secondary" : "primary"} size="large" onClick={(e) => setTacticalVotingMode(eConsts.ALWAYS)}> Always </Button>
                         </ButtonGroup>
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                         <Typography variant="body1">Tactical voting is the proportion of people who vote for one of the two biggest parties in a constituency to keep the other out. Under a proportional system, these votes will be reallocated.</Typography>
                     </Grid>
                     <Grid item xs={2} />
                     <Grid item xs={4}>
                         <Typography variant="h6">MP Mode and Number</Typography>
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                         <Slider
                             defaultValue={eConsts.DEFAULT.MPsPerGroup}
                             value={MPSeats}
@@ -431,19 +422,19 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                             <Button color={isMPMode(eConsts.ALTER) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.ALTER)}> Alter </Button>
                             <Button color={isMPMode(eConsts.LIMIT) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.LIMIT)}> Limit </Button>
                         </ButtonGroup>
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                         <Typography variant="body1">{getMPModeFlavourText(constituencyType)} </Typography>
-                        
+
                     </Grid>
                     <Grid item xs={1} />
                 </Grid>
             </Paper>
-            <br/>
+            <br />
             <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                            <Button color="secondary" size="large" onClick={generateResults} > GENERATE </Button>
-                            <Button color="primary" size="large" onClick={resetSettings} > RESET </Button>
-                </ButtonGroup>
+                <Button color="secondary" size="large" onClick={generateResults} > GENERATE </Button>
+                <Button color="primary" size="large" onClick={resetSettings} > RESET </Button>
+            </ButtonGroup>
         </div>
         )
     );
