@@ -242,7 +242,6 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         return `${Math.round(value*100)}%`;
     }
 
-    console.log(partyPercentages);
     if (partyPercentages == []) {
         updateParties(partyPercentages)
     } 

@@ -95,7 +95,29 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
       //determineWinner returns pIDs. We then map over them and find the biggest constituency for that party's success
       let constituenciesCopy = tempGroup.constituencies.slice()
-      tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, tempGroup.constituencies.length, tempGroup.rounds)
+      var mpNum = tempGroup.constituencies.length
+      if (electionParams.MPGroupingMode === eConsts.ALTER) {
+        mpNum = electionParams.MPsPerGroup
+      }
+      tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, mpNum, tempGroup.rounds)
+      console.log(tempGroup.seatHolders)
+      if (electionParams.MPGroupingMode === eConsts.ALTER) {
+        //this sorts the array in such a way that the most frequent is placed first
+        tempGroup.seatHolders.sort(function(a, b) {return tempGroup.seatHolders.filter(s => s === b).length - tempGroup.seatHolders.filter(s => s === a).length})
+        if (mpNum > constituenciesCopy.length) {
+          console.log("here!")
+          tempGroup.seatHolders = tempGroup.seatHolders.slice(0, constituenciesCopy.length)
+        }
+        else if (mpNum < constituenciesCopy.length) {
+          for (let i = 0; i < constituenciesCopy.length - mpNum; i++) {
+            tempGroup.seatHolders.push(tempGroup.seatHolders[i])
+            
+          }
+        }
+      }
+
+      console.log(tempGroup.seatHolders)
+
       tempGroup.seatHolders = tempGroup.seatHolders.map((pID) => {
 
         let constName = null
@@ -114,6 +136,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
       return tempGroup
     })
+
+    console.log(seatCount)
+    setSeatData(seatCount)
 
     return groups;
   }
@@ -320,7 +345,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       totalVotes = totalVotes + p.vCount
     })
 
-    if (mpNumber > 1 || electionParams.typeOfVote === eConsts.RUNOFF) {
+    if (mpNumber > 2 || electionParams.typeOfVote === eConsts.RUNOFF) {
       partyResults = redistrubuteTacticalVotes(partyResults)
     }
     
@@ -359,9 +384,6 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
     if (seats.total !== seatTotal) {
       seatCount.total = seatCount.total+1
-    }
-    if ((seatCount.total === seatTotal)) {
-      setSeatData(seatCount)
     }
   }
 
