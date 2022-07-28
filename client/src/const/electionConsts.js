@@ -21,8 +21,15 @@ export const LIMIT = "LIMIT"
 export const ALTER = "ALTER"
 export const NO_CHANGE = "NO_CHANGE"
 
+//Tactical Voting Mode
+
+export const OFF = "OFF"
+export const PREDICATE = "PREDICATE"
+export const ALWAYS = "ALWAYS"
+
 
 export const DEFAULT = {
+    tacticalVoteMode: PREDICATE,
     tacticalVoteProportion: 0.25,
     MPGroupingMode: NO_CHANGE,
     MPsPerGroup: 1,

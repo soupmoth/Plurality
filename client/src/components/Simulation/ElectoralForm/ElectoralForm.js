@@ -11,13 +11,12 @@ import * as eConsts from '../../../const/electionConsts.js'
 
 
 const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
-    //the find here searches for a post with the same id as the current focused id, returning
-    //null if nothing is found.
     const classes = useStyles();
     const parties = useSelector((state) => state.parties)
     
     const [voteType, setVoteType] = useState(eConsts.DEFAULT.typeOfVote) 
     const [constituencyType, setConstituencyType] = useState(eConsts.DEFAULT.grouping) 
+    const [tacticalVotingMode, setTacticalVotingMode] = useState(eConsts.DEFAULT.tacticalVoteMode)
     const [tacticalVoting, setTacticalVoting] = useState(eConsts.DEFAULT.tacticalVoteProportion) 
     const [partyPercentages, setPartyPercentages] = useState([])
     const [partyPercentageManual, setPartyPercentageManual] = useState(false)
@@ -31,7 +30,7 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     const getColour = (pID) => {
         const result = parties.find(party => party.partyID === pID)
         return result
-      };
+    };
 
     const updateParties = () => {
         let partyPercent = []
@@ -41,7 +40,6 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 partyPercent.push({pID: parties[i].partyID, pName: parties[i].name, votePercent: percent, startingVotePercent: percent})
             }
         }
-        console.log(partyPercent)
         setPartyPercentages(partyPercent)
     }
 
@@ -86,7 +84,6 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
     const parsePercentage = (value) => {
         if (typeof value === 'string') {
             var parsed = parseFloat(value)
-            console.log(parsed)
             if (Number.isNaN(parsed)) {
                 parsed = 0.1
             }
@@ -212,12 +209,17 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
         return type == MPMode
     }
 
+    const isTacticalVotingMode = (type) => {
+        return type == tacticalVotingMode
+    }
+
     const resetSettings = () => {
         setElectionParams(eConsts.DEFAULT)
     }
 
     const generateResults = () => {
         setElectionParams({
+            tacticalVotingMode: tacticalVotingMode,
             tacticalVoteProportion: tacticalVoting,
             MPGroupingMode: MPMode,
             MPsPerGroup: MPSeats,
@@ -251,9 +253,9 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
             case eConsts.REGION:
                 return 50
             case eConsts.COUNTY_AND_BUROUGH:
-                return 10
+                return 25
             default: 
-                return 5;
+                return 10;
         }
     }
 
@@ -279,7 +281,6 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                 <br/>
                 <Grid container spacing={{ xs: 1, md: 2 }}>
                     {
-                    
                     partyPercentages.map((pPercent) => {
                         if (partyPercentageManual) {
                             switch (pPercent.pID) {
@@ -322,8 +323,6 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                                         </Grid>
                                         )
                             }
-                            
-                            
                         }
                         else {
                             switch (pPercent.pID) {
@@ -393,6 +392,13 @@ const ElectoralForm = ({electionParams, setElectionParams, setSeatData}) => {
                             step={0.001}
                             max={1}
                         />
+                        <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+                            <Button color={isTacticalVotingMode(eConsts.OFF) ? "secondary" : "primary"} size="large" onClick={(e) => setTacticalVotingMode(eConsts.OFF)}> Off </Button>
+                            <Button color={isTacticalVotingMode(eConsts.PREDICATE) ? "secondary" : "primary"} size="large" onClick={(e) => setTacticalVotingMode(eConsts.PREDICATE)}> Conditional </Button>
+                            <Button color={isTacticalVotingMode(eConsts.ALWAYS) ? "secondary" : "primary"} size="large" onClick={(e) => setTacticalVotingMode(eConsts.ALWAYS)}> Always </Button>
+                        </ButtonGroup>
+                        <br/>
+                        <br/>
                         <Typography variant="body1">Tactical voting is the proportion of people who vote for one of the two biggest parties in a constituency to keep the other out. Under a proportional system, these votes will be reallocated.</Typography>
                     </Grid>
                     <Grid item xs={2} />
