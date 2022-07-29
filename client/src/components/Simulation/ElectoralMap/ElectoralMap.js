@@ -3,7 +3,7 @@ import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simp
 
 import ElectoralGeography from "./westminster_const_region TRUE3.json"
 
-import { Grid, CircularProgress} from '@material-ui/core'
+import { Grid, CircularProgress } from '@material-ui/core'
 
 import { useSelector } from "react-redux";
 import { TextField, Button, Typography, Paper, styled } from "@material-ui/core";
@@ -12,7 +12,7 @@ import useStyles from './styles.js';
 
 import * as eConsts from '../../../const/electionConsts.js'
 
-const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElectionData, setBreakdownConstituency}) => {
+const ElectoralMap = ({ electionParams, seats, setSeatData, electionData, setElectionData, setBreakdownConstituency }) => {
   const classes = useStyles();
 
   //constants
@@ -21,28 +21,28 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   const seatCount = {
     total: 18,
     party: {
-        con: 0,
-        brexit: 0,     
-        ni: 18,
-        snp: 0,
-        other: 0,
-        pc: 0,
-        ld: 0,
-        green: 0,
-        lab: 0,
+      con: 0,
+      brexit: 0,
+      ni: 18,
+      snp: 0,
+      other: 0,
+      pc: 0,
+      ld: 0,
+      green: 0,
+      lab: 0,
     },
     nationalVote: {
-        con: 0,
-        brexit: 0,     
-        ni: 799034,
-        snp: 0,
-        other: 0,
-        pc: 0,
-        ld: 0,
-        green: 0,
-        lab: 0,
+      con: 0,
+      brexit: 0,
+      ni: 799034,
+      snp: 0,
+      other: 0,
+      pc: 0,
+      ld: 0,
+      green: 0,
+      lab: 0,
     }
-}
+  }
 
   const constituencies = useSelector((state) => state.constituencies)
   const parties = useSelector((state) => state.parties)
@@ -99,11 +99,12 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       if (electionParams.MPGroupingMode === eConsts.ALTER) {
         mpNum = electionParams.MPsPerGroup
       }
+
       tempGroup.seatHolders = determineWinner(tempGroup.totalVotes, mpNum, tempGroup.rounds)
-      console.log(tempGroup.seatHolders)
+
       if (electionParams.MPGroupingMode === eConsts.ALTER) {
         //this sorts the array in such a way that the most frequent is placed first
-        tempGroup.seatHolders.sort(function(a, b) {return tempGroup.seatHolders.filter(s => s === b).length - tempGroup.seatHolders.filter(s => s === a).length})
+        tempGroup.seatHolders.sort(function (a, b) { return tempGroup.seatHolders.filter(s => s === b).length - tempGroup.seatHolders.filter(s => s === a).length })
         if (mpNum > constituenciesCopy.length) {
           console.log("here!")
           tempGroup.seatHolders = tempGroup.seatHolders.slice(0, constituenciesCopy.length)
@@ -111,12 +112,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         else if (mpNum < constituenciesCopy.length) {
           for (let i = 0; i < constituenciesCopy.length - mpNum; i++) {
             tempGroup.seatHolders.push(tempGroup.seatHolders[i])
-            
           }
         }
       }
-
-      console.log(tempGroup.seatHolders)
 
       tempGroup.seatHolders = tempGroup.seatHolders.map((pID) => {
 
@@ -144,7 +142,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   }
 
   //this function finds the national results of each party and then returns an array of such results
-  const alterConstResults = (constituencyArr, nResults) => { 
+  const alterConstResults = (constituencyArr, nResults) => {
 
     if (electionParams.partyPollRates.length > 0) {
       var newConsts = constituencyArr.slice()
@@ -152,18 +150,18 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
       newConsts.map((c) => {
         var totalWeight = 0;
-        
+
         for (var i = 0; i < pollRates.length; i++) {
           let key = pollRates[i].pID
           if (c[pollRates[i].pID] > 0) {
-            totalWeight += (pollRates[i].votePercent/nResults[key])
+            totalWeight += (pollRates[i].votePercent / nResults[key])
           }
         }
 
         for (var i = 0; i < pollRates.length; i++) {
           let key = pollRates[i].pID
           if (c[key] > 0) {
-            c[key] = c[key]*(pollRates[i].votePercent/nResults[key])
+            c[key] = c[key] * (pollRates[i].votePercent / nResults[key])
           }
         }
       })
@@ -184,10 +182,10 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       brexit: 0,
       green: 0,
       snp: 0,
-      pc:0,
-      dup:0,
+      pc: 0,
+      dup: 0,
       sf: 0,
-      sdlp:0,
+      sdlp: 0,
       uup: 0,
       alliance: 0,
       other: 0
@@ -198,7 +196,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       for (const key in allVotes) {
         allVotes[key] += c[key]
         totalVotes += c[key]
-    }
+      }
     });
 
     for (const key in allVotes) {
@@ -240,109 +238,109 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           listOfGroups.push((consts[i])[grouping])
         }
       }
-  
-        
-  
-        for (let i = 0; i < listOfGroups.length; i++) {
-          groups.push([])
-        }
-  
-        for (let i = 0; i < consts.length; i++) {
-          groups[listOfGroups.findIndex((g) => g === (consts[i])[grouping])].push(consts[i])
-        }
-  
-        console.log(electionParams.MPGroupingMode)
+
+
+
+      for (let i = 0; i < listOfGroups.length; i++) {
+        groups.push([])
+      }
+
+      for (let i = 0; i < consts.length; i++) {
+        groups[listOfGroups.findIndex((g) => g === (consts[i])[grouping])].push(consts[i])
+      }
+
+      console.log(electionParams.MPGroupingMode)
     }
 
-    
-      if (electionParams.MPGroupingMode == eConsts.LIMIT) {
-        let brokenUpGroups = []
-        console.log("building broken up groups")
 
-        groups.forEach(g => {
-          
-          //To limit the number of MPs per group without weird truncations (constituencies with too little MPs), we need to figure out
-          //the average MPs per group ideally, then round that down, and create an array of that size (if its 0, then the array has 1 element), populating them of that number. Then,
-          //iterate over that array, adding 1 to each element until the total equals the size of the group. Then, iterate over the group's constituencies
-          //and add them to subgroups in the break up array, then iterate over THAT, pushing it into
-          let breakUpArray = []
-          let breakupNumberArray = []
-          let total = 0;
-          var averageBreakup = g.length/electionParams.MPsPerGroup
-          var breakupFloor = Math.floor(averageBreakup)
+    if (electionParams.MPGroupingMode == eConsts.LIMIT) {
+      let brokenUpGroups = []
+      console.log("building broken up groups")
 
-          console.log(breakupFloor)
+      groups.forEach(g => {
 
-          console.log(1)
-          
-          //populate array
-          for (let i = 0; i < breakupFloor; i++) {
-            breakupNumberArray.push(1)
-            total++
+        //To limit the number of MPs per group without weird truncations (constituencies with too little MPs), we need to figure out
+        //the average MPs per group ideally, then round that down, and create an array of that size (if its 0, then the array has 1 element), populating them of that number. Then,
+        //iterate over that array, adding 1 to each element until the total equals the size of the group. Then, iterate over the group's constituencies
+        //and add them to subgroups in the break up array, then iterate over THAT, pushing it into
+        let breakUpArray = []
+        let breakupNumberArray = []
+        let total = 0;
+        var averageBreakup = g.length / electionParams.MPsPerGroup
+        var breakupFloor = Math.floor(averageBreakup)
+
+        console.log(breakupFloor)
+
+        console.log(1)
+
+        //populate array
+        for (let i = 0; i < breakupFloor; i++) {
+          breakupNumberArray.push(1)
+          total++
+        }
+        if (averageBreakup > breakupFloor) {
+          breakupNumberArray.push(1)
+          total++
+        }
+
+        //iterate over value array
+        let l = 0
+        while (total < g.length) {
+          breakupNumberArray[l] = breakupNumberArray[l] + 1
+          l++
+          total++
+          if (l == breakupNumberArray.length) {
+            l = 0
           }
-          if (averageBreakup > breakupFloor) {
-            breakupNumberArray.push(1)
-            total++
+        }
+
+
+        var index = 0
+        var constNumber = 0
+        breakupNumberArray.forEach(n => {
+          breakUpArray.push([])
+          for (let m = 0; m < n; m++) {
+            breakUpArray[index].push(g[constNumber])
+            constNumber++
           }
-
-          //iterate over value array
-          let l = 0
-          while (total < g.length) {
-            breakupNumberArray[l] = breakupNumberArray[l] + 1
-            l++
-            total++
-            if (l == breakupNumberArray.length) {
-              l = 0
-            }
-          }
-
-
-          var index = 0
-          var constNumber = 0
-          breakupNumberArray.forEach(n => {
-            breakUpArray.push([])
-            for (let m = 0; m < n; m++) {
-              breakUpArray[index].push(g[constNumber])
-              constNumber++
-            }
-            index++
-          });
-
-          console.log(breakUpArray)
-
-          
-          breakUpArray.forEach(b => {
-            brokenUpGroups.push(b)
-          });
+          index++
         });
 
-        console.log(brokenUpGroups)
+        console.log(breakUpArray)
 
-        return brokenUpGroups
-      }
-      else {
-        return groups
-      }
 
-      
+        breakUpArray.forEach(b => {
+          brokenUpGroups.push(b)
+        });
+      });
+
+      console.log(brokenUpGroups)
+
+      return brokenUpGroups
+    }
+    else {
+      return groups
     }
 
-  
+
+  }
+
+
 
   //c being the constituency.
   const determineWinner = (c, mpNumber, rounds) => {
     //TODO
     //this solution is really bad, its because of how I formatted the backend. Have a fix in mind
     //for it, but I'll have to test it later. Proof of concept
-    var partyResults = [{pName: "con", vCount : c.con}, {pName: "lab", vCount : c.lab}, 
-    {pName: "ld", vCount : c.ld}, {pName: "brexit", vCount : c.brexit}, 
-    {pName: "green", vCount : c.green}, {pName: "snp", vCount : c.snp}, 
-    {pName: "pc", vCount : c.pc}, {pName: "dup", vCount : c.dup}, {pName: "sf", vCount : c.sf},
-    {pName: "sdlp", vCount : c.sdlp}, {pName: "uup", vCount : c.uup},
-    {pName: "alliance", vCount : c.alliance}, {pName: "other", vCount : c.other}];
+    var partyResults = [{ pName: "con", vCount: c.con }, { pName: "lab", vCount: c.lab },
+    { pName: "ld", vCount: c.ld }, { pName: "brexit", vCount: c.brexit },
+    { pName: "green", vCount: c.green }, { pName: "snp", vCount: c.snp },
+    { pName: "pc", vCount: c.pc }, { pName: "dup", vCount: c.dup }, { pName: "sf", vCount: c.sf },
+    { pName: "sdlp", vCount: c.sdlp }, { pName: "uup", vCount: c.uup },
+    { pName: "alliance", vCount: c.alliance }, { pName: "other", vCount: c.other }];
 
     partyResults = partyResults.filter(e => {
-      return e.vCount>0
+      return e.vCount > 0
     })
 
     let totalVotes = 0
@@ -350,14 +348,14 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       totalVotes = totalVotes + p.vCount
     })
 
-    if (mpNumber > 2 || electionParams.typeOfVote === eConsts.RUNOFF) {
+    if (((mpNumber > 2 || electionParams.typeOfVote === eConsts.RUNOFF) && electionParams.tacticalVotingMode !== eConsts.OFF) || electionParams.tacticalVotingMode === eConsts.ALWAYS) {
       partyResults = redistrubuteTacticalVotes(partyResults)
     }
-    
+
     incrementVotes(partyResults)
 
     partyResults.map(p => {
-      p.vCount = p.vCount/totalVotes
+      p.vCount = p.vCount / totalVotes
     })
 
     let pID = "";
@@ -385,10 +383,10 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   }
 
   const incrementSeats = (pID) => {
-    seatCount.party[pID] = seatCount.party[pID]+1;
+    seatCount.party[pID] = seatCount.party[pID] + 1;
 
     if (seats.total !== seatTotal) {
-      seatCount.total = seatCount.total+1
+      seatCount.total = seatCount.total + 1
     }
   }
 
@@ -408,28 +406,28 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     var mpsToElect = mpNumber
 
     if (mpNumber > 1) {
-      winProportion = 1/mpNumber
+      winProportion = 1 / mpNumber
     }
 
     if (winnerWins == false) {
       var weightMax = 0
       partyResults.map((p) => {
-        p.vCount = 1-p.vCount
+        p.vCount = 1 - p.vCount
         weightMax += p.vCount
       })
 
       partyResults.map((p) => {
-        p.vCount = p.vCount/weightMax
+        p.vCount = p.vCount / weightMax
       })
-      
+
     }
-    
+
     var rawResults = partyResults.map(p => {
       let resultsTemp = p.vCount
       return resultsTemp
     })
 
-    
+
 
     var targetVote = null
     var winners = []
@@ -442,7 +440,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
 
       //update data
       winners.push(winner.pName);
-      rounds.push({target: winner.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(partyResults)), seatTotal: mpNumber, seatsLeft: mpsToElect})
+      rounds.push({ target: winner.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(partyResults)), seatTotal: mpNumber, seatsLeft: mpsToElect })
 
       //diminish results for next round
       winner.vCount -= winProportion;
@@ -457,7 +455,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       console.log(error)
       return "other"
     }
-    
+
   }
 
 
@@ -470,7 +468,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     var mpsToElect = mpNumber
 
     if (mpNumber > 1) {
-      winProportion = 1/mpNumber
+      winProportion = 1 / mpNumber
     }
 
 
@@ -482,13 +480,13 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     for (let i = 0; i < mpNumber; i++) {
       weightMax += weightAdding
       weighting.push(weightAdding)
-      weightAdding = 1/(1.5*(i+1))
+      weightAdding = 1 / (1.5 * (i + 1))
     }
 
     let runoffResults = []
     partyResults.forEach(p => {
       for (let i = 0; i < mpNumber; i++) {
-        runoffResults.push({pName: p.pName, vCount: p.vCount*(weighting[i]/weightMax)})
+        runoffResults.push({ pName: p.pName, vCount: p.vCount * (weighting[i] / weightMax) })
       }
     });
 
@@ -504,9 +502,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         mpsToElect--
         //determine winners
         winners.push(mostPopular.pName)
-        rounds.push({target: mostPopular.pName, reason: eConsts.R_DEFAULT, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect})
+        rounds.push({ target: mostPopular.pName, reason: eConsts.R_DEFAULT, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect })
         runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
-        
+
       }
       else {
         //find the biggest winner
@@ -523,9 +521,9 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
         if (mostPopular.vCount >= winProportion) {
           winners.push(mostPopular.pName)
           //TODO: Change reasons to constants
-          rounds.push({target: mostPopular.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect})
+          rounds.push({ target: mostPopular.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect })
 
-          mostPopular.vCount -= winProportion 
+          mostPopular.vCount -= winProportion
           mpsToElect--
           if (mpsToElect > 0) {
             runoffResults = runoffRedistrubtion(runoffResults, mostPopular)
@@ -535,23 +533,23 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
           var leastPopular = null
           //if not, we need to find the biggest loser
           runoffResults.forEach(p => {
-              if (leastPopular == null) {
-                leastPopular = p;
-              }
-              else if (p.vCount < leastPopular.vCount) {
-                leastPopular = p;
-              }
-            
+            if (leastPopular == null) {
+              leastPopular = p;
+            }
+            else if (p.vCount < leastPopular.vCount) {
+              leastPopular = p;
+            }
+
           });
 
           //update the rounds, but declare no winner was found.
 
-          rounds.push({target: leastPopular.pName, reason: eConsts.R_LOSS, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect})
+          rounds.push({ target: leastPopular.pName, reason: eConsts.R_LOSS, results: JSON.parse(JSON.stringify(runoffResults)), seatTotal: mpNumber, seatsLeft: mpsToElect })
           runoffResults = runoffRedistrubtion(runoffResults, leastPopular)
         }
       }
     }
-    
+
     return winners
   }
 
@@ -564,11 +562,11 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     })
 
 
-    let victimVote =  runoffVictim.vCount
+    let victimVote = runoffVictim.vCount
     runoffVictim.vCount = 0
 
     for (let i = 0; i < runoffResults.length; i++) {
-      runoffResults[i].vCount += victimVote*(resultsTemp[i]/weightMax)
+      runoffResults[i].vCount += victimVote * (resultsTemp[i] / weightMax)
     }
     runoffResults = runoffResults.filter(p => runoffVictim !== p)
 
@@ -583,7 +581,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     //two alignments off = 5
     //else = 1
     return array.map(p => {
-      let curPartyLeaning = toLeaning(p.pName) 
+      let curPartyLeaning = toLeaning(p.pName)
       let victimLeaning = toLeaning(compareTo.pName)
       if (p === compareTo) {
         return 0
@@ -594,10 +592,10 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       else if (curPartyLeaning === victimLeaning) {
         return 100
       }
-      else if (Math.abs(curPartyLeaning-victimLeaning) === 1) {
+      else if (Math.abs(curPartyLeaning - victimLeaning) === 1) {
         return 25
       }
-      else if (Math.abs(curPartyLeaning-victimLeaning) === 2) {
+      else if (Math.abs(curPartyLeaning - victimLeaning) === 2) {
         return 5
       }
       else {
@@ -625,7 +623,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       return false
     }
     if (group.constituencies.find(c => c.constituency == mouseOverConst)) {
-        return true
+      return true
     }
     return false
   }
@@ -633,11 +631,11 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   //This redistrubutes the votes from the two best parties in a constituency
   const redistrubuteTacticalVotes = (results) => {
     var temp = results;
-    
+
     var tracker
 
     temp.map(p => {
-      tracker+= p.vCount
+      tracker += p.vCount
     })
     var topTwoParties = []
 
@@ -672,7 +670,7 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
       })
 
       for (let i = 0; i < temp.length; i++) {
-        temp[i].vCount += reducedVote*(tempArray[i]/weightMax)
+        temp[i].vCount += reducedVote * (tempArray[i] / weightMax)
       }
     })
 
@@ -681,10 +679,10 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
     })
 
 
-    tracker = 0 
-    
+    tracker = 0
+
     temp.map(p => {
-      tracker+= p.vCount
+      tracker += p.vCount
     })
 
     return temp
@@ -696,95 +694,95 @@ const ElectoralMap = ({electionParams, seats, setSeatData, electionData, setElec
   }
 
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
-  
+
   function handleMoveEnd(pos) {
     if (position.zoom !== pos.zoom) {
       setPosition(pos);
     }
   }
 
-  
+
 
   return (
-    !constituencies.length || !parties.length ? <CircularProgress/>: (
+    !constituencies.length || !parties.length ? <CircularProgress /> : (
       <ComposableMap width={1200}
-      height={1550}
-      projectionConfig={{
-        center: [1.5, 55.4],
-        rotate: [4.4, 0, 0],
-        parallels: [0, 10],
-        scale: 8000,
-      }}>
+        height={1550}
+        projectionConfig={{
+          center: [1.5, 55.4],
+          rotate: [4.4, 0, 0],
+          parallels: [0, 10],
+          scale: 8000,
+        }}>
         <ZoomableGroup
           zoom={position.zoom}
           center={position.coordinates}
           onMoveEnd={handleMoveEnd}
           maxZoom={16}
         >
-        <Geographies geography={ElectoralGeography}>
-          {({ geographies }) =>
-            geographies.map(geo => {
-              var currentDatum = null
-              var currentConstituency = null
+          <Geographies geography={ElectoralGeography}>
+            {({ geographies }) =>
+              geographies.map(geo => {
+                var currentDatum = null
+                var currentConstituency = null
 
-              //console.log(electionData)
+                //console.log(electionData)
 
                 electionData.forEach(datum => {
                   datum.constituencies.map(group => {
                     if ((group.constituency === geo.properties.NAME)) {
-                    currentDatum = datum
-                    currentConstituency = group.constituency
+                      currentDatum = datum
+                      currentConstituency = group.constituency
                     }
                   })
                 })
 
-              //console.log(currentDatum)
-              //console.log(currentConstituency)
+                //console.log(currentDatum)
+                //console.log(currentConstituency)
 
-              let colour = null
-              try {
-                colour = getColour(currentDatum.seatHolders.find(s => currentConstituency === s.constituencyName).mostResponsible)
-              }
-              catch (error) {
-                //console.log(geo.properties.NAME)
-                console.log(error)
-                
-                colour = getColour("other")
-              }
+                let colour = null
+                try {
+                  colour = getColour(currentDatum.seatHolders.find(s => currentConstituency === s.constituencyName).mostResponsible)
+                }
+                catch (error) {
+                  //console.log(geo.properties.NAME)
+                  console.log(error)
 
-              var strColour = "#000000"
-              var strWidth = (1/position.zoom)
-              var selectedWidth = 25*(1/position.zoom)
-              
-              return <Geography key={geo.rsmKey}
-                geography={geo}
-                onMouseEnter={() => {
-                  setMouseOverConst(geo.properties.NAME)
-                }}
-                onMouseLeave={() => {
-                  setMouseOverConst("");
-                }}
-                onClick={() => {
-                  setBreakdownConstituency(geo.properties.NAME);
-                }}
-                style={{
-                  default: {
-                    fill: `${constShareGroup(currentDatum) ? colour.primaryColour : eConsts.darkenPartyColours(colour.primaryColour, -0.3)}`,
-                    stroke: `${strColour}`,
-                    strokeWidth: {strWidth}
-                  },
-                  hover: {
-                    fill: eConsts.darkenPartyColours(colour.primaryColour, 0.3),
-                    stroke: `${strColour}`,
-                    strokeWidth: {strWidth}
-                  },
-                }}
-                strokeWidth = {strWidth}
+                  colour = getColour("other")
+                }
+
+                var strColour = "#000000"
+                var strWidth = (1 / position.zoom)
+                var selectedWidth = 25 * (1 / position.zoom)
+
+                return <Geography key={geo.rsmKey}
+                  geography={geo}
+                  onMouseEnter={() => {
+                    setMouseOverConst(geo.properties.NAME)
+                  }}
+                  onMouseLeave={() => {
+                    setMouseOverConst("");
+                  }}
+                  onClick={() => {
+                    setBreakdownConstituency(geo.properties.NAME);
+                  }}
+                  style={{
+                    default: {
+                      fill: `${constShareGroup(currentDatum) ? colour.primaryColour : eConsts.darkenPartyColours(colour.primaryColour, -0.3)}`,
+                      stroke: `${strColour}`,
+                      strokeWidth: { strWidth }
+                    },
+                    hover: {
+                      fill: eConsts.darkenPartyColours(colour.primaryColour, 0.3),
+                      stroke: `${strColour}`,
+                      strokeWidth: { strWidth }
+                    },
+                  }}
+                  strokeWidth={strWidth}
                 />
 
-            })
-          }
-        </Geographies>
+              })
+            }
+          </Geographies>
         </ZoomableGroup>
       </ComposableMap>
     )

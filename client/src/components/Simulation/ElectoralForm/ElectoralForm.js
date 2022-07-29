@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 
-import { CircularProgress, Button, Typography, Paper, Slider, Grid, ButtonGroup, TextField, Container } from "@material-ui/core";
+import { CircularProgress, Button, Typography, Paper, Slider, Grid, ButtonGroup, TextField, Container, Tooltip, IconButton } from "@material-ui/core";
+import questionMark from '../../../images/p.png'
 
 import useStyles from './styles.js';
 
@@ -22,6 +23,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
     const [partyPercentageManual, setPartyPercentageManual] = useState(false)
     const [MPMode, setMPMode] = useState(eConsts.DEFAULT.MPGroupingMode)
     const [MPSeats, setMPSeats] = useState(eConsts.DEFAULT.MPsPerGroup)
+    const [autoCorrect, setAutoCorrect] = useState(true)
 
     useEffect(() => {
         updateParties(partyPercentages)
@@ -102,7 +104,14 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
         var temp = partyPercentages.slice()
 
         //do this twice to first give priority to all changed fields, then again to ensure that the result adds up to 100%
-        temp = correction(temp)
+        if (autoCorrect) {
+            temp = correction(temp)
+        }
+        else {
+            temp.map(p => {
+                p.startingVotePercent = p.votePercent
+            })
+        }
 
         setPartyPercentages(temp)
     }
@@ -260,11 +269,23 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
     const getMPModeFlavourText = () => {
         switch (MPMode) {
             case eConsts.NO_CHANGE:
-                return "No Change: This slider is ignored."
+                return "For 'No Change', this slider is ignored."
             case eConsts.ALTER:
-                return "Alter: This slider sets the number of MPs in each group to the same size"
+                return "This slider sets the number of MPs in each group to the same size."
             case eConsts.LIMIT:
-                return "Limit: This slider sets the limit of MPs per group, and breaks a group up into smaller pieces to fit this. This does not respect geographic proximity as a limitation of the design."
+                return "This slider sets the limit of MPs per group, and breaks a group up into smaller pieces to fit this. This does not respect geographic adjacency or proximity as a limitation of the design."
+        }
+
+    };
+
+    const getTacticalVotingFlavourText = () => {
+        switch (tacticalVotingMode) {
+            case eConsts.OFF:
+                return "Tactical voting is never adjusted for, and this slider is ignored."
+            case eConsts.PREDICATE:
+                return "Under a system which feels proportional to a voter, this proportion will have votes from the top two parties in a constituency group be reallocated."
+            case eConsts.ALWAYS:
+                return "The proportion chosen by the slider will always flow away from the top two parties in a constituency group."
         }
 
     };
@@ -274,8 +295,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
             <Paper className={classes.paper}>
                 <Typography variant="h4">Polling Rate</Typography>
                 <Typography variant="body1">This polling rate, while reported on the national level, will only effect constituencies where these parties chose to run.
-                    It's important to note that this is polling rates <b>before any changes made to the voting system.</b> Keep this in mind when picking your rates, as otherwise this can lead to surprising results! How the citizens voted overall is revealed after a
-                    generated election below the Electoral Map.</Typography>
+                    It's important to note that this is polling rates <b>before any changes made to the voting system.</b> Keep this in mind when picking your rates, as otherwise this can lead to surprising results!</Typography>
                 <br />
                 <Grid container spacing={{ xs: 1, md: 2 }}>
                     {
@@ -343,14 +363,21 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                 </Grid>
                 <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
                     <Button color="primary" size="large" onClick={correctPolling}> SUBMIT POLLS </Button>
-                    <Button color="primary" size="large" onClick={defaultPolling}> RETURN TO DEFAULT </Button>
+                    <Button color="primary" size="large" onClick={defaultPolling}> DEFAULT </Button>
+                    <Button color={autoCorrect ? "primary" : "secondary"} size="large" onClick={(e) => setAutoCorrect(!autoCorrect)}> {autoCorrect ? `Don't Correct` : `Correct`} </Button>
                     <Button color={partyPercentageManual ? "secondary" : "primary"} size="large" onClick={toggleManualPolling}> {partyPercentageManual ? `Sliders` : `Manual`} </Button>
                 </ButtonGroup>
             </Paper>
             <br />
             <Paper className={classes.paper}>
-                <Typography variant="h4">Constituency Type</Typography>
-                <Typography variant="body1">A constituency type is how constituencies are joined together in order to create Multimember constituencies.</Typography>
+                <Typography variant="h4">Constituency Type 
+                
+                    <Tooltip title="A constituency type is how constituencies are joined together in order to create Multimember constituencies.">
+                        <IconButton>
+                            <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
+                        </IconButton>
+                    </Tooltip>  
+                </Typography>
                 <br />
                 <Typography variant="body1">{getConstituencyDetails()}</Typography>
                 <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
@@ -363,8 +390,12 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
             </Paper>
             <br />
             <Paper className={classes.paper}>
-                <Typography variant="h4">Voting Type</Typography>
-                <Typography variant="body1">This determines how a citizen may choose to cast their vote.</Typography>
+                <Typography variant="h4">Voting Type <Tooltip title="This determines how a citizen can cast their vote and how it is counted.">
+                        <IconButton>
+                            <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
+                        </IconButton>
+                    </Tooltip>  
+                    </Typography> 
                 <br />
                 <Typography variant="body1">{getElectionDetails()}</Typography>
                 <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
@@ -379,13 +410,18 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                 <Grid container spacing={2}>
                     <Grid item xs={1} />
                     <Grid item xs={4}>
-                        <Typography variant="h6">Tactical Voting Percent</Typography>
+                        <Typography variant="h6">Tactical Voting Percent <Tooltip title="Tactical voting is the proportion of people who vote for one of the two biggest parties in a constituency to keep the other out.">
+                        <IconButton>
+                            <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
+                        </IconButton>
+                    </Tooltip>  </Typography>
                         <br />
                         <br />
                         <Slider
                             value={tacticalVoting}
                             onChange={handleTacticalChange}
                             aria-label="Always visible"
+                            disabled={isTacticalVotingMode(eConsts.OFF)}
                             getAriaValueText={tacticalValueText}
                             valueLabelFormat={tacticalValueText}
                             valueLabelDisplay="on"
@@ -400,16 +436,21 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                         </ButtonGroup>
                         <br />
                         <br />
-                        <Typography variant="body1">Tactical voting is the proportion of people who vote for one of the two biggest parties in a constituency to keep the other out. Under a proportional system, these votes will be reallocated.</Typography>
+                        <Typography variant="body1">{getTacticalVotingFlavourText()}</Typography>
                     </Grid>
                     <Grid item xs={2} />
                     <Grid item xs={4}>
-                        <Typography variant="h6">MP Mode and Number</Typography>
+                        <Typography variant="h6">MP Mode and Number <Tooltip title="An MP mode is how constituency groups decide on how many MPs it should be represented by.">
+                        <IconButton>
+                            <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
+                        </IconButton>
+                    </Tooltip>  </Typography>
                         <br />
                         <br />
                         <Slider
                             defaultValue={eConsts.DEFAULT.MPsPerGroup}
                             value={MPSeats}
+                            disabled={isMPMode(eConsts.NO_CHANGE)}
                             valueLabelDisplay="on"
                             valueLabelFormat={MPSeats}
                             onChange={handleMPSeatsChange}
@@ -424,7 +465,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                         </ButtonGroup>
                         <br />
                         <br />
-                        <Typography variant="body1">{getMPModeFlavourText(constituencyType)} </Typography>
+                        <Typography variant="body1">{getMPModeFlavourText()} </Typography>
 
                     </Grid>
                     <Grid item xs={1} />
