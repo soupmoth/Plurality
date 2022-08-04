@@ -1,12 +1,15 @@
-import React, {useEffect, useState} from 'react';
-import {Container, AppBar, Typography, Grow, Grid } from '@material-ui/core'
+import React, { useEffect, useState } from 'react';
+import { Container, AppBar, Typography, Grow, Grid } from '@material-ui/core'
 import { useDispatch } from 'react-redux';
 
-import {getConstituencies, getParties} from './actions/simulation'
+import { getConstituencies, getParties } from './actions/simulation'
 
 import Header from './images/Header.png'
 import useStyles from './styles';
 import SimulationPage from './components/Simulation/SimulationPage';
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from './Layout';
 
 const App = () => {
     const classes = useStyles();
@@ -18,14 +21,21 @@ const App = () => {
     }, [])
 
     return (
+
         <Container maxWidth="lg">
-            <AppBar className={classes.appBar} position='static' color = "inherit">
-                <img className={classes.image} src={Header} alt = "plurality" height="125"/>
-            </AppBar>
-            
-            <SimulationPage/>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={
+                        <Layout/>
+                    }>
+                        <Route index element={<SimulationPage />} />
+                        <Route path="/simulation" element={<SimulationPage />} />
+                    </Route>
+                </Routes>
+            </BrowserRouter>
+
         </Container>
-        
+
     );
 }
 
