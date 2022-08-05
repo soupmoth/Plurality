@@ -7,6 +7,7 @@ import { getConstituencies, getParties } from './actions/simulation'
 import Header from './images/Header.png'
 import useStyles from './styles';
 import SimulationPage from './components/Simulation/SimulationPage';
+import Home from './components/Home/Home';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from './Layout';
@@ -18,7 +19,7 @@ const App = () => {
     useEffect(() => {
         dispatch(getConstituencies());
         dispatch(getParties())
-    }, [])
+    }, [dispatch])
 
     return (
 
@@ -28,7 +29,7 @@ const App = () => {
                     <Route path="/" element={
                         <Layout/>
                     }>
-                        <Route index element={<SimulationPage />} />
+                        <Route index element={<Home />} />
                         <Route path="/simulation" element={<SimulationPage />} />
                     </Route>
                 </Routes>

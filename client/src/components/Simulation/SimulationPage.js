@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { Grid, CircularProgress, LinearProgress} from '@material-ui/core'
+import { Grid, LinearProgress} from '@material-ui/core'
 
-import { TextField, Button, Typography, Paper, styled } from "@material-ui/core";
+import { Paper } from "@material-ui/core";
 
 import useStyles from './styles.js';
 
@@ -49,16 +49,21 @@ const SimulationPage = () => {
                             <ElectoralSeats seats={seats} parties={parties} />
                         </Grid>
                         <Grid item xs={7}>
-                            <Typography variant="h6">{`${breakdownConstituency}`}</Typography>
                             <ElectoralMap electionParams={electionParams} seats={seats} setSeatData={setSeatData} electionData={electionData} setElectionData={setElectionData} setBreakdownConstituency={setBreakdownConstituency} />
                         </Grid>
                     </Grid>
 
-                    <ElectoralBreakdown breakdownConstituency={breakdownConstituency} electionData={electionData} electionParams={electionParams} parties={parties}></ElectoralBreakdown>
+                    
 
                 </Paper>
 
+                <br />
+                <br />
 
+                <ElectoralBreakdown breakdownConstituency={breakdownConstituency} electionData={electionData} electionParams={electionParams} parties={parties}></ElectoralBreakdown>
+
+                <br />
+                <br />
 
             </div>
         )
