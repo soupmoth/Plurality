@@ -45,10 +45,10 @@ const SimulationPage = () => {
                 <br />
                 <Paper className={classes.paper}>
                     <Grid container spacing={2}>
-                        <Grid item xs={5}>
+                        <Grid item md={5} xs = {12}>
                             <ElectoralSeats seats={seats} parties={parties} />
                         </Grid>
-                        <Grid item xs={7}>
+                        <Grid item md={7} xs = {12}>
                             <ElectoralMap electionParams={electionParams} seats={seats} setSeatData={setSeatData} electionData={electionData} setElectionData={setElectionData} setBreakdownConstituency={setBreakdownConstituency} />
                         </Grid>
                     </Grid>

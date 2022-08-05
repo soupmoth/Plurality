@@ -326,7 +326,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
 
                                         })
                                         return (
-                                            <Grid item xs={3}>
+                                            <Grid item md={3} xs={6}>
                                                 <Container sx={{ width: 300 }}>
                                                     <TextField name="ni" variant="filled" label="ni" fullWidth value={percentValue(pPercent.votePercent)} disabled={true} />
                                                 </Container>
@@ -334,7 +334,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                                         )
                                     default:
                                         return (
-                                            <Grid item xs={3}>
+                                            <Grid item md={3} xs={6}>
                                                 <Container sx={{ width: 300 }} color={`${getColour(pPercent.pID).primaryColour}`}>
                                                     <TextField name={pPercent.pID} variant="filled" label={pPercent.pID} fullWidth value={percentValue(pPercent.votePercent)} onChange={(e) => handlePercentageChange(e.target.name, e.target.value)} />
                                                 </Container>
@@ -352,7 +352,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                                         break;
                                     default:
                                         return (
-                                            <Grid item xs={3}>
+                                            <Grid item md={3} xs={6}>
                                                 <PartySlider pPercent={pPercent} partyPercentages={partyPercentages} setPartyPercentages={setPartyPercentages} key={pPercent.pID} />
                                             </Grid>
                                         )
@@ -382,7 +382,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                 <Typography variant="body1">{getConstituencyDetails()}</Typography>
                 <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
                     <Button color={isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.INDIVIDUAL)}> Individual </Button>
-                    <Button color={isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.COUNTY_AND_BUROUGH)}> Counties/Buroughs </Button>
+                    <Button color={isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.COUNTY_AND_BUROUGH)}> Counties </Button>
                     <Button color={isConstituencyType(eConsts.REGION) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.REGION)}> Regions </Button>
                     <Button color={isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.COUNTRY)}> Countries </Button>
                     <Button color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" disabled={isElectionType(eConsts.RUNOFF)} onClick={(e) => setConstType(eConsts.NATION)}> Nationwide </Button>

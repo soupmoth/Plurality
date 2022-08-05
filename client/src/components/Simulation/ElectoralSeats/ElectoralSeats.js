@@ -111,6 +111,7 @@ const ElectoralSeats = ({seats, parties}) => {
       responsive: true,
       plugins: {
         legend: {
+          display: false,
           position: 'top',
         },
         title: {
@@ -122,25 +123,21 @@ const ElectoralSeats = ({seats, parties}) => {
 
   return (
       <Paper classes={classes.paper}>
-        <Grid container spacing={2}>
-        <Grid item xs={1}/>
-          <Grid item xs={10}>
-            <Typography variant="h6">Total Seats Won</Typography>
+        <Grid container justifyContent="space-around" spacing={2}>
+          <Grid item md={12} xs={5}>
+            <Typography align="center" variant="h6">Total Seats Won</Typography>
             <Pie
               options={options}
               data={seatData}
             />
           </Grid>
-          <Grid item xs={1}/>
-          <Grid item xs={1}/>
-          <Grid item xs={10}>
-            <Typography variant="h6">Total National Vote</Typography>
+          <Grid item md={12} xs={5} >
+            <Typography align="center" variant="h6">Total National Vote</Typography>
             <Pie
               options={options}
               data={voteData}
             />
           </Grid>
-          <Grid item xs={1}/>
         </Grid>
       </Paper>
   )

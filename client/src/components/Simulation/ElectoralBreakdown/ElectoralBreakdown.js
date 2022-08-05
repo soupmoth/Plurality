@@ -133,11 +133,11 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
     if (electionParams == null || electionData == null) {
       return 0
     }
-    if (electionParams.typeOfVote == eConsts.RUNOFF) {
+    if (electionParams.typeOfVote === eConsts.RUNOFF) {
       var p = 0
       electionData.forEach(eData => {
         if (eData.constituencies.find(e => e.constituency == breakdownConstituency)) {
-          p = 1 / eData.constituencies.length
+          p = 1 / rounds[round].seatTotal
         }
       });
       if (p == 1) {
@@ -320,7 +320,7 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
       <Paper className={classes.paper}>
 
         <Grid container spacing={2}>
-          <Grid item xs={8}>
+          <Grid item md={8} xs={12}>
             <Paper className={classes.paper}>
               <Bar
                 options={options}
@@ -328,7 +328,7 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
               />
             </Paper>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item md={4} xs={12}>
             <Paper className={classes.paper}>
               <Typography variant="h6">{`${breakdownConstituency}`}</Typography>
               <br />
