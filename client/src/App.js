@@ -8,6 +8,8 @@ import Header from './images/Header.png'
 import useStyles from './styles';
 import SimulationPage from './components/Simulation/SimulationPage';
 import Home from './components/Home/Home';
+import Article from './components/Articles/Article/Article';
+import ArticlesPage from './components/Articles/ArticlesPage';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from './Layout';
@@ -32,7 +34,7 @@ const App = () => {
                         <Route index element={<Home />} />
                         <Route path="simulation" element={<SimulationPage />} />
                         <Route path="articles" element={<ArticlesPage/>}/>
-                        <Route path="articles/" element={
+                        <Route path="articles/:id" element={
                             <Article/>
                         }/>
                     </Route>

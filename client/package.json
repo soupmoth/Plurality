@@ -26,6 +26,7 @@
     "react-charts": "^3.0.0-beta.38",
     "react-dom": "^18.2.0",
     "react-file-base64": "^1.0.3",
+    "react-markdown": "^8.0.3",
     "react-redux": "^8.0.2",
     "react-scripts": "^5.0.1",
     "react-simple-maps": "^2.3.0",
