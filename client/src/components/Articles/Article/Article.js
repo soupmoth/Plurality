@@ -15,7 +15,7 @@ const Article = () => {
     const classes = useStyles();
     const { id } = useParams()
 
-    const articleData = getArticleData(id - 1)
+    const articleData = getArticleData(id)
 
     return (
         <Paper className={classes.paper}> 

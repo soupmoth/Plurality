@@ -17,6 +17,8 @@ import SW from '../../images/SpoilerWall.png'
 const Home = () => {
     const classes = useStyles();
 
+    console.log("hi")
+
     return (
         <div>
             <Card className={classes.card}>
