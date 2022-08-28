@@ -122,7 +122,70 @@ export const votingSystemsArticle = {
 export const goodVotingSystemArticle = {
     title: "What's a good Voting System?",
     image: GVS,
-    body: "EMPTY"
+    body: "So this website is very clearly biased against the First Past the Post system. So instead of just raging blindly about how the system sucks, let’s actually define what a good electoral system is, by looking at the problems and strengths of the First Past the Post system."
+    +
+    "\n \n Firstly, voters in the First Past the Post system are reduced to “tactical voting”, where the average voter votes to keep someone they don’t like out. This is a strong weakness of the system, as it essentially forces compromise onto the voters, even though the purpose of a democracy is to give the overall group sentiment to direct the ship. This system instead states that there are 2 rigid options. Left or Right. Oh but sometimes its right ahead or to the right, or maybe to the left and to the far left. You don’t decide the bearings, you just get two options and must pick. The point is that a system should force the compromise onto the macro scale instead of the micro scale. If a majority of people support a party, then thats fine for them to have absolute control, but otherwise, these parties must negotiate where they want to steer the ship to best represent how the people voted."
+    +
+    "\n \nSo that’s our first point "
+    +
+    "\n \n - The voters should have the ability to vote for any party or candidate without worries, and forces the compromise onto the people who make decisions. "
+    +
+    "\n \n Another issue in the First Past the Post system, and by extension, the Alternative Vote, is that the way people vote don’t seem to have a big sway in the end result of the election. You can read more about why this is in the [Spoiler Wall] article, where different measurements of “sway” are tabled. But the importance here is that a system should ideally give the people the power to sway elections. How much this is done is the main point of contention when it comes to this kind of discussion. How much should the people sway an election? In my opinion, the people should have as much say as possible, and if 1% of people decide “Conservatives aren’t my style”, then 1% of the power the Conservatives have should disappear. Many systems achieve this with “proportionality”, and it’s pretty effective. So ideally, our system should be as close to the “1% loss, 1% defeat” rule as possible."
+    +
+    "\n \n So that’s the second point."
+    +
+    "\n \n - The system should let changes in how the people think determine the fate of elections proportionally."
+    +
+    "\n \n And finally, one of the strengths of the First Past the Post system, which is that there is local representation, that an area’s identity is always represented in some ways. This is an important part of a representative democracy, because with smaller and more numerous constituencies, comes more and more closer links to individual places and micro cultures. In an ideal electoral system, we attempt to preserve the local ties to a politician in westminister, so that everyone feels represented. However, even in First Past the Post, this isn’t entirely preserved. How your particular Conservative MP acts doesn’t matter if Party Whips exist. Unless you vote for an independent, which is very difficult under this system, it’s very likely you’re voting for someone who will vote with their party. Maybe they’ll challenge the internal policies of the party, but it’s not as impactful as an Independent who votes based on their individual beliefs. So instead, we should reangle this focus. Currently, our two big parties mainly campaign in marginal seats, as these are what tend to win elections. Every other constituency tends to get ignored, and therefore, campaign promises that would interest the safe constituencies are less prioritized. By ensuring that a system forces the parties to consider as many different constituencies as possible in their electoral strategy, we make it so they try to benefit the most people in order to win an election."
+    +
+    "\n \n That’s our final point."
+    +
+    "\n \n - The system should provide local ties to the national state of politics, and every area should have parties campaigning at them if the parties are relevant to said areas. "
+    +
+    "\n \n For this, we can quickly rank each of these three categories for different voting systems that can be modeled using the simulation page of this site. These rankings are entirely personal but I’ll attempt to justify them."
+    +
+    "\n \n First Past the Post" +
+    "\n\n A: 1/5"+
+    "\n B: 1/5" +
+    "\n C: 2/5"
+    +
+    "\n\nI already picked this apart, so consider it a nice benchmark for further analysis."
+    +
+    "\n\nAlternative Vote:" +
+    "\n\nA: 5/5" +
+    "\nB: 2/5" +
+    "\nC: 4/5"
+    +
+    "\n\nThe Alternative Vote was what the United Kingdom nearly settled on in the 2011 referendum. Thankfully, we didn’t do so, as the Alternative Vote is only good for voter choice and ensuring that they don’t have to compromise. The AV system still trends towards two significant parties, because it’s not aiming for proportionality, it’s simply eliminating the Spoiler Effect and that’s all that it's doing. Now this does give a bigger sway to the voters in how representatives are elected, but compared to other systems, it's not much, and is kinda subpar. It also does have a stronger incentive for more campaigning, as it essentially makes more seats `marginal`, so more campaigning needs to be done for a majority, but its still not the best it could be, as many seats are still safe under AV. It’s a direct upgrade to First Past the Post, but it’s not the best option."
+    +
+    "\n\nParty-List Proportional Representation: Regional (Regions as declared by official government data)" +
+    "\n\nA: 4/5" +
+    "\nB: 4/5" +
+    "\nC: 3/5"
+    +
+    "\n\nParty-List Proportional Representation: Country" +
+    "\n\nA: 4/5" +
+    "\nB: 5/5" +
+    "\nC: 2/5" 
+    +
+    "\n\nParty-List Proportional Representation: Nationwide" +
+    "\n\nA: 5/5" +
+    "\nB: 5/5"  +
+    "\nC: 1/5" 
+    +
+    "\n\nThese are all the same system, the scope of them simply varies. Proportional Representation as a system is where seats within a “constituency” (because that term is doing ALOT of legwork for this) are awarded proportionally based on the votes that a party receives. For that reason, it’s a pretty easy 4/5 or 5/5 in the proportionality aspect. It’s a 4/5 for regionality because the smaller scope makes it slightly less proportional, but this isn’t that bad in practice. However, as we zoom out with this system, the ties to local areas become lessened, and instead appeals to popularity and ideology become more relevant. Campaigning isn’t done based on local issues, more about blanket policies and ideologies. This is fine in a federal system because the local government would be appealing to local issues and the nationwide authority would be appealing to the common ideas of all. But in the UK, we don’t have such a system, only devolved assemblies that have limited power. So this system doesn't really make much sense for the UK in my opinion where we have a centralized government. It’d still be fantastic, and a major improvement compared to First Past the Post, but compared to the Single Transferrable Vote… It’s close, but I believe that STV is better.."
+    +
+    "\n\nThe Single Transferrable Vote (Of which, joins 4/5 adjacent constituencies together for 4/5 MPs)" +
+    "\n\nA: 5/5" + 
+    "\nB: 4/5" +
+    "\nC: 5/5"
+    +
+    "\n\nTo put it simply, the STV system is both proportional and local, and it also gives the most say to individual voters on how their vote is counted. It is, in my opinion, the best system for electing representatives. It does what Proportional Representation aims to achieve, and yet maintains the local link to a constituency alongside individuality of candidates from the parties they belong to."
+    +
+    "\n\nIt’s the strengths of the Alternative Vote, with the proportionality of Proportional Representation. "
+    +
+    "\n\n\nIn short, for any position with multiple winners, STV is the best choice, hands down. And for individual candidates, AV is the best choice, because AV’s flaw was lack of proportionality and sway, but in a single option vote, AV doesn’t need to care about this. This means it’s ideal for electing positions such as Mayors. (It’s also good in constituencies that need to be single member for certain reasons, like Isle of Wight, or for constituencies that would be too big if joined together with other ones.)"
+    
 }
 
 export const spoilerWallArticle = {
