@@ -1,3 +1,6 @@
+import {Grid, Card, CardActionArea, CardContent, CardMedia, Typography} from '@material-ui/core';
+import { Link } from "react-router-dom";
+
 //this is a terrible solution but I just want to finish this project I know how to actually make this work
 
 import VS from '../images/VotingSystems.png'
@@ -10,23 +13,62 @@ export const PROPOSALS = "proposals"
 
 
 //ID articles
-export const VOTING_SYSTEMS = 1
-export const GOOD_VOTING_SYSTEM = 2
-export const SPOILER_WALL = 3
-export const PR_VS_STV = 4
-export const CASE_AGAINST = 5
+export const VOTING_SYSTEMS = "1"
+export const GOOD_VOTING_SYSTEM = "2"
+export const SPOILER_WALL = "3"
+export const PR_VS_STV = "4"
+export const CASE_AGAINST = "5"
 
 export const ARTICLE_COUNT = 5
+
+export const generateArticlePreview = (articleData, classes, id) => {
+
+    var articleComponent = null
+    try {
+        articleComponent = (
+            <Grid key= {articleData.title} item xs={4}>
+                <Card className={classes.smallCard}>
+                    <CardActionArea component={Link} to={`/articles/${id}`} >
+                        <CardMedia className={classes.media} image={articleData.image} title={articleData.title} />
+                        <CardContent backgroundColor="red" >
+                            <Typography align="center" variant="h5">{articleData.title}</Typography>
+                        </CardContent>
+                    </CardActionArea>
+                </Card>
+            </Grid>
+        )
+    }
+    catch {
+        articleData = getArticleData("ERROR")
+        articleComponent = (
+            <Grid item xs={4}>
+                <Card className={classes.smallCard}>
+                    <CardActionArea component={Link} to={`/articles/${id}`} >
+                        <CardMedia className={classes.media} image={articleData.image} title={articleData.title} />
+                        <CardContent backgroundColor="red" >
+                            <Typography align="center" variant="h5">{articleData.title}</Typography>
+                        </CardContent>
+                    </CardActionArea>
+                </Card>
+            </Grid>
+        )
+    }
+    return articleComponent
+}
 
 export const getArticleCount = () => {
     return ARTICLE_COUNT
 }
 
 export const getArticleData = (aID) => {
+    if (typeof(aID) == "number") {
+        aID = `${aID}`
+    }
+    
     switch (aID) {
         case VOTING_SYSTEMS:
             return votingSystemsArticle
-        case GOOD_VOTING_SYSTEM:
+        case  GOOD_VOTING_SYSTEM:
             return goodVotingSystemArticle
         case SPOILER_WALL:
             return spoilerWallArticle
@@ -34,6 +76,10 @@ export const getArticleData = (aID) => {
             return PRvsSTVArticle
         case CASE_AGAINST:
             return CaseAgainstArticle
+        case METHODOLOGY:
+            return 
+        case PROPOSALS:
+            return
         default: 
             return {
                 title: "404",
@@ -70,7 +116,7 @@ export const votingSystemsArticle = {
 }
 
 export const goodVotingSystemArticle = {
-    title: "What makes a good Voting System?",
+    title: "What's a good Voting System?",
     image: GVS,
     body: "EMPTY"
 }
@@ -88,6 +134,18 @@ export const PRvsSTVArticle = {
 }
 
 export const CaseAgainstArticle = {
+    title: "The Case against Electoral Reforms",
+    image: VS,
+    body: "EMPTY"
+}
+
+export const MethodologyArticle = {
+    title: "The Methodology and Development of Plurality",
+    image: VS,
+    body: "EMPTY"
+}
+
+export const ProposalsArticle = {
     title: "The Case against Electoral Reforms",
     image: VS,
     body: "EMPTY"

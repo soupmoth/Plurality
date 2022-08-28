@@ -406,10 +406,10 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
             </Paper>
             <br />
             <Paper className={classes.paper}>
-                <Typography variant="h6">Settings</Typography>
+                <Typography variant="h4">Settings</Typography>
                 <Grid container spacing={2}>
-                    <Grid item xs={1} />
-                    <Grid item xs={4}>
+                    <Grid item md={1} xs={0}/>
+                    <Grid item md={4} xs={12}>
                         <Typography variant="h6">Tactical Voting Percent <Tooltip title="Tactical voting is the proportion of people who vote for one of the two biggest parties in a constituency to keep the other out.">
                         <IconButton>
                             <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
@@ -438,8 +438,9 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                         <br />
                         <Typography variant="body1">{getTacticalVotingFlavourText()}</Typography>
                     </Grid>
-                    <Grid item xs={2} />
-                    <Grid item xs={4}>
+                    <Grid item md={1} xs={0}/>
+                    <Grid item md={1} xs={0}/>
+                    <Grid item md={4} xs={12}>
                         <Typography variant="h6">MP Mode and Number <Tooltip title="An MP mode is how constituency groups decide on how many MPs it should be represented by.">
                         <IconButton>
                             <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
@@ -468,7 +469,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                         <Typography variant="body1">{getMPModeFlavourText()} </Typography>
 
                     </Grid>
-                    <Grid item xs={1} />
+                    <Grid item md={1} xs={1} />
                 </Grid>
             </Paper>
             <br />

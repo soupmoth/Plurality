@@ -14,10 +14,10 @@ const Layout = () => {
       <AppBar className={classes.appBar} position='static' color="inherit">
         <img className={classes.image} src={Header} alt="plurality" height="125" />
         <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-          <Button color="primary" size="large" component={Link} to="/"> Home </Button>
-          <Button color="primary" size="large" component={Link} to="/simulation"> Simulation </Button>
-          <Button color="primary" size="large" component={Link} to="/articles"> Articles </Button>
-          <Button color="primary" size="large" component={Link} to="/about"> About</Button>
+          <Button color="primary" size="small" component={Link} to="/"> Home </Button>
+          <Button color="primary" size="small" component={Link} to="/simulation"> Simulation </Button>
+          <Button color="primary" size="small" component={Link} to="/articles"> Articles </Button>
+          <Button color="primary" size="small" component={Link} to="/about"> About</Button>
         </ButtonGroup>
       </AppBar>
 

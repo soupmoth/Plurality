@@ -17,6 +17,8 @@ const Article = () => {
 
     const articleData = getArticleData(id)
 
+    console.log(id)
+
     return (
         <Paper className={classes.paper}> 
             <Box component="img" sx={{ justifyContent: "flex-end", minWidth: 5,  width: '100%' }} src={articleData.image}>

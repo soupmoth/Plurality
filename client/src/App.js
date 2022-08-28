@@ -13,6 +13,7 @@ import ArticlesPage from './components/Articles/ArticlesPage';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from './Layout';
+import About from './components/About/About';
 
 const App = () => {
     const classes = useStyles();
@@ -35,6 +36,10 @@ const App = () => {
                         <Route path="simulation" element={<SimulationPage />} />
                         <Route path="articles" element={<ArticlesPage/>}/>
                         <Route path="articles/:id" element={
+                            <Article/>
+                        }/>
+                        <Route path="about" element={<About/>}/>
+                        <Route path="about/:id" element={
                             <Article/>
                         }/>
                     </Route>

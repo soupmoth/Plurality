@@ -70,9 +70,6 @@ export default makeStyles((theme) => ({
           justifyContent: 'space-between',
           margin: '20px',
         },
-        paper: {
-          padding: theme.spacing(3),
-        },
         title: {
           padding: '0 16px',
         },
@@ -80,5 +77,8 @@ export default makeStyles((theme) => ({
           padding: '0 16px 8px 16px',
           display: 'flex',
           justifyContent: 'space-between',
+        },
+        paper: {
+          padding: theme.spacing(3),
         },
 }));
