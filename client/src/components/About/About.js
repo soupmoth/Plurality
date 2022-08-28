@@ -59,7 +59,7 @@ const About = () => {
                 Contact:
                 </Typography>
             <Typography variant="body1">
-                <b>Email Address:</b> soupmothstudios@gmail.com.
+                <b>Email Address:</b> soupmothstudio@gmail.com.
                 <br/>
                 This project is also open source, so if you wish to laugh at my horrible coding choices, like how I hardcoded the articles
                 into the javascript bundle and made no easy ways to edit them and import them, <b><a href="https://github.com/soupmoth/Plurality" target="_blank">just click here to view my Github!</a></b> (listen this is my first time making a website)
