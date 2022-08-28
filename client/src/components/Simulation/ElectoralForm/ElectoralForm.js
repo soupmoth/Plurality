@@ -469,7 +469,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                         <Typography variant="body1">{getMPModeFlavourText()} </Typography>
 
                     </Grid>
-                    <Grid item md={1} xs={1} />
+                    <Grid item md={1} xs={0} />
                 </Grid>
             </Paper>
             <br />

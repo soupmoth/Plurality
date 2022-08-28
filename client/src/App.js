@@ -39,9 +39,6 @@ const App = () => {
                             <Article/>
                         }/>
                         <Route path="about" element={<About/>}/>
-                        <Route path="about/:id" element={
-                            <Article/>
-                        }/>
                     </Route>
                 </Routes>
             </BrowserRouter>

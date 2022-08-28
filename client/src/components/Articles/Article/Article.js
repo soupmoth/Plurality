@@ -25,7 +25,7 @@ const Article = () => {
                 
             </Box>
 
-            <Typography align="center" variant="h1">{articleData.title}</Typography>
+            <Typography align="center" variant="h3">{articleData.title}</Typography>
 
             <Typography><ReactMarkdown>{articleData.body}</ReactMarkdown></Typography>
         </Paper>

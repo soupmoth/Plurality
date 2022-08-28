@@ -59,7 +59,7 @@ const Home = () => {
             </Typography>
         </Paper>
             <br/>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} justifyContent="center">
                 {articlePreviews}
             </Grid>
         </div>

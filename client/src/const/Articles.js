@@ -6,6 +6,10 @@ import { Link } from "react-router-dom";
 import VS from '../images/VotingSystems.png'
 import GVS from '../images/GoodVotingSystem.png'
 import SW from '../images/SpoilerWall.png'
+import PRvsSTV from '../images/STV vs PR.png'
+import TCA from '../images/TheCaseAgainst.png'
+import M from '../images/Methodology.png'
+import P from '../images/Proposals.png'
 
 //About Us articles
 export const METHODOLOGY = "methodology"
@@ -26,7 +30,7 @@ export const generateArticlePreview = (articleData, classes, id) => {
     var articleComponent = null
     try {
         articleComponent = (
-            <Grid key= {articleData.title} item xs={4}>
+            <Grid key= {articleData.title} item md={4} xs={6}>
                 <Card className={classes.smallCard}>
                     <CardActionArea component={Link} to={`/articles/${id}`} >
                         <CardMedia className={classes.media} image={articleData.image} title={articleData.title} />
@@ -41,7 +45,7 @@ export const generateArticlePreview = (articleData, classes, id) => {
     catch {
         articleData = getArticleData("ERROR")
         articleComponent = (
-            <Grid item xs={4}>
+            <Grid item md={4} xs={12}>
                 <Card className={classes.smallCard}>
                     <CardActionArea component={Link} to={`/articles/${id}`} >
                         <CardMedia className={classes.media} image={articleData.image} title={articleData.title} />
@@ -77,9 +81,9 @@ export const getArticleData = (aID) => {
         case CASE_AGAINST:
             return CaseAgainstArticle
         case METHODOLOGY:
-            return 
+            return MethodologyArticle
         case PROPOSALS:
-            return
+            return ProposalsArticle
         default: 
             return {
                 title: "404",
@@ -128,25 +132,25 @@ export const spoilerWallArticle = {
 }
 
 export const PRvsSTVArticle = {
-    title: "Party List Versus the Single Transferrable Vote",
-    image: VS,
+    title: "Party List versus the Single Transferrable Vote",
+    image: PRvsSTV,
     body: "EMPTY"
 }
 
 export const CaseAgainstArticle = {
-    title: "The Case against Electoral Reforms",
-    image: VS,
+    title: "The Case against Electoral Reform",
+    image: TCA,
     body: "EMPTY"
 }
 
 export const MethodologyArticle = {
-    title: "The Methodology and Development of Plurality",
-    image: VS,
+    title: "Methodology and Development",
+    image: M,
     body: "EMPTY"
 }
 
 export const ProposalsArticle = {
-    title: "The Case against Electoral Reforms",
-    image: VS,
+    title: "Proposals of the Project",
+    image: P,
     body: "EMPTY"
 }

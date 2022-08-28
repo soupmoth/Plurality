@@ -12,6 +12,7 @@ import Banner from '../../images/Banner.png'
 import VS from '../../images/VotingSystems.png'
 import GVS from '../../images/GoodVotingSystem.png'
 import SW from '../../images/SpoilerWall.png'
+import { generateArticlePreview, getArticleCount, getArticleData, METHODOLOGY, PROPOSALS } from "../../const/Articles.js";
 
 
 const About = () => {
@@ -22,6 +23,7 @@ const About = () => {
 
 
     return (
+        <div>
         <Paper className={classes.paper}>
             <Typography variant="h4">
                 About Plurality
@@ -52,14 +54,26 @@ const About = () => {
                 I wanted to make my arguments with much more broader appeal. That's honestly the only reason.
                 <br/>
                 <br/>
-                If you want to contact me, you can email me at soupmothstudios@gmail.com.
+                </Typography>
+                <Typography variant="h4">
+                Contact:
+                </Typography>
+            <Typography variant="body1">
+                <b>Email Address:</b> soupmothstudios@gmail.com.
+                <br/>
                 This project is also open source, so if you wish to laugh at my horrible coding choices, like how I hardcoded the articles
-                into the javascript bundle and made no easy ways to edit them and import them, just click here! (listen this is my first time making a website)
+                into the javascript bundle and made no easy ways to edit them and import them, <b><a href="https://github.com/soupmoth/Plurality" target="_blank">just click here to view my Github!</a></b> (listen this is my first time making a website)
                 
             </Typography>
-
-        
         </Paper>
+        <br></br>
+        <br></br>
+        <Grid container spacing={3} justifyContent="center">
+                {generateArticlePreview(getArticleData(METHODOLOGY), classes, METHODOLOGY)}
+                {generateArticlePreview(getArticleData(PROPOSALS), classes, PROPOSALS)}
+        </Grid>
+
+        </div>
     );
 }
 

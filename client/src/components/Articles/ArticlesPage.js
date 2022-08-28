@@ -23,7 +23,7 @@ const ArticlesPage = () => {
     }
 
     return (
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
             {ArticleComponents}
         </Grid>
     );
