@@ -1,6 +1,6 @@
 import { Outlet, Link } from "react-router-dom";
 
-import { Container, AppBar, Button, ButtonGroup, Grid, Typography } from '@material-ui/core'
+import { Box, AppBar, Button, ButtonGroup, Grid, Typography } from '@material-ui/core'
 
 
 
@@ -11,8 +11,8 @@ const Layout = () => {
   const classes = useStyles();
   return (
     <>
-      <AppBar className={classes.appBar} position='static' color="inherit">
-        <img className={classes.image} src={Header} alt="plurality" height="125" />
+      <AppBar className={classes.appBar} position='static' color="inherit" >
+        <Box component="img" sx={{ justifyContent: "flex-end", minWidth: 250,  width: '30%' }} src={Header}></Box>
         <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
           <Button color="primary" size="small" component={Link} to="/"> Home </Button>
           <Button color="primary" size="small" component={Link} to="/simulation"> Simulation </Button>

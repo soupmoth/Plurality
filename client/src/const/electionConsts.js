@@ -99,3 +99,43 @@ export const darkenPartyColours = (hex, lum) => {
 
 	return rgb;
 }
+
+export const PRESET_FPTP = {
+    tacticalVoteMode: PREDICATE,
+    tacticalVoteProportion: 0.25,
+    MPGroupingMode: NO_CHANGE,
+    MPsPerGroup: 1,
+    typeOfVote: PLURALITY,
+    grouping: INDIVIDUAL,
+    partyPollRates: [],
+}
+
+export const PRESET_AV = {
+    tacticalVoteMode: PREDICATE,
+    tacticalVoteProportion: 0.25,
+    MPGroupingMode: NO_CHANGE,
+    MPsPerGroup: 1,
+    typeOfVote: RUNOFF,
+    grouping: INDIVIDUAL,
+    partyPollRates: [],
+}
+
+export const PRESET_PARTY_LIST = {
+    tacticalVoteMode: PREDICATE,
+    tacticalVoteProportion: 0.25,
+    MPGroupingMode: NO_CHANGE,
+    MPsPerGroup: 1,
+    typeOfVote: PLURALITY,
+    grouping: NATION,
+    partyPollRates: [],
+}
+
+export const PRESET_STV = {
+    MPGroupingMode: LIMIT,
+    MPsPerGroup: 5,
+    grouping: COUNTY_AND_BUROUGH,
+    partyPollRates: [],
+    tacticalVoteProportion: 0.25,
+    tacticalVoteMode: PREDICATE,
+    typeOfVote: RUNOFF,
+}

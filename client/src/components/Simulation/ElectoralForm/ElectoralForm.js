@@ -172,7 +172,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
     }
 
     const isConstituencyType = (type) => {
-        return type == constituencyType
+        return type === constituencyType
     }
 
     //ELECTION TYPES
@@ -193,24 +193,27 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
             case eConsts.PLURALITY:
                 return "Plurality gives each voter a single vote, seats are given to the candidate/party who receives the biggest vote. In a multimember constituency, these are awarded as proportionally as possible."
             case eConsts.RUNOFF:
-                return "In Runoff, each voter ranks the candidates in order of preference. If their preferred candidate loses, their vote is counted for their next choice. In a multimember constituency, if a candidate wins, their wasted votes" +
-                    " are allocated to the next choices of every voter based on the excess of votes. A candidate wins if they have a majority in a single member constituency (called AV), or if they reach a threshold in a multi member constituency (called STV), or if they're" +
-                    " the last man standing with one seat remaining."
+                return "In Runoff, each voter ranks the candidates in order of preference. If no clear majority is found, then the biggest loser's voters' next choices are counted instead. "
             default:
-                return "Westminister goes insane and votes in a landslide 574-0 vote that the biggest loser wins, and hides it from the public! A bit of fun data visualisation to see the weakest party in each constituency. Works with Multimember constituencies!"
+                return "Westminister goes insane and votes in a landslide 649-0 vote that the biggest loser wins, and hides it from the public! A bit of fun data visualisation to see the weakest party in each constituency. Kinda works with small Multimember constituencies!"
         }
     }
 
     const isElectionType = (type) => {
-        return type == voteType
+        return type === voteType
     }
 
     const isMPMode = (type) => {
-        return type == MPMode
+        return type === MPMode
     }
 
     const isTacticalVotingMode = (type) => {
-        return type == tacticalVotingMode
+        return type === tacticalVotingMode
+    }
+
+    const isPreset = (preset) => {
+        return (preset.typeOfVote == voteType && preset.grouping == constituencyType && preset.tacticalVoteMode == tacticalVotingMode &&
+            preset.tacticalVoteProportion == tacticalVoting && preset.MPGroupingMode == MPMode && preset.MPsPerGroup == MPSeats)
     }
 
     const resetSettings = () => {
@@ -234,6 +237,15 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
             grouping: constituencyType,
             partyPollRates: partyPercentages
         })
+    }
+
+    const setPreset = (preset) => {
+        setVoteType(preset.typeOfVote)
+        setConstituencyType(preset.grouping)
+        setTacticalVotingMode(preset.tacticalVoteMode)
+        setTacticalVoting(preset.tacticalVoteProportion)
+        setMPMode(preset.MPGroupingMode)
+        setMPSeats(preset.MPsPerGroup)
     }
 
     function tacticalValueText(value) {
@@ -290,8 +302,53 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
 
     };
 
+    const getPresetDetails = () => {
+        if (isPreset(eConsts.PRESET_FPTP)) {
+            return "Plurality, or First Past the Post is the current electoral model of the United Kingdom. It is also used by America, Belarus, and Canada"
+        }
+        else if (isPreset(eConsts.PRESET_AV)) {
+            return "The Alternative Vote was the proposed system in the 2011 Referendum. You rank the votes, and losers have the second choices counted until a clear majority is found. It is used by Australia"
+        }
+        else if (isPreset(eConsts.PRESET_PARTY_LIST)) {
+            return "The Party-List is a standard method of proportional representation. Votes are cast for parties, and seats in the House of Commons are rewarded proportionally. It is used across Europe"
+        }
+        else if (isPreset(eConsts.PRESET_STV)) {
+            return "The Single Transferable Vote is a form of Proportional Representation using ranked-choice voting. It's like AV, but rewards several seats, and winners have their excess votes reallocated. It is designed so every vote was responsible for electing a candidate in some form. This is the proposed model by the Plurality project"
+        }
+        else {
+            return "The current settings have deviated from the basic presets described here."
+        }
+    };
+
     return (
-        !partyPercentages === null ? <CircularProgress /> : (<div>
+        !partyPercentages == null ? <CircularProgress /> : (<div>
+            <Paper className={classes.paper}>
+                <Typography variant="h4">Presets 
+                    <Tooltip title="These presets will automatically set the parameters of the election to set types.">
+                        <IconButton>
+                            <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
+                        </IconButton>
+                    </Tooltip>  
+                </Typography>
+                <br />
+                <Typography variant="body1">{getPresetDetails()}</Typography>
+                <br />
+                <Grid container justifyContent="center" spacing={1} columns={20}>
+                    <Grid item md={6} sm={6} xs={12}>
+                    <Button fullWidth  color={isPreset(eConsts.PRESET_FPTP) ? "secondary" : "primary"} size="large" variant="contained" onClick={(e) => setPreset(eConsts.PRESET_FPTP)}> Plurality </Button>
+                    </Grid>
+                    <Grid item md={6} sm={6} xs={12}>
+                    <Button fullWidth  color={isPreset(eConsts.PRESET_AV) ? "secondary" : "primary"} size="large" variant="contained" onClick={(e) => setPreset(eConsts.PRESET_AV)}> Alternative Vote </Button>
+                    </Grid>
+                    <Grid item md={6} sm={6} xs={12}>
+                    <Button fullWidth  color={isPreset(eConsts.PRESET_PARTY_LIST) ? "secondary" : "primary"} size="large" variant="contained" onClick={(e) => setPreset(eConsts.PRESET_PARTY_LIST)}> Party List </Button>
+                    </Grid>
+                    <Grid item md={6} sm={6} xs={12}>
+                    <Button fullWidth variant="contained" color={isPreset(eConsts.PRESET_STV) ? "secondary" : "primary"} size="large"  onClick={(e) => setPreset(eConsts.PRESET_STV)}> Single Transferable Vote </Button>
+                    </Grid>
+                </Grid>
+            </Paper>
+            <br />
             <Paper className={classes.paper}>
                 <Typography variant="h4">Polling Rate</Typography>
                 <Typography variant="body1">This polling rate, while reported on the national level, will only effect constituencies where these parties chose to run.
@@ -312,19 +369,6 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                                         break;
                                     case "uup":
                                         var percent = 0
-                                        partyPercentages.map((pPerc) => {
-                                            switch (pPercent.pID) {
-                                                case "sdlp":
-                                                case "dup":
-                                                case "sf":
-                                                case "alliance":
-                                                case "uup":
-                                                    percent += pPerc.votePercent
-                                                    break;
-                                                default:
-                                            }
-
-                                        })
                                         return (
                                             <Grid item md={3} xs={6}>
                                                 <Container sx={{ width: 300 }}>
@@ -361,18 +405,26 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
 
                         })}
                 </Grid>
-                <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                    <Button color="primary" size="large" onClick={correctPolling}> SUBMIT POLLS </Button>
-                    <Button color="primary" size="large" onClick={defaultPolling}> DEFAULT </Button>
-                    <Button color={autoCorrect ? "primary" : "secondary"} size="large" onClick={(e) => setAutoCorrect(!autoCorrect)}> {autoCorrect ? `Don't Correct` : `Correct`} </Button>
-                    <Button color={partyPercentageManual ? "secondary" : "primary"} size="large" onClick={toggleManualPolling}> {partyPercentageManual ? `Sliders` : `Manual`} </Button>
-                </ButtonGroup>
+                <Grid container justifyContent="center" spacing={1}>
+                    <Grid item md={3} sm={6} xs={12}>
+                    <Button fullWidth color="primary" size="large" variant="contained" onClick={correctPolling}>SUBMIT POLLS</Button>
+                    </Grid>
+                    <Grid item md={3} sm={6} xs={12}>
+                    <Button fullWidth color="primary" size="large" variant="contained" onClick={defaultPolling}> DEFAULT </Button>
+                    </Grid>
+                    <Grid item md={3} sm={6} xs={12}>
+                    <Button fullWidth  color={autoCorrect ? "primary" : "secondary"} size="large" variant="contained" onClick={(e) => setAutoCorrect(!autoCorrect)}> {autoCorrect ? `Don't Correct` : `Correct`} </Button>
+                    </Grid>
+                    <Grid item md={3} sm={6} xs={12}>
+                    <Button fullWidth color={partyPercentageManual ? "secondary" : "primary"} size="large" variant="contained" onClick={toggleManualPolling}> {partyPercentageManual ? `Sliders` : `Manual`} </Button>
+                    </Grid>
+                </Grid>
             </Paper>
             <br />
             <Paper className={classes.paper}>
-                <Typography variant="h4">Constituency Type 
+                <Typography variant="h4">Grouping Type 
                 
-                    <Tooltip title="A constituency type is how constituencies are joined together in order to create Multimember constituencies.">
+                    <Tooltip title="A grouping type is how constituencies are joined together in order to create Multimember constituencies (or do nothing).">
                         <IconButton>
                             <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
                         </IconButton>
@@ -380,13 +432,23 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                 </Typography>
                 <br />
                 <Typography variant="body1">{getConstituencyDetails()}</Typography>
-                <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                    <Button color={isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.INDIVIDUAL)}> Individual </Button>
-                    <Button color={isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.COUNTY_AND_BUROUGH)}> Counties </Button>
-                    <Button color={isConstituencyType(eConsts.REGION) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.REGION)}> Regions </Button>
-                    <Button color={isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size="large" onClick={(e) => setConstType(eConsts.COUNTRY)}> Countries </Button>
-                    <Button color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" disabled={isElectionType(eConsts.RUNOFF)} onClick={(e) => setConstType(eConsts.NATION)}> Nationwide </Button>
-                </ButtonGroup>
+                <Grid container justifyContent="center" spacing={1} columns={20}>
+                    <Grid item md={4} sm={4} xs={6}>
+                    <Button fullWidth  color={isConstituencyType(eConsts.INDIVIDUAL) ? "secondary" : "primary"} size="large" variant="contained" onClick={(e) => setConstType(eConsts.INDIVIDUAL)}> Individual </Button>
+                    </Grid>
+                    <Grid item md={4} sm={4} xs={6}>
+                    <Button fullWidth  color={isConstituencyType(eConsts.COUNTY_AND_BUROUGH) ? "secondary" : "primary"} size="large" variant="contained" onClick={(e) => setConstType(eConsts.COUNTY_AND_BUROUGH)}> Counties </Button>
+                    </Grid>
+                    <Grid item md={4} sm={4} xs={6}>
+                    <Button fullWidth  color={isConstituencyType(eConsts.REGION) ? "secondary" : "primary"} size="large" variant="contained" onClick={(e) => setConstType(eConsts.REGION)}> Regions </Button>
+                    </Grid>
+                    <Grid item md={6} sm={6} xs={6}>
+                    <Button fullWidth variant="contained" color={isConstituencyType(eConsts.COUNTRY) ? "secondary" : "primary"} size="large"  onClick={(e) => setConstType(eConsts.COUNTRY)}> Countries </Button>
+                    </Grid>
+                    <Grid item md={6} sm={6} xs={12}>
+                    <Button fullWidth  color={isConstituencyType(eConsts.NATION) ? "secondary" : "primary"} size="large" variant="contained" disabled={isElectionType(eConsts.RUNOFF)} onClick={(e) => setConstType(eConsts.NATION)}> Nationwide </Button>
+                    </Grid>
+                </Grid>
             </Paper>
             <br />
             <Paper className={classes.paper}>
@@ -398,18 +460,23 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                     </Typography> 
                 <br />
                 <Typography variant="body1">{getElectionDetails()}</Typography>
-                <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                    <Button color={isElectionType(eConsts.PLURALITY) ? "secondary" : "primary"} size="large" onClick={(e) => setElectionType(eConsts.PLURALITY)}> Plurality </Button>
-                    <Button color={isElectionType(eConsts.RUNOFF) ? "secondary" : "primary"} size="large" onClick={(e) => setElectionType(eConsts.RUNOFF)}> Runoff </Button>
-                    <Button color={isElectionType(eConsts.LOSER_TAKES_ALL) ? "secondary" : "primary"} size="large" onClick={(e) => setElectionType(eConsts.LOSER_TAKES_ALL)}> LOSER TAKES ALL </Button>
-                </ButtonGroup>
+                <Grid container justifyContent="center" spacing={1} columns={20}>
+                    <Grid item md={4} sm={6} xs={6}>
+                    <Button fullWidth variant="contained" color={isElectionType(eConsts.PLURALITY) ? "secondary" : "primary"} size="large" onClick={(e) => setElectionType(eConsts.PLURALITY)}> Plurality </Button>
+                    </Grid>
+                    <Grid item md={4} sm={6} xs={6}>
+                    <Button fullWidth variant="contained" color={isElectionType(eConsts.RUNOFF) ? "secondary" : "primary"} size="large" onClick={(e) => setElectionType(eConsts.RUNOFF)}> Runoff </Button>
+                    </Grid>
+                    <Grid item md={4} sm={12} xs={12}>
+                    <Button fullWidth variant="contained" color={isElectionType(eConsts.LOSER_TAKES_ALL) ? "secondary" : "primary"} size="large" onClick={(e) => setElectionType(eConsts.LOSER_TAKES_ALL)}> LOSER TAKES ALL </Button>
+                    </Grid>
+                </Grid>
             </Paper>
             <br />
             <Paper className={classes.paper}>
                 <Typography variant="h4">Settings</Typography>
-                <Grid container spacing={2}>
-                    <Grid item md={1} xs={0}/>
-                    <Grid item md={4} xs={12}>
+                <Grid container spacing={10}>
+                    <Grid item md={6} sm={12}>
                         <Typography variant="h6">Tactical Voting Percent <Tooltip title="Tactical voting is the proportion of people who vote for one of the two biggest parties in a constituency to keep the other out.">
                         <IconButton>
                             <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
@@ -438,9 +505,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                         <br />
                         <Typography variant="body1">{getTacticalVotingFlavourText()}</Typography>
                     </Grid>
-                    <Grid item md={1} xs={0}/>
-                    <Grid item md={1} xs={0}/>
-                    <Grid item md={4} xs={12}>
+                    <Grid item md={6} sm={12}>
                         <Typography variant="h6">MP Mode and Number <Tooltip title="An MP mode is how constituency groups decide on how many MPs it should be represented by.">
                         <IconButton>
                             <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
@@ -469,7 +534,6 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                         <Typography variant="body1">{getMPModeFlavourText()} </Typography>
 
                     </Grid>
-                    <Grid item md={1} xs={0} />
                 </Grid>
             </Paper>
             <br />

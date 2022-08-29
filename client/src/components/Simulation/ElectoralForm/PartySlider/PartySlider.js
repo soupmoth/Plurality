@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 
 import { createTheme, ThemeProvider, TextField, Button, Typography, Paper, Slider, Grid, Box, Container } from "@material-ui/core";
 
+
 import useStyles from './styles.js';
 
 import * as eConsts from '../../../../const/electionConsts.js'
@@ -13,7 +14,10 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
     
     const getColour = (pID) => {
         const result = parties.find(party => party.partyID === pID)
-        return result
+        if (result.partyID == "snp") {
+            return eConsts.darkenPartyColours(result.primaryColour, -0.065)
+        }
+        return result.primaryColour
       };
 
 
@@ -36,13 +40,20 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
         return 3*pPercent.startingVotePercent+0.02
     };
 
-    function percentValue(value) {
+    const percentValue = (value) => {
         return `${Math.round(value*1000)/10}%`;
+    }
+
+    const getName = () => {
+        if (pPercent.pID == "brexit") {
+            return "REFORM"
+        }
+        return pPercent.pID.toUpperCase()
     }
 
     return (
         <Container sx={{ width: 300 }}>
-        <Typography variant="h5">{`${pPercent.pName}`}</Typography>
+        <Typography variant="h5">{`${getName()}`}</Typography>
             <br/>
             <Slider 
                 value={pPercent.votePercent} 
@@ -54,7 +65,7 @@ const PartySlider = ({pPercent, partyPercentages, setPartyPercentages}) => {
                 min={0.001}
                 step={0.001}
                 max={findMax(pPercent)}
-                style={{color: `${getColour(pPercent.pID).primaryColour}`}}
+                style={{color: `${getColour(pPercent.pID)}`}}
             />
          </Container>
 

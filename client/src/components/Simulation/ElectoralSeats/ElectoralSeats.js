@@ -115,7 +115,7 @@ const ElectoralSeats = ({seats, parties}) => {
           position: 'top',
         },
         title: {
-          display: true,
+          display: false,
           text: 'Seats Won',
         },
       },
@@ -125,14 +125,14 @@ const ElectoralSeats = ({seats, parties}) => {
       <Paper classes={classes.paper}>
         <Grid container justifyContent="space-around" spacing={2}>
           <Grid item md={12} xs={5}>
-            <Typography align="center" variant="h6">Total Seats Won</Typography>
+            <Typography align="center" variant="h6">Seats Won</Typography>
             <Pie
               options={options}
               data={seatData}
             />
           </Grid>
           <Grid item md={12} xs={5} >
-            <Typography align="center" variant="h6">Total National Vote</Typography>
+            <Typography align="center" variant="h6">National Vote</Typography>
             <Pie
               options={options}
               data={voteData}
