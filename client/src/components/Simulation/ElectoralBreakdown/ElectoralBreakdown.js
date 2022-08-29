@@ -289,6 +289,11 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
     setRound(rnd)
   }
 
+  const isNextPage = (shift) => {
+    var rnd = round + shift;
+    return (rnd >= rounds.length || rnd < 0) 
+  }
+
   const shiftPageToInterest = (shift) => {
     var rnd = null;
     if (shift == 1) {
@@ -330,28 +335,29 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
           </Grid>
           <Grid item md={4} xs={12}>
             <Paper className={classes.paper}>
-              <Typography variant="h6">{`${breakdownConstituency}`}</Typography>
+              <Typography variant="h5"><b>{`${breakdownConstituency}`}</b></Typography>
               <br />
               <br />
-              <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                <Button color="primary" size="large" onClick={(e) => shiftPage(-1)}> Previous </Button>
-                <Button color="primary" size="large" onClick={(e) => shiftPageToInterest(-1)}> Prev. Winner </Button>
+              <div align="center">
+              <ButtonGroup align="center" variant="contained" aria-label="outlined primary button group">
+                <Button color="primary" size="large" onClick={(e) => shiftPage(-1)} disabled={isNextPage(-1)}> {"<"} </Button>
+                <Button color="primary" size="large" onClick={(e) => shiftPageToInterest(-1)} disabled={isNextPage(-1)}> {"<<"} </Button>
               </ButtonGroup>
-              <br />
-              <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                <Button color="secondary" size="large" onClick={(e) => shiftPage(1)}> Next </Button>
-                <Button color="secondary" size="large" onClick={(e) => shiftPageToInterest(1)}> Next. Winner </Button>
+              <ButtonGroup align="center" variant="contained" aria-label="outlined primary button group">
+                <Button color="secondary" size="large" onClick={(e) => shiftPage(1)} disabled={isNextPage(1)}> {">"} </Button>
+                <Button color="secondary" size="large" onClick={(e) => shiftPageToInterest(1)} disabled={isNextPage(1)}> {">>"} </Button>
               </ButtonGroup>
+              </div>
               <br />
               <br />
-              <Grid container spacing={2}>
+              <Grid container spacing={2} justifyContent="center">
                 <Grid item xs={6}>
-                  <Typography variant="h6">Seat Total</Typography>
-                  <Typography variant="h3">{`${rounds[round].seatTotal}`}</Typography>
+                  <Typography align="center" variant="h6">Seat Total</Typography>
+                  <Typography align="center" variant="h3">{`${rounds[round].seatTotal}`}</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography variant="h6">Seats Left</Typography>
-                  <Typography variant="h3">{`${rounds[round].seatsLeft}`}</Typography>
+                  <Typography align="center" variant="h6">Seats Left</Typography>
+                  <Typography align="center" variant="h3">{`${rounds[round].seatsLeft}`}</Typography>
                 </Grid>
               </Grid>
               <Typography variant="body1">{`${getVerdictFlavour()}`}</Typography>
