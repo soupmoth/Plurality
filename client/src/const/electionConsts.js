@@ -11,6 +11,7 @@ export const NATION = "NATION"
 export const INDIVIDUAL = "INDIVIDUAL"
 
 //Reasons for round selection.
+export const R_PLURALITY = "PLURALITY"
 export const R_SURPASS = "SURPASS"
 export const R_LOSS = "LOSS"
 export const R_DEFAULT = "DEFAULT"

@@ -440,7 +440,7 @@ const ElectoralMap = ({ electionParams, seats, setSeatData, electionData, setEle
 
       //update data
       winners.push(winner.pName);
-      rounds.push({ target: winner.pName, reason: eConsts.R_SURPASS, results: JSON.parse(JSON.stringify(partyResults)), seatTotal: mpNumber, seatsLeft: mpsToElect })
+      rounds.push({ target: winner.pName, reason: eConsts.R_PLURALITY, results: JSON.parse(JSON.stringify(partyResults)), seatTotal: mpNumber, seatsLeft: mpsToElect })
 
       //diminish results for next round
       winner.vCount -= winProportion;

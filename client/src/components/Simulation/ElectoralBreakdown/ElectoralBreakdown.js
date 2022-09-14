@@ -153,7 +153,7 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
   }
 
   const getAdjustOffset = (value) => {
-    return -100
+    return -50
   }
 
   const getParty = () => {
@@ -168,14 +168,11 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
       pName = "An Independant"
     }
 
-    switch (rounds[round].reason) {
-      case eConsts.R_DEFAULT:
-      case eConsts.R_SURPASS:
-        return `${pName} wins a seat!`
-      case eConsts.R_LOSS:
-        return `${pName} loses an MP!`
-      default:
-        return "ERROR"
+    if (rounds[round].reason == eConsts.R_LOSS) {
+      return `loses an MP!`
+    }
+    else {
+      return `wins a seat!`
     }
   }
 
@@ -197,11 +194,18 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
       pName = "An Independant"
     }
 
+    let addThis = ""
+    if (rounds[round].seatsLeft > 1) {
+      addThis = `As more seats are yet to be filled, the threshold is taken away from their share of the vote, and a new round begins.`
+    }
+
     switch (rounds[round].reason) {
+      case eConsts.R_PLURALITY:
+        return `A seat is allocated to the most popular candidate. ${addThis}`
       case eConsts.R_DEFAULT:
         return `This seat is won as ${rounds[round].results.length} seat${pluralCheck(rounds[round].results.length, true)} remain to be filled and ${rounds[round].results.length} candidate${pluralCheck(rounds[round].results.length, true)} remain${pluralCheck(rounds[round].results.length, false)}`
       case eConsts.R_SURPASS:
-        return `${pName} wins a seat as an MP's votes surpasses the threshold! Its excess votes are reallocated if more seats remain to be filled`
+        return `${pName} wins a seat as a candidates votes surpasses the threshold! Its excess votes are reallocated if more seats remain to be filled`
       case eConsts.R_LOSS:
         return `One of ${pName}'s MPs is eliminated from unpopularity, and has its votes reallocated!`
       default:
@@ -267,7 +271,7 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
             backgroundColor: () => eConsts.darkenPartyColours(findPartyColour(getParty()), 0.1),
             content: () => getVerdictText(),
             font: {
-              size: 20
+              size: 12
             },
             callout: {
               enabled: true,
@@ -326,12 +330,10 @@ const ElectoralBreakdown = ({ breakdownConstituency, electionData, electionParam
 
         <Grid container spacing={2}>
           <Grid item md={8} xs={12}>
-            <Paper className={classes.paper}>
               <Bar
                 options={options}
                 data={data}
               />
-            </Paper>
           </Grid>
           <Grid item md={4} xs={12}>
             <Paper className={classes.paper}>

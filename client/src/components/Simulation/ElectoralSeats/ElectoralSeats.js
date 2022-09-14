@@ -67,7 +67,7 @@ const ElectoralSeats = ({seats, parties}) => {
     const getVoteData = () => {
       var data = []
       for (const key in seats.nationalVote) {
-        data.push(seats.nationalVote[key])
+        data.push(Math.round(seats.nationalVote[key]))
       }
       return data
     }
@@ -123,16 +123,16 @@ const ElectoralSeats = ({seats, parties}) => {
 
   return (
       <Paper classes={classes.paper}>
-        <Grid container justifyContent="space-around" spacing={2}>
-          <Grid item md={12} xs={5}>
+        <Grid container justifyContent="space-around" spacing={4}>
+          <Grid item md={12} xs={6}>
             <Typography align="center" variant="h6">Seats Won</Typography>
             <Pie
               options={options}
               data={seatData}
             />
           </Grid>
-          <Grid item md={12} xs={5} >
-            <Typography align="center" variant="h6">National Vote</Typography>
+          <Grid item md={12} xs={6} >
+            <Typography align="center" variant="h6">Pop. Vote</Typography>
             <Pie
               options={options}
               data={voteData}
