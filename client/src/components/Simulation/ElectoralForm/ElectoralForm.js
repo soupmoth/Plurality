@@ -475,8 +475,39 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
             <br />
             <Paper className={classes.paper}>
                 <Typography variant="h4">Settings</Typography>
-                <Grid container spacing={10}>
-                    <Grid item md={6} sm={12}>
+                
+                <Grid container spacing={5}>
+                    <Grid item md={6} xs={12}>
+                        <Typography variant="h6">MP Mode and Number <Tooltip title="An MP mode is how constituency groups decide on how many MPs it should be represented by.">
+                        <IconButton>
+                            <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
+                        </IconButton>
+                    </Tooltip>  </Typography>
+                        <br />
+                        <br />
+                        <Slider
+                            defaultValue={eConsts.DEFAULT.MPsPerGroup}
+                            value={MPSeats}
+                            aria-label="Always visible"
+                            disabled={isMPMode(eConsts.NO_CHANGE)}
+                            valueLabelDisplay="on"
+                            valueLabelFormat={MPSeats}
+                            onChange={handleMPSeatsChange}
+                            min={1}
+                            step={1}
+                            max={getMPSeatMax(constituencyType)}
+                        />
+                        <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+                            <Button color={isMPMode(eConsts.NO_CHANGE) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.NO_CHANGE)}> Off </Button>
+                            <Button color={isMPMode(eConsts.ALTER) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.ALTER)}> Alter </Button>
+                            <Button color={isMPMode(eConsts.LIMIT) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.LIMIT)}> Limit </Button>
+                        </ButtonGroup>
+                        <br />
+                        <br />
+                        <Typography variant="body1">{getMPModeFlavourText()} </Typography>
+
+                    </Grid>
+                    <Grid item md={6} xs={12}>
                         <Typography variant="h6">Tactical Voting Percent <Tooltip title="Tactical voting is the proportion of people who vote for one of the two biggest parties in a constituency to keep the other out.">
                         <IconButton>
                             <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
@@ -505,35 +536,7 @@ const ElectoralForm = ({ electionParams, setElectionParams, setSeatData }) => {
                         <br />
                         <Typography variant="body1">{getTacticalVotingFlavourText()}</Typography>
                     </Grid>
-                    <Grid item md={6} sm={12}>
-                        <Typography variant="h6">MP Mode and Number <Tooltip title="An MP mode is how constituency groups decide on how many MPs it should be represented by.">
-                        <IconButton>
-                            <img className={classes.image} src={questionMark} alt = "questionMark" height="24"/>
-                        </IconButton>
-                    </Tooltip>  </Typography>
-                        <br />
-                        <br />
-                        <Slider
-                            defaultValue={eConsts.DEFAULT.MPsPerGroup}
-                            value={MPSeats}
-                            disabled={isMPMode(eConsts.NO_CHANGE)}
-                            valueLabelDisplay="on"
-                            valueLabelFormat={MPSeats}
-                            onChange={handleMPSeatsChange}
-                            min={1}
-                            step={1}
-                            max={getMPSeatMax(constituencyType)}
-                        />
-                        <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                            <Button color={isMPMode(eConsts.NO_CHANGE) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.NO_CHANGE)}> Off </Button>
-                            <Button color={isMPMode(eConsts.ALTER) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.ALTER)}> Alter </Button>
-                            <Button color={isMPMode(eConsts.LIMIT) ? "secondary" : "primary"} size="large" onClick={(e) => setMPMode(eConsts.LIMIT)}> Limit </Button>
-                        </ButtonGroup>
-                        <br />
-                        <br />
-                        <Typography variant="body1">{getMPModeFlavourText()} </Typography>
-
-                    </Grid>
+                    
                 </Grid>
             </Paper>
             <br />
